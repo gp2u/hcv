@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HCV Decision Support</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>
+<style>
+
+p,td,input,div,select { font-family: sans-serif; font-size:1em;}
+td { padding: 2px 0;}
+label { float:right; padding-right:3px;}
+
+.narrow { width:40px; font-size:0.8em;}
+.notes { font-size:0.90em }
+.error { color:red;}
+
+@media print {
+    #print { display:none;}
+    #dataInput { display:none;}
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+var version = '1.0';
+
+var drugs = {
+    sof: {
+        generic: 'Sofosbuvir',
+        dose: ['400mg'],
+        brand: [
+        'Solvadi',
+        'Hopetavir (Incepta)',
+        'Sofovir (Hetero)',
+        'Hepcinat (Natco)',
+        'Soforal (Beacon)',
+        'Hepcvir (Cipla)',
+        'Sofovir-C (Beximco)',
+        'Hepcee (Julphar)',
+        'MyHep (Mylan)'
+        ],
+        freq: 'daily'
+   },
+    sof_led: {
+        generic: 'Sofosbuvir/Ledipasvir',
+        dose: ['400mg/90mg'],
+        brand: [
+        'Harvoni',
+        'Twinvir (Incepta)',
+        'Hepcvir-L (Cipla)',
+        'Ledifos (Hetero)',
+        'Hepcinat LP (Natco)',
+        'Lesovir-C (Beximco)',
+        'Combicee (Julphar)',
+        'MyHep LVIR (Mylan)'
+        ],
+        freq: 'daily'
+    },
+    dac: {
+        generic: 'Daclatasvir',
+        dose: ['60mg','30mg'],
+        brand: [
+        'Daklinza',
+        'Virodacla (Incepta)',
+        'Daclahep (Hetero)',
+        'Daclavir (Beacon)',
+        'Daclacee (Julphar)'
+        ],
+        freq: 'daily'
+    },
+    riba: {
+        generic: 'Ribavirin',
+        dose: ['200mg','400mg','600mg'],
+        brand: [
+        'Ibavyr',
+        'Celbarin (Incepta)',
+        'Ribacee (Julphar)'
+        ],
+        freq: 'daily divided into 2 doses'
+    }
+};
+
+function supportDecision () {
+
+    $("#demographics").html('');
+    $("#rx").html('');
+    var h = new Object();
+    h.genotype  = $("#genotype option:selected").text();
+    h.fibrosis  = $("#fibrosis option:selected").text();
+    h.harvoniCI = $("input[name=harvoniCI]:checked").val();
+    h.guidelines= $("input[name=guidelines]:checked").val();
+    h.past      = $("#past option:selected").text();
+    h.riba      = $("#riba:checked").length == 1 ? true : false;
+    h.platelets = parseInt($("#platelets").val());
+    h.weight    = $("input[name=weight]:checked").val();
+    h.eGFR      = $("#eGFR").val();
+    h.eGFR      = h.eGFR.replace('>','');
+    h.eGFR      = parseInt(h.eGFR);
+    h.locale    = h.guidelines == 'AASLD' ? 'en-US' : h.guidelines == 'EASL' ? 'en-GB' : 'en-AU';
+
+    var error = '';
+    if (h.genotype == '' ) error += 'Please select Genotype<br>';
+    if (h.fibrosis == '' ) error += 'Please select Fibrosis<br>';
+    if (h.past == ''     ) error += 'Please select Past Treament<br>';
+    if (h.harvoniCI === undefined ) error += 'Please select Harvoni CI<br>';
+    if (h.riba) {
+        if (isNaN(h.platelets)) error += 'Please input Platelets<br>';
+        if (typeof h.weight === "undefined") error += 'Please select Weight<br>';
+        if (isNaN(h.eGFR)) error += 'Please input eGFR<br>';   
+    }
+    if (error != '') {
+        blockMessage(error,1000);
+        setTimeout(function(){$("#demographics").html('<span class="error">'+error+'</span>')},1000);      
+        return;
+    }
+
+    h.fail = $("#past option:selected").val() == 'naive' ? false : true;
+    h.harvoniCI = (h.harvoniCI == 'yes') ? true : false;
+
+    // visual feedback to user
+    blockMessage('Calculating...',500);
+    $("#calculate").val('Recalculate');
+    setTimeout(function(){doCalculation(h)},500);
+}
+
+function doCalculation (h) {
+
+    renderDemographics(h);
+    renderRx(h);
+}
+
+function renderDemographics(h) {
+
+    var demographics = 'Guidelines:     ' + h.guidelines + '\n' +
+                       'Genotype:       ' + h.genotype   + '\n' +
+                       'Fibrosis:       ' + h.fibrosis   + '\n' + 
+                       'Past Treatment: ' + h.past       + '\n' +
+                       'Past Failure:   ' + h.fail       + '\n' +
+                       'Harvoni CI:     ' + h.harvoniCI  + '\n' +
+                       'Ribavirin:      ' + h.riba       + '\n';
+    if ( h.riba ) {
+        demographics += 
+                       'Platelets:      ' + h.platelets      + '\n' +
+                       'Weight:         ' + h.weight + ' kg' + '\n' +
+                       'eGFR:           ' + $("#eGFR").val() + '\n';
+    }
+    var d = new Date();
+    demographics = '<p><b>HCV Decision Support v' + version + ' ' + d.toLocaleString(h.locale) + '</b></p><pre>' + demographics + '</pre>';
+    $("#demographics").html(demographics);
+} 
+
+function renderRx(h) {
+
+    getRxOptions(h); //alert(JSON.stringify(h));
+    var html = '';
+    // display by descending SVR
+    h.rx.sort(function(a, b){return b.svr-a.svr});
+
+    for ( var m in h.rx ) {
+        var svrOdds = Math.round(100/(100-h.rx[m].svr)) - 1;
+        var days = h.rx[m].duration == 24 ? '84 days + 1 repeat' : '84 days + no repeats';
+        var medication = '';
+        for ( var d in h.rx[m].medication ) {
+            var drug = h.rx[m].medication[d];
+            if ( parseInt(d) > 0 ) medication += ' + ';
+            medication += drug.generic + ' (' + drug.brand[0] + ') ' + drug.dose[0] + ' ' + drug.freq;
+            var drugSort = drug.brand.slice();
+            drugSort.sort();
+            h.rx[m].notes.push(drug.generic + ' brand names: ' + drugSort.join(', '));
+        }
+        html += '<hr>' +
+                '<b>Medications:</b> '   + medication + '<br>' +
+                '<b>Duration:</b> '     + h.rx[m].duration + ' weeks (' + days + ')<br>' +
+                '<b>Expected SVR:</b> ' + h.rx[m].svr + '% (Odds of SVR are '  + svrOdds + ':1)<br>';
+
+        h.rx[m].notes.unshift('Check for interactions using <a href="http://www.hep-druginteractions.org/Interactions.aspx" target="_new">http://www.hep-druginteractions.org/Interactions.aspx</a>');
+        html += '<br><div class="notes"><b>Notes:</b><ol>';
+        for (var i in h.rx[m].notes) {
+            html += '<li>' + h.rx[m].notes[i] + '</li>';
+        }
+        html += '</ol></div>';
+    }
+    html += '<div id="print"><hr><input type="button" value="Print" onclick="window.print()"></div>'
+    $("#rx").html(html);
+}
+
+function getRxOptions(h) {
+
+    // setup sensible pangenotypic default - it appears everywhere
+    h.rx = [ { 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration:12,
+        svr:96, 
+        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+    } ];
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = 90;
+    }
+
+    // overrides
+    if (h.guidelines == 'AUS') {
+        if ( h.genotype.match(/1/) ) rxGT1(h);
+        if ( h.genotype.match(/2/) ) rxGT2(h);   
+        if ( h.genotype.match(/3/) ) rxGT3(h);
+        if ( h.genotype.match(/4/) ) rxGT4(h);
+        if ( h.genotype.match(/5/) ) rxGT5(h);
+        if ( h.genotype.match(/6/) ) rxGT6(h);       
+    }
+    else if (h.guidelines == 'EASL') {
+        blockMessage('EASL not yet implemented',2000);
+        if ( h.genotype.match(/1/) ) rxGT1EASL(h);
+        if ( h.genotype.match(/2/) ) rxGT2EASL(h);   
+        if ( h.genotype.match(/3/) ) rxGT3EASL(h);
+        if ( h.genotype.match(/4/) ) rxGT4EASL(h);
+        if ( h.genotype.match(/5/) ) rxGT5EASL(h);
+        if ( h.genotype.match(/6/) ) rxGT6EASL(h); 
+    }
+    else if (h.guidelines == 'AASLD') {
+        blockMessage('AASLD not yet implemented',2000);
+        if ( h.genotype.match(/1/) ) rxGT1AASLD(h);
+        if ( h.genotype.match(/2/) ) rxGT2AASLD(h);   
+        if ( h.genotype.match(/3/) ) rxGT3AASLD(h);
+        if ( h.genotype.match(/4/) ) rxGT4AASLD(h);
+        if ( h.genotype.match(/5/) ) rxGT5AASLD(h);
+        if ( h.genotype.match(/6/) ) rxGT6AASLD(h); 
+    }
+    else {
+        alert('OMG, the flux capacitor has imploded!');
+    }
+
+}
+
+/* EASL stubs */
+function rxGT1EASL (h) {}
+function rxGT2EASL (h) {}
+function rxGT3EASL (h) {}
+function rxGT4EASL (h) {}
+function rxGT5EASL (h) {}
+function rxGT6EASL (h) {}
+
+/* AASLD stubs */
+function rxGT1AASLD (h) {}
+function rxGT2AASLD (h) {}
+function rxGT3AASLD (h) {}
+function rxGT4AASLD (h) {}
+function rxGT5AASLD (h) {}
+function rxGT6AASLD (h) {}
+
+/* SVR and Rx References 
+
+http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-1/core-concept/all
+https://www.gilead.com/~/media/Files/pdfs/medicines/liver-disease/harvoni/harvoni_pi.pdf
+http://www.easl.eu/medias/cpg/HEPC-2015/Summary.pdf
+
+*/
+
+function rxGT1 (h) {
+    if (hasHarvoniCI(h)) return;
+    var duration = 12;
+    var svr      = 96;
+    if ( h.genotype.match(/1b/)) svr = 98;
+    if ( h.fibrosis.match(/F4/) ) {
+        duration = 24;
+        svr      = 94;
+    }
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: duration,
+        svr: svr,
+        notes: []
+    })
+}
+
+/* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-2/core-concept/all */
+
+function rxGT2 (h) {
+    if (! h.riba) {
+        blockMessage('<span class="error">Sorry, we can\'t offer Ribavirin option without Ribavirin details</span>');
+        return;
+    }
+    var duration = 12;
+    var svr      = 96;
+    if ( h.fibrosis.match(/F4/) ) {
+        duration = 24;
+        svr      = 90;
+    }
+    h.rx.unshift({
+        duration: duration,
+        medication: [ drugs.sof ],
+        svr: svr,
+        notes: []
+    });
+    addRiba(h,h.rx[0]);
+}
+
+/* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-3/core-concept/all */
+
+function rxGT3 (h) {
+    if (! h.riba && h.fibrosis.match(/F4/)) {
+        blockMessage("Sorry, we can't offer Ribavirin option without Ribavirin details");
+        return;
+    }
+    if ( h.riba && h.fibrosis.match(/F4/) ) {
+        h.rx.unshift({
+            medication: [ drugs.sof, drugs.dac ],
+            duration: 24,
+            svr: 88,
+            notes: []
+        });
+        addRiba(h,h.rx[0]);
+    }
+}
+
+/* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-4/core-concept/all */
+
+function rxGT4 (h) {
+    if (hasHarvoniCI(h)) return;
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr: 93,
+        notes: []
+    })
+}
+
+/* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-5-or-6/core-concept/all */
+
+function rxGT5 (h) {
+    if (hasHarvoniCI(h)) return;
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr: 93,
+        notes: []
+    })
+}
+
+/* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-5-or-6/core-concept/all */
+
+function rxGT6 (h) {
+    if (hasHarvoniCI(h)) return;
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr: 96,
+        notes: []
+    })
+}
+
+function hasHarvoniCI (h) {
+    if (h.harvoniCI) {
+        var msg = '<span class="error">Sofosbuvir/Ledipasvir not being recommended due to Harvoni CI(s)</span>';
+        blockMessage(msg);
+        h.rx[0].notes.push(msg);
+        return true;
+    }
+    return false;
+}
+
+function addRiba(h,rx) {
+    var ribaDose = calcRibaDose(h,rx);
+    rx.medication.push(drugs.riba);;
+    rx.medication[rx.medication.length-1].dose = [ribaDose];
+    rx.notes.push('Ribavirin uses requires frequent monitoring for pancytopaenia');
+    if ( h.platelets < 50 ) rx.notes.push('<span class="error">Low platelets are a relative contraindication to Ribavirin</span>');
+    rx.notes.push('Rivabivrin 200 mg Capsules: ' + calcRibaCaps(ribaDose));
+}
+
+function calcRibaDose (h,rx) {
+
+    if ( ! h.riba ) return 0;
+    var dose = 0;
+    if ( h.weight == '>105' ) {
+        dose = 1400;
+    }
+    else if ( h.weight == '81-105' ) {
+        dose = 1200;
+    }
+    else if ( h.weight == '66-80' ) {
+        dose = 1000;  
+    }
+    else if ( h.weight == '<66' ) {
+        dose = 800;
+    }
+    else {
+        alert('Error for weight: ' + h.weight );
+    }
+
+    if ( h.eGFR < 30 ) {
+        dose = dose / 3;
+        rx.notes.push('Specialist advice highly recommended about Ribavirin dose');
+    }
+    else if ( h.eGFR >= 30 && h.eGFR < 60 ) {
+        dose = dose / 2;
+        rx.notes.push('Specialist advice highly recommended about Ribavirin dose');
+    }
+  
+    return 100 * Math.round(dose/100);
+}
+
+function calcRibaCaps (dose) {
+
+    if ( dose >=1400 ) {
+        return '3 in the morning 4 at night';
+    }
+    if ( dose >=1200 ) {
+        return '3 in the morning 3 at night';
+    }
+    if ( dose >=1000 ) {
+        return '2 in the morning 3 at night';
+    }
+    if ( dose >=800 ) {
+        return '2 in the morning 2 at night';
+    }
+    if ( dose >=600 ) {
+        return '1 in the morning 2 at night';
+    }
+    if ( dose >=400 ) {
+        return '1 in the morning 1 at night';
+    }
+    if ( dose >=300 ) {
+        return 'Alternating doses, 1 daily alternating with 2 daily every other day';
+    }
+    if ( dose >=200 ) {
+        return '1 daily';
+    }
+    return 'No Riba!';
+}
+
+function setFibrosisFromKPa () {
+
+    var kpa = parseFloat($("#kpa").val());
+
+    if (isNaN(kpa)) {
+        return;
+    }
+
+    if ( kpa >= 14.5 ) {
+        $("#fibrosis").val('F4');
+    }
+    else if ( kpa >= 12.5 ) {
+        $("#fibrosis").val('F3-F4');
+    }
+    else if ( kpa >= 9.5 ) {
+        $("#fibrosis").val('F3');
+    }
+    else if ( kpa >= 8.5 ) {
+        $("#fibrosis").val('F2');
+    }
+    else if ( kpa >= 7 ) {
+        $("#fibrosis").val('F1-F2');
+    }
+    else {
+        $("#fibrosis").val('F0-F1'); 
+    }
+ 
+}
+
+function setFibrosisHepascore () {
+
+    var hepascore = parseFloat($("#hepascore").val());
+
+    if (isNaN(hepascore)) {
+        return;
+    }
+
+    if ( hepascore >= 0.7 ) {
+        $("#fibrosis").val('F4');
+    }
+    else if ( hepascore >= 0.5 ) {
+        $("#fibrosis").val('F3-F4');
+    }
+    else if ( hepascore >= 0.3 ) {
+        $("#fibrosis").val('F2');
+    }
+    else if ( hepascore >= 0.15 ) {
+        $("#fibrosis").val('F1');
+    }
+    else {
+        $("#fibrosis").val('F0-F1');
+    }
+}
+
+function toggleRiba () {
+    $("#riba:checked").length == 1 ? $("#ribavirin").show() : $("#ribavirin").hide();
+}
+
+function blockMessage(message,timeout) {
+
+        if (timeout === undefined) timeout = 3000;
+        $.blockUI({ 
+        message: message, 
+        css: {
+            border: 'none',
+            top: '100px',
+            padding: '10px 20px',
+            backgroundColor: 'rgba(255, 255, 255, 1)',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            'border-radius': '10px',
+            color: '#000'
+        },
+        timeout: timeout,
+    });
+}
+</script>
+
+<div id="dataInput">
+  <table>
+    <tr>
+      <td>
+        <label>Genotype</label>
+      </td>
+      <td>
+        <select id="genotype">
+          <option></option>
+          <option>1</option>
+          <option>1a</option>
+          <option>1b</option>
+          <option>2</option>
+          <option>2a</option>
+          <option>2b</option>
+          <option>3</option>
+          <option>3a</option>
+          <option>3b</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>Unknown</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label>Fibrosis</label>
+      </td>
+      <td>
+        <select id="fibrosis">
+          <option></option>
+          <option>F0</option>
+          <option>F0-F1</option>
+          <option>F1</option>
+          <option>F1-F2</option>
+          <option>F2</option>
+          <option>F2-F3</option>
+          <option>F3</option>
+          <option>F3-F4</option>
+          <option>F4</option>
+        </select>
+        kPa
+        <input type="text" class="narrow" id="kpa" onblur="setFibrosisFromKPa()"> Hepascore
+        <input type="text" class="narrow" id="hepascore" onblur="setFibrosisHepascore()">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label>Past Treatment</label>
+      </td>
+      <td>
+        <select id="past">
+          <option></option>
+          <option value="naive">Naive</option>
+          <option value="PEG">Failed Interferon/Ribavirin</option>
+          <option value="12NS5B">Failed Sofosbuvir 12 weeks</option>
+          <option value="24NS5B">Failed Sofosbuvir 24 weeks</option>
+          <option value="other">Failed NS3 NS4 NS5A</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label>Harvoni CI<label>
+      </td>
+      <td>
+        <input type="radio" name="harvoniCI" value="no"> No
+        <input type="radio" name="harvoniCI" value="yes"> Yes (Amiodarone, Anticonvulsants, Antacids/PPIs/H2 blockers, St John's Wort)</td>
+    </tr>
+    <tr>
+      <td>
+        <label>Guidelines<label>
+      </td>
+      <td>
+        <input type="radio" name="guidelines" value="AUS" checked="checked"> AUS
+        <input type="radio" name="guidelines" value="EASL"> EASL
+        <input type="radio" name="guidelines" value="AASLD"> AASLD
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label>Ribavirin<label>
+      </td>
+      <td>
+        <input type="checkbox" id="riba" onChange="toggleRiba()"> (Check this box to include ribavirin options)</td>
+    </tr>
+    <tr id="ribavirin" style="display:none">
+      <td> </td>
+      <td>
+        <fieldset>
+          <legend>Ribavirin Only</legend>
+          <table>
+            <tr>
+              <td>
+                <label>Platelets<label>
+              </td>
+              <td>
+                <input type="text" class="narrow" id="platelets">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Weight<label>
+              </td>
+              <td>
+                <input type="radio" name="weight" value="&lt;66"> &lt; 66kg
+                <input type="radio" name="weight" value="66-80"> 66-80kg
+                <input type="radio" name="weight" value="81-105"> 81-105kg
+                <input type="radio" name="weight" value="&gt;105"> &gt; 105kg
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>eGFR<label>
+              </td>
+              <td>
+                <input type="text" class="narrow" id="eGFR">
+              </td>
+            </tr>
+          </table>
+        </fieldset>
+      </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>
+        <input type="button" value="Calculate" id="calculate" onclick="supportDecision()">
+      </td>
+    </tr>
+  </table>
+  <hr>
+</div>
+
+<div id="demographics">Please make your selections and press the calculate button</div>
+<div id="rx"></div>
+
+</body>
+
+</html>
