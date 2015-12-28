@@ -25,7 +25,7 @@ label { float:right; padding-right:3px;}
 <body>
 
 <script>
-var version = '1.0';
+var version = '1.1';
 
 var drugs = {
     sof: {
@@ -42,6 +42,7 @@ var drugs = {
         'Hepcee (Julphar)',
         'MyHep (Mylan)'
         ],
+        route: 'PO',
         freq: 'daily'
    },
     sof_led: {
@@ -57,6 +58,7 @@ var drugs = {
         'Combicee (Julphar)',
         'MyHep LVIR (Mylan)'
         ],
+        route: 'PO',
         freq: 'daily'
     },
     dac: {
@@ -69,6 +71,7 @@ var drugs = {
         'Daclavir (Beacon)',
         'Daclacee (Julphar)'
         ],
+        route: 'PO',
         freq: 'daily'
     },
     riba: {
@@ -79,7 +82,43 @@ var drugs = {
         'Celbarin (Incepta)',
         'Ribacee (Julphar)'
         ],
+        route: 'PO',
         freq: 'daily divided into 2 doses'
+    },
+    viekira1: {
+        generic: 'Paritaprevir/Ritonavir',
+        dose: [ '150mg/100mg' ],
+        brand: [ 'Viekira Pak' ],
+        route: 'PO',
+        freq: 'daily'
+    },
+    viekira2: {
+        generic: 'Ombitasvir',
+        dose: [ '25mg' ],
+        brand: [ 'Viekira Pak' ],
+        route: 'PO',
+        freq: 'daily'
+    },
+    viekira3: {
+        generic: 'Dasabuvir',
+        dose: [ '250mg' ],
+        brand: [ 'Viekira Pak' ],
+        route: 'PO',
+        freq: 'twice daily'
+    },
+    peg: {
+        generic: 'Peginterferon-&alpha;',
+        dose: [ '180&mu;g'],
+        brand: [ 'Pegasys' ],
+        route: 'SC',
+        freq: 'weekly'
+    },
+    sim: {
+        generic: 'Simeprevir',
+        dose: [ '150mg' ],
+        brand: [ 'Olysio' ],
+        route: 'PO',
+        freq: 'daily'
     }
 };
 
@@ -92,7 +131,8 @@ function supportDecision () {
     h.fibrosis  = $("#fibrosis option:selected").text();
     h.harvoniCI = $("input[name=harvoniCI]:checked").val();
     h.guidelines= $("input[name=guidelines]:checked").val();
-    h.past      = $("#past option:selected").text();
+    h.past      = $("#past option:selected").val();
+    h.pastTxt    = $("#past option:selected").text();
     h.riba      = $("#riba:checked").length == 1 ? true : false;
     h.platelets = parseInt($("#platelets").val());
     h.weight    = $("input[name=weight]:checked").val();
@@ -102,9 +142,9 @@ function supportDecision () {
     h.locale    = h.guidelines == 'AASLD' ? 'en-US' : h.guidelines == 'EASL' ? 'en-GB' : 'en-AU';
 
     var error = '';
-    if (h.genotype == '' ) error += 'Please select Genotype<br>';
-    if (h.fibrosis == '' ) error += 'Please select Fibrosis<br>';
-    if (h.past == ''     ) error += 'Please select Past Treament<br>';
+    if (h.genotype  == '' ) error += 'Please select Genotype<br>';
+    if (h.fibrosis  == '' ) error += 'Please select Fibrosis<br>';
+    if (h.pastTxt   == '' ) error += 'Please select Past Treament<br>';
     if (h.harvoniCI === undefined ) error += 'Please select Harvoni CI<br>';
     if (h.riba) {
         if (isNaN(h.platelets)) error += 'Please input Platelets<br>';
@@ -117,7 +157,7 @@ function supportDecision () {
         return;
     }
 
-    h.fail = $("#past option:selected").val() == 'naive' ? false : true;
+    h.fail =  (h.past == 'naive' || h.past == 'PEG' ) ? false : true;
     h.harvoniCI = (h.harvoniCI == 'yes') ? true : false;
 
     // visual feedback to user
@@ -137,7 +177,7 @@ function renderDemographics(h) {
     var demographics = 'Guidelines:     ' + h.guidelines + '\n' +
                        'Genotype:       ' + h.genotype   + '\n' +
                        'Fibrosis:       ' + h.fibrosis   + '\n' + 
-                       'Past Treatment: ' + h.past       + '\n' +
+                       'Past Treatment: ' + h.pastTxt    + '\n' +
                        'Past Failure:   ' + h.fail       + '\n' +
                        'Harvoni CI:     ' + h.harvoniCI  + '\n' +
                        'Ribavirin:      ' + h.riba       + '\n';
@@ -154,6 +194,7 @@ function renderDemographics(h) {
 
 function renderRx(h) {
 
+    h.rx = [];
     getRxOptions(h); //alert(JSON.stringify(h));
     var html = '';
     // display by descending SVR
@@ -166,7 +207,7 @@ function renderRx(h) {
         for ( var d in h.rx[m].medication ) {
             var drug = h.rx[m].medication[d];
             if ( parseInt(d) > 0 ) medication += ' + ';
-            medication += drug.generic + ' (' + drug.brand[0] + ') ' + drug.dose[0] + ' ' + drug.freq;
+            medication += drug.generic + ' (' + drug.brand[0] + ') ' + drug.dose[0] + ' ' + drug.route +', ' + drug.freq;
             var drugSort = drug.brand.slice();
             drugSort.sort();
             h.rx[m].notes.push(drug.generic + ' brand names: ' + drugSort.join(', '));
@@ -189,26 +230,13 @@ function renderRx(h) {
 
 function getRxOptions(h) {
 
-    // setup sensible pangenotypic default - it appears everywhere
-    h.rx = [ { 
-        medication:[ drugs.sof, drugs.dac ], 
-        duration:12,
-        svr:96, 
-        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
-    } ];
-    if ( h.fibrosis.match(/F4/) ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr = 90;
-    }
-
-    // overrides
     if (h.guidelines == 'AUS') {
-        if ( h.genotype.match(/1/) ) rxGT1(h);
-        if ( h.genotype.match(/2/) ) rxGT2(h);   
-        if ( h.genotype.match(/3/) ) rxGT3(h);
-        if ( h.genotype.match(/4/) ) rxGT4(h);
-        if ( h.genotype.match(/5/) ) rxGT5(h);
-        if ( h.genotype.match(/6/) ) rxGT6(h);       
+        if ( h.genotype.match(/1/) ) rxGT1AUS(h);
+        if ( h.genotype.match(/2/) ) rxGT2AUS(h);   
+        if ( h.genotype.match(/3/) ) rxGT3AUS(h);
+        if ( h.genotype.match(/4/) ) rxGT4AUS(h);
+        if ( h.genotype.match(/5/) ) rxGT5AUS(h);
+        if ( h.genotype.match(/6/) ) rxGT6AUS(h);       
     }
     else if (h.guidelines == 'EASL') {
         blockMessage('EASL not yet implemented',2000);
@@ -228,10 +256,172 @@ function getRxOptions(h) {
         if ( h.genotype.match(/5/) ) rxGT5AASLD(h);
         if ( h.genotype.match(/6/) ) rxGT6AASLD(h); 
     }
+    else if (h.guidelines == 'FIXHEPC') {
+        if ( h.genotype.match(/1/) ) rxGT1(h);
+        if ( h.genotype.match(/2/) ) rxGT2(h);   
+        if ( h.genotype.match(/3/) ) rxGT3(h);
+        if ( h.genotype.match(/4/) ) rxGT4(h);
+        if ( h.genotype.match(/5/) ) rxGT5(h);
+        if ( h.genotype.match(/6/) ) rxGT6(h);       
+    }
     else {
         alert('OMG, the flux capacitor has imploded!');
     }
 
+}
+
+/* AUS Treatment Protocols */
+
+function rxGT1AUS (h) {
+
+    // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: 96, 
+        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+    });
+    if ( h.past == 'PROTEASE' ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = 90;
+        h.rx[0].notes.push('24 weeks recommended for patients who have failed a protease inhibitor');
+    }
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].svr = 90;
+        if ( h.past != 'PROTEASE' ) {
+            h.rx[0].notes.push('<span class="error">Consider adding Ribavirin or extending treatment to 24 weeks</span>');
+        }
+    }
+    // viekira pak
+    h.rx.unshift({
+        medication: [ drugs.viekira1, drugs.viekira2, drugs.viekira3 ],
+        duration: 12,
+        svr: 97,
+        notes: []
+    })
+    if ( ! h.genotype.match(/1b/)) {
+        addRiba(h,h.rx[0]);
+        h.rx[0].svr = 95;
+
+    }
+    // harvoni
+    if (hasHarvoniCI(h)) return;
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr: 96,
+        notes: []
+    })
+    if ( h.genotype.match(/1b/)) h.rx[0].svr = 98;
+    if ( h.fibrosis.match(/F4/) && h.fail ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr      = 94;
+        h.rx[0].notes.push('12 weeks + Ribavirin may be considered');
+    }
+    if ( ! h.fail && ! h.fibrosis.match(/F4/) ) {
+        h.rx[0].notes.push('8 weeks may be considered if HCV RNA < 6 x 10^6 IU/ml');
+    }
+}
+
+function rxGT2AUS (h) {
+
+    // sof riba
+    h.rx.unshift({
+        medication: [ drugs.sof ],
+        duration: 12,
+        svr: 96,
+        notes: []
+    });
+    addRiba(h,h.rx[0]);
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].svr      = 94;
+        h.rx[0].notes.push('<span class="error">SVR rates may be increased by extending duration to 16-24 weeks</span>');
+    }
+}
+
+function rxGT3AUS (h) {
+
+    // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: 96, 
+        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+    });
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr      = 94;
+        h.rx.unshift({ 
+            medication:[ drugs.sof, drugs.dac ], 
+            duration: 16,
+            svr: 94, 
+            notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+        });
+        addRiba(h,h.rx[0]);
+    }
+    // sof riba
+    h.rx.unshift({
+        medication: [ drugs.sof ],
+        duration: 24,
+        svr: 93,
+        notes: []
+    });
+    addRiba(h,h.rx[0]);
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].svr      = 67;
+    }
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr: 85,
+        notes: []
+    });
+    addRiba(h,h.rx[0]);    
+}
+
+function rxGT4AUS (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr: 90,
+        notes: []
+    });
+    addRiba(h,h.rx[0]); 
+    // sim peg riba
+    h.rx.unshift({
+        medication: [ drugs.sim, drugs.peg ],
+        duration: 48,
+        svr: 85,
+        notes: [ 'Duration 24-48 weeks']
+    });
+    addRiba(h,h.rx[0]);
+}
+
+function rxGT5AUS (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr: 90,
+        notes: []
+    });
+    addRiba(h,h.rx[0]); 
+}
+
+function rxGT6AUS (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr: 90,
+        notes: []
+    });
+    addRiba(h,h.rx[0]);    
 }
 
 /* EASL stubs */
@@ -259,65 +449,83 @@ http://www.easl.eu/medias/cpg/HEPC-2015/Summary.pdf
 */
 
 function rxGT1 (h) {
-    if (hasHarvoniCI(h)) return;
-    var duration = 12;
-    var svr      = 96;
-    if ( h.genotype.match(/1b/)) svr = 98;
-    if ( h.fibrosis.match(/F4/) ) {
-        duration = 24;
-        svr      = 94;
+   // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: 96, 
+        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+    });
+    if ( h.fibrosis.match(/F4/) || h.past == 'PROTEASE' ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = 90;
+        if ( h.past == 'PROTEASE' ) h.rx[0].notes.push('24 weeks recommended for patients who have failed a protease inhibitor');
     }
+    // harvoni
+    if (hasHarvoniCI(h)) return;
     h.rx.unshift({
         medication: [ drugs.sof_led ],
-        duration: duration,
-        svr: svr,
+        duration: 12,
+        svr: 96,
         notes: []
     })
+    if ( h.genotype.match(/1b/)) h.rx[0].svr = 98;
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr      = 94;
+    }
 }
 
 /* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-2/core-concept/all */
 
 function rxGT2 (h) {
-    if (! h.riba) {
-        blockMessage('<span class="error">Sorry, we can\'t offer Ribavirin option without Ribavirin details</span>');
-        return;
-    }
-    var duration = 12;
-    var svr      = 96;
-    if ( h.fibrosis.match(/F4/) ) {
-        duration = 24;
-        svr      = 90;
-    }
-    h.rx.unshift({
-        duration: duration,
-        medication: [ drugs.sof ],
-        svr: svr,
-        notes: []
+   // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: 96, 
+        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
     });
-    addRiba(h,h.rx[0]);
+    if ( h.fibrosis.match(/F4/) || h.past == 'PROTEASE' ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = 90;
+        if ( h.past == 'PROTEASE' ) h.rx[0].notes.push('24 weeks recommended for patients who have failed a protease inhibitor');
+    }
 }
 
 /* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-3/core-concept/all */
 
 function rxGT3 (h) {
-    if (! h.riba && h.fibrosis.match(/F4/)) {
-        blockMessage("Sorry, we can't offer Ribavirin option without Ribavirin details");
-        return;
-    }
-    if ( h.riba && h.fibrosis.match(/F4/) ) {
-        h.rx.unshift({
-            medication: [ drugs.sof, drugs.dac ],
-            duration: 24,
-            svr: 88,
-            notes: []
-        });
-        addRiba(h,h.rx[0]);
+   // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: 96, 
+        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+    });
+    if ( h.fibrosis.match(/F4/) || h.past == 'PROTEASE' ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = 90;
+        if ( h.past == 'PROTEASE' ) h.rx[0].notes.push('24 weeks recommended for patients who have failed a protease inhibitor');
     }
 }
 
 /* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-4/core-concept/all */
 
 function rxGT4 (h) {
+   // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: 93, 
+        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+    });
+    if ( h.fibrosis.match(/F4/) || h.past == 'PROTEASE' ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = 90;
+        if ( h.past == 'PROTEASE' ) h.rx[0].notes.push('24 weeks recommended for patients who have failed a protease inhibitor');
+    }
+    // harvoni
     if (hasHarvoniCI(h)) return;
     h.rx.unshift({
         medication: [ drugs.sof_led ],
@@ -330,6 +538,19 @@ function rxGT4 (h) {
 /* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-5-or-6/core-concept/all */
 
 function rxGT5 (h) {
+    // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: 93, 
+        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+    });
+    if ( h.fibrosis.match(/F4/) || h.past == 'PROTEASE' ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = 90;
+        if ( h.past == 'PROTEASE' ) h.rx[0].notes.push('24 weeks recommended for patients who have failed a protease inhibitor');
+    }
+    // harvoni
     if (hasHarvoniCI(h)) return;
     h.rx.unshift({
         medication: [ drugs.sof_led ],
@@ -342,6 +563,19 @@ function rxGT5 (h) {
 /* http://www.hepatitisc.uw.edu/go/treatment-infection/treatment-genotype-5-or-6/core-concept/all */
 
 function rxGT6 (h) {
+   // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: 96, 
+        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+    });
+    if ( h.fibrosis.match(/F4/) || h.past == 'PROTEASE' ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = 90;
+        if ( h.past == 'PROTEASE' ) h.rx[0].notes.push('24 weeks recommended for patients who have failed a protease inhibitor');
+    }
+    // harvoni
     if (hasHarvoniCI(h)) return;
     h.rx.unshift({
         medication: [ drugs.sof_led ],
@@ -362,12 +596,18 @@ function hasHarvoniCI (h) {
 }
 
 function addRiba(h,rx) {
-    var ribaDose = calcRibaDose(h,rx);
+    if (! h.riba) {
+        var msg = '<span class="error">Sorry, we can\'t accurately add Ribavirin without Ribavirin details. Please add them and recalculate</span>';
+        blockMessage(msg);
+        rx.notes.push(msg);
+    }
+    var ribaDose = h.riba ? calcRibaDose(h,rx) : 1000;
     rx.medication.push(drugs.riba);;
-    rx.medication[rx.medication.length-1].dose = [ribaDose];
+    rx.medication[rx.medication.length-1].dose = [ribaDose + 'mg'];
     rx.notes.push('Ribavirin uses requires frequent monitoring for pancytopaenia');
     if ( h.platelets < 50 ) rx.notes.push('<span class="error">Low platelets are a relative contraindication to Ribavirin</span>');
-    rx.notes.push('Rivabivrin 200 mg Capsules: ' + calcRibaCaps(ribaDose));
+    rx.notes.push('Ribavirin (200mg Capsules): ' + calcRibaCaps(ribaDose));
+    rx.notes.push('Ribavirin (Ibavyr 400mg &amp; 600mg Tablets): ' + calcRibaTabs(ribaDose));
 }
 
 function calcRibaDose (h,rx) {
@@ -389,19 +629,15 @@ function calcRibaDose (h,rx) {
     else {
         alert('Error for weight: ' + h.weight );
     }
-
-    if ( h.eGFR < 30 ) {
-        dose = dose / 3;
-        rx.notes.push('Specialist advice highly recommended about Ribavirin dose');
-    }
-    else if ( h.eGFR >= 30 && h.eGFR < 60 ) {
-        dose = dose / 2;
-        rx.notes.push('Specialist advice highly recommended about Ribavirin dose');
+    if ( h.eGFR < 60 ) {
+        rx.notes.push('<span class="error">Specialist advice highly recommended about Ribavirin dose</span>');
+        dose =  h.eGFR > 30 ? dose/2 : dose/3;
     }
   
     return 100 * Math.round(dose/100);
 }
 
+// standard Riba formulation is 200 mg capsules
 function calcRibaCaps (dose) {
 
     if ( dose >=1400 ) {
@@ -428,7 +664,37 @@ function calcRibaCaps (dose) {
     if ( dose >=200 ) {
         return '1 daily';
     }
-    return 'No Riba!';
+    return '<span class="error">No Riba dose!</span>';
+}
+
+// Ibavyr tablets come in 400mg and 600mg scored
+function calcRibaTabs (dose) {
+
+    if ( dose >=1400 ) {
+        return '2 x 400mg in the morning 600mg at night';
+    }
+    if ( dose >=1200 ) {
+        return '600 mg morning and night';
+    }
+    if ( dose >=1000 ) {
+        return '600mg in the morning 400mg at night';
+    }
+    if ( dose >=800 ) {
+        return '400mg morning and night';
+    }
+    if ( dose >=600 ) {
+        return '&frac12; 600mg morning and night';
+    }
+    if ( dose >=400 ) {
+        return '&frac12; 400mg morning and night';
+    }
+    if ( dose >=300 ) {
+        return '&frac12; 600mg daily';
+    }
+    if ( dose >=200 ) {
+        return '&frac12; 400mg daily';
+    }
+    return '<span class="error">No Riba dose!</span>';
 }
 
 function setFibrosisFromKPa () {
@@ -564,10 +830,12 @@ function blockMessage(message,timeout) {
         <select id="past">
           <option></option>
           <option value="naive">Naive</option>
-          <option value="PEG">Failed Interferon/Ribavirin</option>
+          <option value="PEG">Failed Interferon</option>
+          <option value="PEGRIBA">Failed Interferon + Riba</option>
+          <option value="PROTEASE">Failed Protease + Interferon + Riba</option>
           <option value="12NS5B">Failed Sofosbuvir 12 weeks</option>
           <option value="24NS5B">Failed Sofosbuvir 24 weeks</option>
-          <option value="other">Failed NS3 NS4 NS5A</option>
+
         </select>
       </td>
     </tr>
@@ -587,6 +855,7 @@ function blockMessage(message,timeout) {
         <input type="radio" name="guidelines" value="AUS" checked="checked"> AUS
         <input type="radio" name="guidelines" value="EASL"> EASL
         <input type="radio" name="guidelines" value="AASLD"> AASLD
+        <input type="radio" name="guidelines" value="FIXHEPC"> PEG/Riba Free
       </td>
     </tr>
     <tr>
@@ -607,7 +876,7 @@ function blockMessage(message,timeout) {
                 <label>Platelets<label>
               </td>
               <td>
-                <input type="text" class="narrow" id="platelets">
+                <input type="text" class="narrow" id="platelets"> * If <50 Ribavirin presents significant risks
               </td>
             </tr>
             <tr>
@@ -626,7 +895,7 @@ function blockMessage(message,timeout) {
                 <label>eGFR<label>
               </td>
               <td>
-                <input type="text" class="narrow" id="eGFR">
+                <input type="text" class="narrow" id="eGFR"> * Dose adjustment with CRF will be calculated
               </td>
             </tr>
           </table>

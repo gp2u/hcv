@@ -1,10 +1,8 @@
 ##HCV Decision Support
 
-The purpose of this tool is to provide a simple user interface to navigate the upcoming Australian HCV treatment Guidelines which are by necessity limited to dealing with the PBS listed medications Sofosbuvir, Ledipasvir, Daclatasvir and Ribavirin.
+The purpose of this tool is to provide a simple user interface to navigate the upcoming Australian HCV treatment Guidelines which are by necessity limited to dealing with the PBS listed medications Sofosbuvir, Ledipasvir, Daclatasvir, Ribavirin, Viekira Pak, and Simeprevir with Interferon.
 
 The intention is to also support the AASLD and EASL guidelines which have a wider scope.
-
-The tool consists of an Object Oriented Framework that should be self explanatory to most programmers.
 
 You can find a demonstration at https://gp2u.com.au/hcv
 
