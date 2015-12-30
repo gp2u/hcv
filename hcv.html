@@ -752,7 +752,7 @@ function setFibrosisHepascore () {
 }
 
 function toggleRiba () {
-    $("#riba:checked").length == 1 ? $("#ribavirin").show() : $("#ribavirin").hide();
+    $("#riba:checked").length == 1 ? $("#ribavirin").slideDown() : $("#ribavirin").hide(400);
 }
 
 function blockMessage(message,timeout) {
@@ -776,6 +776,17 @@ function blockMessage(message,timeout) {
 </script>
 
 <div id="dataInput">
+<div style="float:left;padding:4px 40px 0 0"><b>HCV Decision Support Tool</b></div>
+<div style="float:left;" id="google_translate_element"></div>
+<div style="clear:both"></div>
+<hr>
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
   <table>
     <tr>
       <td>
@@ -865,10 +876,10 @@ function blockMessage(message,timeout) {
       <td>
         <input type="checkbox" id="riba" onChange="toggleRiba()"> (Check this box to include ribavirin options)</td>
     </tr>
-    <tr id="ribavirin" style="display:none">
+    <tr>
       <td> </td>
       <td>
-        <fieldset>
+        <fieldset id="ribavirin" style="display:none">
           <legend>Ribavirin Only</legend>
           <table>
             <tr>
@@ -912,7 +923,17 @@ function blockMessage(message,timeout) {
   <hr>
 </div>
 
-<div id="demographics">Please make your selections and press the calculate button</div>
+<div id="demographics">
+<p>Please make your selections and press the calculate button</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+
+</div>
 <div id="rx"></div>
 
 </body>
