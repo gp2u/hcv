@@ -2,8 +2,11 @@
 <html>
 <head>
 <title>HCV Decision Support</title>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script>
+ 
 <style>
 
 p,td,input,div,select { font-family: sans-serif; font-size:1em;}
@@ -11,8 +14,11 @@ td { padding: 2px 0;}
 label { float:right; padding-right:3px;}
 
 .narrow { width:40px; font-size:0.8em;}
-.notes { font-size:0.90em }
+.notes { font-size:0.9em }
 .error { color:red;}
+.title { font-weight: 700; padding-top:0.5em;}
+.grading { font-size:0.9em;}
+button:focus {outline:0;}
 
 @media print {
     #print { display:none;}
@@ -25,7 +31,24 @@ label { float:right; padding-right:3px;}
 <body>
 
 <script>
-var version = '1.2';
+var version = '1.3';
+
+var ratings = {
+    classILevelA   : 'Class I, Level A',
+    classILevelB   : 'Class I, Level B',
+    classIILevelA  : 'Class II, Level A',
+    classIILevelB  : 'Class II, Level B',
+    classIIaLevelA : 'Class IIa, Level A',
+    classIIaLevelB : 'Class IIa, Level B',
+    classIIbLevelA : 'Class IIb, Level A',
+    classIIbLevelB : 'Class IIb, Level B',
+    A1: 'A1 - High, Strong',
+    A2: 'A2 - High, Weak',
+    B1: 'B1 - Moderate, Strong',
+    B2: 'B2 - Moderate, Weak',
+    C1: 'C1 - Low, Strong',
+    C2: 'C2 - Low, Weak'
+}
 
 var drugs = {
     sof: {
@@ -43,7 +66,8 @@ var drugs = {
         'MyHep (Mylan)'
         ],
         route: 'PO',
-        freq: 'daily'
+        freq: 'daily',
+        notes: []
    },
     sof_led: {
         generic: 'Sofosbuvir/Ledipasvir',
@@ -59,7 +83,9 @@ var drugs = {
         'MyHep LVIR (Mylan)'
         ],
         route: 'PO',
-        freq: 'daily'
+        freq: 'daily',
+        notes: ['In the ION-3 trial, patients without cirrhosis and a baseline HCV RNA levels less than 6 million IU/mL had similar relapse rates when treated with 8 weeks versus 12 weeks. Decreasing the length of the regimen to 8 weeks should be done with caution.'
+        ]
     },
     dac: {
         generic: 'Daclatasvir',
@@ -72,7 +98,9 @@ var drugs = {
         'Daclacee (Julphar)'
         ],
         route: 'PO',
-        freq: 'daily'
+        freq: 'daily',
+        notes: ['The dose of daclatasvir may need to be increased or decreased when used concomitantly with cytochrome P450 3A/4 inducers and inhibitors, respectively.'
+        ]
     },
     riba: {
         generic: 'Ribavirin',
@@ -83,50 +111,189 @@ var drugs = {
         'Ribacee (Julphar)'
         ],
         route: 'PO',
-        freq: 'daily divided into 2 doses'
+        freq: 'daily divided into 2 doses',
+        notes: []
     },
-    viekira1: {
-        generic: 'Paritaprevir/Ritonavir',
-        dose: [ '150mg/100mg' ],
+    viek: {
+        generic: 'Paritaprevir/Ritonavir/Ombitasvir',
+        dose: [ '75mg/50mg/12.5mg' ],
         brand: [ 'Viekira Pak' ],
         route: 'PO',
-        freq: 'daily'
+        freq: 'two tablets once daily',
+        notes: ['Contraindicated in patients with Child-Turcotte-Pugh class B or C hepatic impairment.']
     },
-    viekira2: {
-        generic: 'Ombitasvir',
-        dose: [ '25mg' ],
-        brand: [ 'Viekira Pak' ],
-        route: 'PO',
-        freq: 'daily'
-    },
-    viekira3: {
+    viekx: {
         generic: 'Dasabuvir',
         dose: [ '250mg' ],
         brand: [ 'Viekira Pak' ],
         route: 'PO',
-        freq: 'twice daily'
+        freq: 'twice daily',
+        notes: []
     },
     peg: {
-        generic: 'Peginterferon-&alpha;',
+        generic: 'PegInterferon-&alpha;2a',
         dose: [ '180&mu;g'],
         brand: [ 'Pegasys' ],
         route: 'SC',
-        freq: 'weekly'
+        freq: 'weekly',
+        note: []
+    },
+    peg2b: {
+        generic: 'PegInterferon-&alpha;2b',
+        dose: [ '1.5&mu;g/kg'],
+        brand: [ 'PegIntron' ],
+        route: 'SC',
+        freq: 'weekly',
+        note: []
     },
     sim: {
         generic: 'Simeprevir',
         dose: [ '150mg' ],
         brand: [ 'Olysio' ],
         route: 'PO',
-        freq: 'daily'
+        freq: 'daily',
+        notes: []
     }
 };
+
+var svrx = {
+    gt1: {
+        sof_led: {
+            default: 97,
+            rating: {
+                aasld: ratings.classILevelA,
+                easl: undefined
+            },
+            gt1a: {
+                default: 97, // ION-1 98% (142/145) ION-3 96% 96% (165/172) Aggregate 96.8% (307/317)
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: undefined                                   
+                }
+            },
+            gt1b: {
+                default: 99, // ION-1 100% (67/67) ION-3 98% (43/44) Aggregate 99.1% (110/111)
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: undefined                                   
+                }
+            },
+            f4: { 
+                default: 97,
+                rating: {
+                    aasld: ratings.classILevelB,
+                    easl: undefined                                   
+                },
+                w12: 97,      // ION-1 97% (32/33)
+                w12riba: 100, // ION-1 100% (33/33)
+                w24: 97,      // ION-1 97% (31/32)
+                w24riba: 100  // ION-1 100% (36/36)
+            },
+            fail: {
+                default: 94,
+                rating: {
+                    aasld: ratings.classILevelB,
+                    easl: undefined
+                },
+                w12: 94,     // ION-3 94% (102/109) 
+                w12riba: 96, // ION-3 96% (107/111) 
+                w24: 99,     // ION-3 99% (108/109) 
+                w24riba: 99  // ION-3 99% (110/111)
+            }
+
+        },
+        sof_dac: {
+            default: 97,
+            rating: {
+                aasld: ratings.classILevelB,
+                easl: undefined
+            },
+            gt1a: {
+                default: 95,
+                rating: {
+                    aasld: ratings.classILevelB,
+                    easl: undefined
+                }
+            },
+            gt1b: {
+                default: 95,
+                rating: {
+                    aasld: ratings.classILevelB,
+                    easl: undefined
+                }
+            },
+            f4: {},
+            fail: {}
+        },
+        sof_sim: {
+            default: 95,
+            rating: {
+                aasld: ratings.classILevelA,
+                easl: undefined
+            },
+            gt1a: {
+                default: 95,
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: undefined
+                }
+            },
+            gt1b: {
+                default: 95,
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: undefined
+                }
+            },
+            f4: {},
+            fail: {}
+        },
+        viek: {
+            default: 95,
+            rating: {
+                aasld: ratings.classILevelA,
+                easl: undefined
+            },
+            gt1a: {
+                default: 95,
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: undefined
+                }
+            },
+            gt1b: {
+                default: 95,
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: undefined
+                }
+            },
+            f4: {},
+            fail: {}
+        }
+    },
+    gt2: {
+
+    },
+    gt3: {
+
+    },
+    gt4: {
+
+    },
+    gt5: {
+
+    },
+    gt6: {
+
+    }
+}
 
 function supportDecision () {
 
     $("#demographics").html('');
     $("#rx").html('');
-    var h = new Object();
+    var h = {};
     h.genotype  = $("#genotype option:selected").text();
     h.fibrosis  = $("#fibrosis option:selected").text();
     h.harvoniCI = $("input[name=harvoniCI]:checked").val();
@@ -142,18 +309,40 @@ function supportDecision () {
     h.locale    = h.guidelines == 'AASLD' ? 'en-US' : h.guidelines == 'EASL' ? 'en-GB' : 'en-AU';
 
     var error = '';
-    if (h.genotype  == '' ) error += 'Please select Genotype<br>';
-    if (h.fibrosis  == '' ) error += 'Please select Fibrosis<br>';
-    if (h.pastTxt   == '' ) error += 'Please select Past Treament<br>';
-    if (h.harvoniCI === undefined ) error += 'Please select Harvoni CI<br>';
+    var errorFocus = ''
+    if (h.genotype  == '' ) { 
+        error += 'Please select Genotype<br>'; 
+        if (errorFocus == '') errorFocus = '#genotype' 
+    }
+    if (h.fibrosis  == '' ) { 
+        error += 'Please select Fibrosis<br>'; 
+        if (errorFocus == '') errorFocus = '#fibrosis' 
+    }
+    if (h.pastTxt   == '' ) { 
+        error += 'Please select Past Treament<br>'; 
+        if (errorFocus == '') errorFocus = '#past' 
+    }
+    if (h.harvoniCI === undefined ) { 
+        error += 'Please select Harvoni CI<br>'; 
+        if (errorFocus == '') errorFocus = '#harvoniCI' 
+    }
     if (h.riba) {
-        if (isNaN(h.platelets)) error += 'Please input Platelets<br>';
-        if (typeof h.weight === "undefined") error += 'Please select Weight<br>';
-        if (isNaN(h.eGFR)) error += 'Please input eGFR<br>';   
+        if (isNaN(h.platelets)) { 
+            error += 'Please input Platelets<br>'; 
+            if (errorFocus == '') errorFocus = '#platelets' 
+        }
+        if (typeof h.weight === "undefined") { 
+            error += 'Please select Weight<br>'; 
+            if (errorFocus == '') errorFocus = '#weight' 
+        }
+        if (isNaN(h.eGFR)) { 
+            error += 'Please input eGFR<br>'; 
+            if (errorFocus == '') errorFocus = '#eGFR' 
+        }
     }
     if (error != '') {
-        blockMessage(error,1000);
-        setTimeout(function(){$("#demographics").html('<span class="error">'+error+'</span>')},1000);      
+        errorDialog(error,errorFocus)
+        setTimeout(function(){$("#demographics").html(errorText(error))},1000);      
         return;
     }
 
@@ -206,7 +395,8 @@ function renderRx(h) {
         var medication = '';
         for ( var d in h.rx[m].medication ) {
             var drug = h.rx[m].medication[d];
-            if ( parseInt(d) > 0 ) medication += ' + ';
+            if ( parseInt(d) > 0 ) medication += drug.optional ? ' &plusmn; ' : ' + ';
+            //alert(JSON.stringify(drug));
             medication += drug.generic + ' (' + drug.brand[0] + ') ' + drug.dose[0] + ' ' + drug.route +', ' + drug.freq;
             var drugSort = drug.brand.slice();
             drugSort.sort();
@@ -216,6 +406,8 @@ function renderRx(h) {
                 '<b>Medications:</b> '   + medication + '<br>' +
                 '<b>Duration:</b> '     + h.rx[m].duration + ' weeks (' + days + ')<br>' +
                 '<b>Expected SVR:</b> ' + h.rx[m].svr + '% (Odds of SVR are '  + svrOdds + ':1)<br>';
+
+        if (typeof h.rx[m].rating !== 'undefined') html += '<b>Rating:</b> <a href="javascript:evidence()">' + h.rx[m].rating + '</a><br>';
 
         h.rx[m].notes.unshift('Check for interactions using <a href="http://www.hep-druginteractions.org/Interactions.aspx" target="_new">http://www.hep-druginteractions.org/Interactions.aspx</a>');
         html += '<br><div class="notes"><b>Notes:</b><ol>';
@@ -248,7 +440,6 @@ function getRxOptions(h) {
         if ( h.genotype.match(/6/) ) rxGT6EASL(h); 
     }
     else if (h.guidelines == 'AASLD') {
-        blockMessage('AASLD not yet implemented',2000);
         if ( h.genotype.match(/1/) ) rxGT1AASLD(h);
         if ( h.genotype.match(/2/) ) rxGT2AASLD(h);   
         if ( h.genotype.match(/3/) ) rxGT3AASLD(h);
@@ -278,8 +469,8 @@ function rxGT1AUS (h) {
     h.rx.unshift({ 
         medication:[ drugs.sof, drugs.dac ], 
         duration: 12,
-        svr: 96, 
-        notes: ['Daclatasvir levels are elevated by CYP3A4 inhibitors'] 
+        svr: svrx.gt1.sof_dac.default, 
+        notes: drugs.dac.notes.slice()
     });
     if ( h.past == 'PROTEASE' ) {
         h.rx[0].duration = 24;
@@ -289,18 +480,18 @@ function rxGT1AUS (h) {
     if ( h.fibrosis.match(/F4/) ) {
         h.rx[0].svr = 90;
         if ( h.past != 'PROTEASE' ) {
-            h.rx[0].notes.push('<span class="error">Consider adding Ribavirin or extending treatment to 24 weeks</span>');
+            h.rx[0].notes.push(errorText('Consider adding Ribavirin or extending treatment to 24 weeks'));
         }
     }
     // viekira pak
     h.rx.unshift({
-        medication: [ drugs.viekira1, drugs.viekira2, drugs.viekira3 ],
+        medication: [ drugs.viek, drugs.viekx ],
         duration: 12,
         svr: 97,
         notes: []
     })
     if ( ! h.genotype.match(/1b/)) {
-        addRiba(h,h.rx[0]);
+        addRiba(h,h.rx[0],false);
         h.rx[0].svr = 95;
 
     }
@@ -335,7 +526,7 @@ function rxGT2AUS (h) {
     addRiba(h,h.rx[0]);
     if ( h.fibrosis.match(/F4/) ) {
         h.rx[0].svr      = 94;
-        h.rx[0].notes.push('<span class="error">SVR rates may be increased by extending duration to 16-24 weeks</span>');
+        h.rx[0].notes.push(errorText('SVR rates may be increased by extending duration to 16-24 weeks'));
     }
 }
 
@@ -433,7 +624,161 @@ function rxGT5EASL (h) {}
 function rxGT6EASL (h) {}
 
 /* AASLD stubs */
-function rxGT1AASLD (h) {}
+function rxGT1AASLD (h) {
+    if ( h.fail ) {
+        if ( h.past == 'PEGRIBA' ) {
+            rxGT1AASLDpegriba(h);
+        }
+        else if ( h.past == 'SOFRIBA') {
+            rxGT1AASLDsofriba(h);
+        }
+        else if ( h.past == 'PROTEASE' ) {
+            rxGT1AASLDprotease(h);
+        }
+        else if ( h.past == 'SOFNS5A' ) {
+            rxGT1AASLDsofNS5A(h);
+        }
+        else {
+            alert('Error - unhandled failure case: ' + h.past )
+        }
+    }
+    else {
+        if ( h.genotype.match(/1b/) ) {
+            rxGT1AASLDnaive1b(h);
+        }
+        else {
+            rxGT1AASLDnaive1a(h);       
+        }
+    }
+}
+
+function rxGT1AASLDnaive1a (h) {
+
+    // sofosbuvir daclatasvir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: svrx.gt1.sof_dac.gt1a.default, 
+        rating: svrx.gt1.sof_dac.gt1a.rating,
+        notes: drugs.dac.notes.slice()
+    });
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = svrx.gt1.sof_dac.gt1a.f4.default;
+        h.rx[0].rating = svrx.gt1.sof_dac.gt1a.f4.rating;
+        addRiba(h,h.rx[0],true);
+
+    }
+    // harvoni
+    if ( ! hasHarvoniCI(h)) {
+        h.rx.unshift({
+            medication: [ drugs.sof_led ],
+            duration: 12,
+            svr: svrx.gt1.sof_led.gt1a.default,
+            rating: svrx.gt1.sof_led.gt1a.rating,           
+            notes: drugs.sof_led.notes.slice()
+        });
+    }
+    // viekira pak
+    h.rx.unshift({
+        medication: [ drugs.viek, drugs.viekx ],
+        duration: 12,
+        svr: svrx.gt1.viek.gt1a.default,
+        rating: svrx.gt1.viek.gt1a.rating,
+        notes: drugs.viek.notes.slice()
+    });
+    addRiba(h,h.rx[0],false);    
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = svrx.gt1.viek.gt1a.f4.default;
+        h.rx[0].rating = svrx.gt1.viek.gt1a.f4.rating;
+    }
+    // sofosbuvir simeprevir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.sim ], 
+        duration: 12,
+        svr: svrx.gt1.sof_sim.gt1a.default,
+        rating: svrx.gt1.sof_sim.gt1a.rating, 
+        notes: drugs.sim.notes.slice()
+    });
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = svrx.gt1.sof_sim.gt1a.f4.default;
+        h.rx[0].rating = svrx.gt1.sof_sim.gt1a.f4.rating;    
+        addRiba(h,h.rx[0],true);
+    }
+
+}
+
+function rxGT1AASLDnaive1b (h) {
+
+    // sofosbuvir daclatasvir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr: svrx.gt1.sof_dac.gt1b.default, 
+        rating: svrx.gt1.sof_dac.gt1b.rating,
+        notes: drugs.dac.notes.slice()
+    });
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = svrx.gt1.sof_dac.gt1b.f4.default;
+        h.rx[0].rating = svrx.gt1.sof_dac.gt1b.f4.rating;
+        addRiba(h,h.rx[0],true);
+
+    }
+    // harvoni
+    if ( ! hasHarvoniCI(h)) {
+        h.rx.unshift({
+            medication: [ drugs.sof_led ],
+            duration: 12,
+            svr: svrx.gt1.sof_led.gt1b.default,
+            rating: svrx.gt1.sof_led.gt1b.rating,           
+            notes: drugs.sof_led.notes.slice()
+        });
+    }
+    // viekira pak
+    h.rx.unshift({
+        medication: [ drugs.viek, drugs.viekx ],
+        duration: 12,
+        svr: svrx.gt1.viek.gt1b.default,
+        rating: svrx.gt1.viek.gt1b.rating,
+        notes: drugs.viek.notes.slice()
+    });
+
+    // sofosbuvir simeprevir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.sim ], 
+        duration: 12,
+        svr: svrx.gt1.sof_sim.gt1b.default,
+        rating: svrx.gt1.sof_sim.gt1b.rating, 
+        notes: drugs.sim.notes.slice()
+    });
+    if ( h.fibrosis.match(/F4/) ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = svrx.gt1.sof_sim.gt1b.f4.default;
+        h.rx[0].rating = svrx.gt1.sof_sim.gt1b.f4.rating;    
+        addRiba(h,h.rx[0],true);
+    }
+
+}
+
+function rxGT1AASLDpegriba (h) {
+    alert(arguments.callee.name)
+}
+
+function rxGT1AASLDsofriba (h) {
+    alert(arguments.callee.name)
+}
+
+function rxGT1AASLDprotease (h) {
+    alert(arguments.callee.name)
+}
+
+function rxGT1AASLDsofNS5A (h) {
+    alert(arguments.callee.name)
+}
+
 function rxGT2AASLD (h) {}
 function rxGT3AASLD (h) {}
 function rxGT4AASLD (h) {}
@@ -587,7 +932,7 @@ function rxGT6 (h) {
 
 function hasHarvoniCI (h) {
     if (h.harvoniCI) {
-        var msg = '<span class="error">Sofosbuvir/Ledipasvir not being recommended due to Harvoni CI(s)</span>';
+        var msg = errorText('Sofosbuvir/Ledipasvir not being recommended due to Harvoni CI(s)');
         blockMessage(msg);
         h.rx[0].notes.push(msg);
         return true;
@@ -595,19 +940,51 @@ function hasHarvoniCI (h) {
     return false;
 }
 
-function addRiba(h,rx) {
+function addRiba(h,rx,optional) {
     if (! h.riba) {
-        var msg = '<span class="error">Sorry, we can\'t accurately add Ribavirin without Ribavirin details. Please add them and recalculate</span>';
-        blockMessage(msg);
-        rx.notes.push(msg);
+        var msg = 'Sorry, we can\'t accurately add Ribavirin without Ribavirin details. Please add them and recalculate.';
+        $("#riba").prop('checked', true);
+        $("#ribavirin").show();
+        errorDialog(msg, "#platelets");
+        rx.notes.push(errorText(msg));
     }
     var ribaDose = h.riba ? calcRibaDose(h,rx) : 1000;
-    rx.medication.push(drugs.riba);;
-    rx.medication[rx.medication.length-1].dose = [ribaDose + 'mg'];
+    // need to clone drugs.riba so we can have multiple riba notes associated with various Rx options
+    var riba = $.extend(true,{},drugs.riba);
+    riba.optional = optional ? true : false;
+    riba.dose = [ribaDose + 'mg'];
+    rx.medication.push(riba);
+    if (optional) {
+        rx.notes.push(errorText('Ribavirin is optional'));
+    }
+    else {
+        rx.notes.push(errorText('Ribavirin is mandatory'));        
+    }
     rx.notes.push('Ribavirin uses requires frequent monitoring for pancytopaenia');
-    if ( h.platelets < 50 ) rx.notes.push('<span class="error">Low platelets are a relative contraindication to Ribavirin</span>');
+    if ( h.platelets < 50 ) rx.notes.push(errorText('Low platelets are a relative contraindication to Ribavirin'));
     rx.notes.push('Ribavirin (200mg Capsules): ' + calcRibaCaps(ribaDose));
     rx.notes.push('Ribavirin (Ibavyr 400mg &amp; 600mg Tablets): ' + calcRibaTabs(ribaDose));
+}
+
+function setRibaWeight() {
+
+    var guidelines= $("input[name=guidelines]:checked").val();
+    if ( guidelines == 'AUS' || guidelines == 'AASLD') {
+        $("#weightFull").hide();
+        $("#weight75").show();
+        $("#sfw").show();
+        $("#sfwHR").hide();
+    }
+    else {
+        $("#weightFull").show();
+        $("#weight75").hide();
+    }
+}
+
+function showFullWeightOptions() {
+    $('#weightFull').show()
+    $('#sfw').hide();
+    $('#sfwHR').show();
 }
 
 function calcRibaDose (h,rx) {
@@ -617,10 +994,10 @@ function calcRibaDose (h,rx) {
     if ( h.weight == '>105' ) {
         dose = 1400;
     }
-    else if ( h.weight == '81-105' ) {
+    else if ( h.weight == '81-105' || h.weight == '>75' ) {
         dose = 1200;
     }
-    else if ( h.weight == '66-80' ) {
+    else if ( h.weight == '66-80' || h.weight == '<75' ) {
         dose = 1000;  
     }
     else if ( h.weight == '<66' ) {
@@ -630,7 +1007,7 @@ function calcRibaDose (h,rx) {
         alert('Error for weight: ' + h.weight );
     }
     if ( h.eGFR < 60 ) {
-        rx.notes.push('<span class="error">Specialist advice highly recommended about Ribavirin dose</span>');
+        rx.notes.push(errorText('Specialist advice highly recommended about Ribavirin dose'));
         dose =  h.eGFR > 30 ? dose/2 : dose/3;
     }
   
@@ -664,7 +1041,7 @@ function calcRibaCaps (dose) {
     if ( dose >=200 ) {
         return '1 daily';
     }
-    return '<span class="error">No Riba dose!</span>';
+    return errorText('No Riba dose!');
 }
 
 // Ibavyr tablets come in 400mg and 600mg scored
@@ -694,7 +1071,7 @@ function calcRibaTabs (dose) {
     if ( dose >=200 ) {
         return '&frac12; 400mg daily';
     }
-    return '<span class="error">No Riba dose!</span>';
+    return errorText('No Riba dose!');
 }
 
 function setFibrosisFromKPa () {
@@ -757,8 +1134,8 @@ function toggleRiba () {
 
 function blockMessage(message,timeout) {
 
-        if (timeout === undefined) timeout = 3000;
-        $.blockUI({ 
+    if (timeout === undefined) timeout = 3000;
+    $.blockUI({ 
         message: message, 
         css: {
             border: 'none',
@@ -773,6 +1150,38 @@ function blockMessage(message,timeout) {
         timeout: timeout,
     });
 }
+
+function errorText(text) {
+    return '<span class="error">' + text + '</span>';
+}
+
+function errorDialog(text,e) {
+    $('#error').html(errorText(text)).dialog({
+        title: "Error",
+        modal: true,
+        open: function(event, ui) { $('.ui-widget-overlay').bind('click', function(){ $("#error").dialog('close'); $(e).select().focus() } ) }
+    })
+};
+
+function evidence() {
+    if ($("input[name=guidelines]:checked").val() == 'AASLD') {
+        $("#gradingAASLD").dialog({
+            title: 'AASLD Grading System Used For Guidelines',
+            width: "80%",
+            modal: true,
+            open: function(event, ui) { $('.ui-widget-overlay').bind('click', function(){ $("#gradingAASLD").dialog('close') } ) }
+        });
+    }
+    else {
+        $("#gradingEASL").dialog({
+            title: 'EASL Grading System Used For Guidelines',
+            width: "80%",
+            modal: true,
+            open: function(event, ui) { $('.ui-widget-overlay').bind('click', function(){ $("#gradingEASL ").dialog('close') } ) }
+        });
+    }
+}
+
 </script>
 
 <div id="dataInput">
@@ -785,8 +1194,7 @@ function googleTranslateElementInit() {
   new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
 }
 </script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <table>
     <tr>
       <td>
@@ -844,9 +1252,9 @@ function googleTranslateElementInit() {
           <option value="PEG">Failed Interferon</option>
           <option value="PEGRIBA">Failed Interferon + Riba</option>
           <option value="PROTEASE">Failed Protease + Interferon + Riba</option>
-          <option value="12NS5B">Failed Sofosbuvir 12 weeks</option>
-          <option value="24NS5B">Failed Sofosbuvir 24 weeks</option>
-
+          <option value="PROTEASE">Failed Simeprevir + Sofosbuvir (no prior NS5A treatment)</option>
+          <option value="SOFRIBA">Failed Sofosbuvir + Ribavirin +/- Interferon</option>
+          <option value="SOFNS5A">Failed Sofosbuvir + NS5A (Led or Dac) or Viekira Pak</option>
         </select>
       </td>
     </tr>
@@ -863,10 +1271,10 @@ function googleTranslateElementInit() {
         <label>Guidelines<label>
       </td>
       <td>
-        <input type="radio" name="guidelines" value="AUS" checked="checked"> AUS
-        <input type="radio" name="guidelines" value="EASL"> EASL
-        <input type="radio" name="guidelines" value="AASLD"> AASLD
-        <input type="radio" name="guidelines" value="FIXHEPC"> PEG/Riba Free
+        <input type="radio" name="guidelines" value="AUS" checked="checked" onChange="setRibaWeight()"> AUS
+        <input type="radio" name="guidelines" value="EASL" onChange="setRibaWeight()"> EASL
+        <input type="radio" name="guidelines" value="AASLD" onChange="setRibaWeight()"> AASLD
+        <input type="radio" name="guidelines" value="FIXHEPC" onChange="setRibaWeight()"> PEG/Riba Free
       </td>
     </tr>
     <tr>
@@ -895,10 +1303,18 @@ function googleTranslateElementInit() {
                 <label>Weight<label>
               </td>
               <td>
+                <div id="weightFull" style="display:none">
                 <input type="radio" name="weight" value="&lt;66"> &lt; 66kg
                 <input type="radio" name="weight" value="66-80"> 66-80kg
                 <input type="radio" name="weight" value="81-105"> 81-105kg
                 <input type="radio" name="weight" value="&gt;105"> &gt; 105kg
+                </div>
+                <div id="weight75" style="clear:left">
+                <hr id="sfwHR" style="display:none">
+                <input type="radio" name="weight" value="&lt;75"> &lt; 75kg
+                <input type="radio" name="weight" value="&gt;75"> &gt; 75kg
+                <a id="sfw" href="javascript:showFullWeightOptions()">Show full weight options</a>
+                </div>
               </td>
             </tr>
             <tr>
@@ -932,9 +1348,72 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</p>
+</div>
+
+<div id="rx"></div>
+
+<div id="error"></div>
+
+<div id="gradingAASLD" class="grading" style="display:none;">
+
+<div class="title">Class I</div>
+<div class="description">Conditions for which there is evidence and/or general agreement that a given diagnostic evaluation, procedure, or treatment is beneficial, useful, and effective</div>
+
+<div class="title">Class II</div>
+<div class="description">Conditions for which there is conflicting evidence and/or a divergence of opinion about the usefulness and efficacy of a diagnostic evaluation, procedure, or treatment</div>
+
+<div class="title">Class IIa</div>
+<div class="description">Weight of evidence and/or opinion is in favor of usefulness and efficacy</div>
+
+<div class="title">Class IIb</div>
+<div class="description">Usefulness and efficacy are less well established by evidence and/or opinion</div>
+
+<div class="title">Class III</div>
+<div class="description">Conditions for which there is evidence and/or general agreement that a diagnostic evaluation, procedure, or treatment is not useful and effective or if it in some cases may be harmful</div>
+
+<hr>
+
+<div class="title">Evidence Quality</div>
+
+<div class="title">Level A</div>
+<div class="description">Data derived from multiple randomized clinical trials or meta-analyses</div>
+
+<div class="title">Level B</div>
+<div class="description">Data derived from a single randomized trial, or nonrandomized studies</div>
+
+<div class="title">Level C</div>
+<div class="description">Consensus opinion of experts, case studies, or standard of care</div>
 
 </div>
-<div id="rx"></div>
+
+<div id="gradingEASL" class="grading" style="display:none;">
+
+<div class="title">Evidence Quality</div>
+
+<div class="title">A - High</div>
+<div class="description">Further research is very unlikely to change our confidence in the estimate of effect</div>
+
+<div class="title">B - Moderate</div>
+<div class="description">Further research is likely to have an important impact on our confidence in the estimate of effect and may
+change the estimate</div>
+
+<div class="title">C - Low</div>
+<div class="description">Further research is very likely to have an important impact on our confidence in the estimate of effect and
+is likely to change the estimate. Any change of estimate is uncertain</div>
+
+<hr>
+
+<div class="title">Recommendation</div>
+
+<div class="title">1 - Strong</div> 
+<div class="description">Factors influencing the strength of the recommendation included the quality of the evidence, presumed
+patient-important outcomes, and cost</div>
+
+<div class="title">2 - Weak</div> 
+<div class="description">Variability in preferences and values, or more uncertainty. Recommendation is made with less certainty,
+higher cost or resource consumption</div>
+
+</div>
 
 </body>
 
