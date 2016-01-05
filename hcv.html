@@ -20,6 +20,7 @@ button:focus {outline:0;}
 .green { color:green;}
 .title { font-weight: 700; padding-top:0.5em;}
 .grading { font-size:0.9em;}
+.nowrap { white-space: nowrap;}
 
 @media print {
     #print { display:none;}
@@ -421,7 +422,7 @@ var svrx = {
             },
         },
         sof_dac: {
-            default: 92, // UNAMED http://www.ncbi.nlm.nih.gov/pubmed/24428467 92% (24/26) AI444040 (24wk) 96% (25/26)
+            default: 92, // UN-NAMED http://www.ncbi.nlm.nih.gov/pubmed/24428467 92% (24/26) AI444040 (24wk) 96% (25/26)
             rating: {
                 aasld: undefined,
                 easl: ratings.B1
@@ -429,6 +430,56 @@ var svrx = {
         }
     },
     gt3: {
+        sof_peg_riba: {
+            default: 90,  // UN-NAMED 90% (9/10) UN-NAMED 91% (20/22) BOSON 95% (117/123) Aggregate 94.1% (146/155)
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            },
+            f4: {
+                default: 88 // BOSON 88% (51/58)
+            },
+            fail: {
+                default: 91 // BOSON 91% (79/87)
+            }
+        },
+        sof_riba: {
+            default: 88, // BOSON 24 weeks 88% (83/94) VALENCE 95% (87/92)
+            w16: 71, // BOSON 71% (128/181)
+            w24: 84, // BOSON 84% (153/182) 
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+            f4: {
+                default: 81  // BOSON 79% (44/56) VALENCE 92% (12/13) Aggregate 81.1% (56/69)
+            },
+            fail: {
+                default: 83, // BOSON 80% (70/88) VALENCE 87% (85/98) Aggregate 83.3% (155/186)
+                f4: 62       // VALENCE 62% (29/47)
+            }
+        },
+        sof_dac: {
+            // AASLD-2015 http://www.clinicaloptions.com/Hepatitis/Conference%20Coverage/AASLD%202015/Highlights/Capsules/206.aspx
+            // Presented at AASLD Nov 2015
+            default: 89,    // UN-NAMED IIb (24wk) 89% (16/18) ALLY-3 97% (73/75) AASLD-2015 96% (24/45)
+            w24: 100,       // AASLD-2015 100% (29/29)
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            },
+            f4: {
+                default: 65, // ALLY-3 58% (11/19) AASLD-2015 70% (23/33) Aggregate 65.4% (34/52)
+                w24: 90,     // AASLD-2015 86% (116/135) overall but Child-Pugh A 90% (90/100)
+                riba24: 81   // AASL-2015 81% (39/48)
+            },
+            fail: {
+                default: 86,  // ALLY-3 94% (32/34) AASLD-2015 86% (89/103) (bias by F3/F4)
+                f4: 64,       // ALLY-3 69% (9/13) 
+                w24: 86,      // AASLD-2015 86% (89/103)
+                riba24: 80,   // AASLD-2015 80% (28/35)
+            }
+        }        
 
     },
     gt4: {
@@ -657,7 +708,7 @@ function rxGT1AUS (h) {
     });
     pushNotes(h.rx[0]);
     if ( ! h.genotype.match(/1b/)) {
-        addRiba(h,h.rx[0],false);
+        addRiba(h,false);
         h.rx[0].svr = svrx.gt1.viek_riba.gt1a.default;
 
     }
@@ -691,7 +742,7 @@ function rxGT2AUS (h) {
         notes: []
     });
     pushNotes(h.rx[0]);
-    addRiba(h,h.rx[0]);
+    addRiba(h);
     if ( h.f4  || h.fail ) {
         h.rx[0].svr =  h.f4 ? svrx.gt2.sof_riba.f4.default : svrx.gt2.sof_riba.fail.default;
         h.rx[0].notes.push(redText('SVR rates may be increased by extending duration to 16-24 weeks'));
@@ -717,7 +768,7 @@ function rxGT3AUS (h) {
             svr: 94, 
             notes: [] 
         });
-        addRiba(h,h.rx[0]);
+        addRiba(h);
     }
     // sof riba
     h.rx.unshift({
@@ -726,7 +777,7 @@ function rxGT3AUS (h) {
         svr: 93,
         notes: []
     });
-    addRiba(h,h.rx[0]);
+    addRiba(h);
     if ( h.f4 ) {
         h.rx[0].svr      = 67;
     }
@@ -737,7 +788,7 @@ function rxGT3AUS (h) {
         svr: 85,
         notes: []
     });
-    addRiba(h,h.rx[0]);    
+    addRiba(h);    
 }
 
 function rxGT4AUS (h) {
@@ -749,7 +800,7 @@ function rxGT4AUS (h) {
         svr: 90,
         notes: []
     });
-    addRiba(h,h.rx[0]); 
+    addRiba(h); 
     // sim peg riba
     h.rx.unshift({
         medication: [ drugs.sim, drugs.peg ],
@@ -757,7 +808,7 @@ function rxGT4AUS (h) {
         svr: 85,
         notes: [ 'Duration 24-48 weeks']
     });
-    addRiba(h,h.rx[0]);
+    addRiba(h);
 }
 
 function rxGT5AUS (h) {
@@ -769,7 +820,7 @@ function rxGT5AUS (h) {
         svr: 90,
         notes: []
     });
-    addRiba(h,h.rx[0]); 
+    addRiba(h); 
 }
 
 function rxGT6AUS (h) {
@@ -781,7 +832,7 @@ function rxGT6AUS (h) {
         svr: 90,
         notes: []
     });
-    addRiba(h,h.rx[0]);    
+    addRiba(h);    
 }
 
 /*
@@ -806,7 +857,7 @@ function rxGT1EASL (h) {
         notes: []
     });
     pushNotes(h.rx[0]);
-    addRiba(h,h.rx[0]);
+    addRiba(h);
     if ( h.genotype.match(/1a/) ) {
         h.rx[0].svr = svrx.gt1.sof_peg_riba.gt1a.default;
     }
@@ -829,7 +880,7 @@ function rxGT1EASL (h) {
         notes: [ 'HCV RNA levels should be monitored on treatment. Treatment should be stopped if HCV RNA level is ≥25 IU/ml at treatment week 4, week 12 or week 24 (A2)']
     });
     pushNotes(h.rx[0]);
-    addRiba(h,h.rx[0]);
+    addRiba(h);
     if ( h.genotype.match(/1a/) ) {
         h.rx[0].svr = svrx.gt1.sim_peg_riba.gt1a.default;
     }
@@ -861,7 +912,7 @@ function rxGT1EASL (h) {
             h.rx[0].svr = svrx.gt1.sof_led.gt1b.default;
         }
         if ( h.f4 ) {
-            addRiba(h,h.rx[0]);
+            addRiba(h);
             if ( negativePredictorsOfResponse(h) ) {
                 h.rx[0].duration = 24;
                 h.rx[0].rating = svrx.gt1.sof_led.fail.rating.easl;
@@ -889,16 +940,16 @@ function rxGT1EASL (h) {
     if ( h.genotype.match(/1b/)) {
         h.rx[0].svr = svrx.gt1.viek.gt1b.default;
         if ( h.f4 ) {
-            addRiba(h,h.rx[0]); 
+            addRiba(h); 
             h.rx[0].svr = svrx.gt1.viek_riba.f4.gt1b;          
         }
         else if ( h.fail) {
-            addRiba(h,h.rx[0]); 
+            addRiba(h); 
             h.rx[0].svr = svrx.gt1.viek_riba.fail.gt1b;             
         }
     }
     else {
-        addRiba(h,h.rx[0]);
+        addRiba(h);
         h.rx[0].svr = svrx.gt1.viek_riba.gt1a.default;
         if ( h.f4 ) {
             h.rx[0].duration = 24;
@@ -929,7 +980,7 @@ function rxGT1EASL (h) {
         h.rx[0].svr = svrx.gt1.sof_sim.fail.w12;
     }
     if ( h.f4 ) {
-        addRiba(h,h.rx[0]);
+        addRiba(h);
         h.rx[0].svr = svrx.gt1.sof_sim.f4.w12riba;
         h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_sim.f4.w24));
     }
@@ -952,7 +1003,7 @@ function rxGT1EASL (h) {
         h.rx[0].svr = svrx.gt1.sof_dac.gt1a.default;        
     }
     if ( h.f4 ) {
-        addRiba(h,h.rx[0]);
+        addRiba(h);
         h.rx[0].svr = svrx.gt1.sof_dac.f4.default;
         h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.default));
     }
@@ -970,7 +1021,7 @@ function rxGT2EASL (h) {
         notes: []
     });
     pushNotes(h.rx[0]);
-    addRiba(h,h.rx[0]);
+    addRiba(h);
 
     if ( h.f4 || h.fail ) {
         h.rx[0].svr = h.f4 ? svrx.gt2.sof_riba.f4.default : svrx.gt2.sof_riba.fail.default;
@@ -988,7 +1039,7 @@ function rxGT2EASL (h) {
         notes: []
     });
     pushNotes(h.rx[0]);
-    addRiba(h,h.rx[0]);
+    addRiba(h);
 
     // sof dac
     h.rx.unshift({
@@ -1003,7 +1054,51 @@ function rxGT2EASL (h) {
 
 }
 function rxGT3EASL (h) {
-    blockMessage('EASL GT3 not yet implemented',2000);
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr: svrx.gt3.sof_peg_riba.default,
+        rating: svrx.gt3.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sof riba
+    h.rx.unshift({
+        medication: [ drugs.sof ],
+        duration: 24,
+        svr: svrx.gt3.sof_riba.default,
+        rating: svrx.gt3.sof_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr = (h.fail && h.f4) ? svrx.gt3.sof_riba.fail.f4 : h.fail ? svrx.gt3.sof_riba.fail.default : svrx.gt3.sof_riba.f4.default;
+        h.rx[0].notes.push(redText(' This therapy is suboptimal in treatment-experienced cirrhotic patients and in patients who failed to achieve an SVR after sofosbuvir plus ribavirin treatment, who should be offered an alternative treatment option (B1)'));
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr: svrx.gt3.sof_dac.default,
+        rating: svrx.gt3.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h,true);
+        h.rx[0].duration = 24;
+        h.rx[0].svr = h.fail ? svrx.gt3.sof_dac.fail.riba24 : svrx.gt3.sof_riba.f4.riba24;
+        h.rx[0].notes.push(greenText('EASL Guidelines 2015 say add Riba for 24 weeks pending clarification  but AASLD 2015 n=468 GT3 F3/F4 series showed inferior performance in all 24 week + Riba groups. For F4 SVR was 90% and treatment-experienced 86% http://www.clinicaloptions.com/Hepatitis/Conference%20Coverage/AASLD%202015/Highlights/Capsules/206.aspx'))
+    }
+
 }
 function rxGT4EASL (h) {
     blockMessage('EASL GT4 not yet implemented',2000);
@@ -1067,7 +1162,7 @@ function rxGT1AASLDnaive1a (h) {
         h.rx[0].duration = 24;
         h.rx[0].svr = svrx.gt1.sof_dac.gt1a.f4.default;
         h.rx[0].rating = svrx.gt1.sof_dac.gt1a.f4.rating;
-        addRiba(h,h.rx[0],true);
+        addRiba(h,true);
 
     }
     // harvoni
@@ -1088,7 +1183,7 @@ function rxGT1AASLDnaive1a (h) {
         rating: svrx.gt1.viek.gt1a.rating,
         notes: drugs.viek.notes.slice()
     });
-    addRiba(h,h.rx[0],false);    
+    addRiba(h);    
     if ( h.f4 ) {
         h.rx[0].duration = 24;
         h.rx[0].svr = svrx.gt1.viek.gt1a.f4.default;
@@ -1106,7 +1201,7 @@ function rxGT1AASLDnaive1a (h) {
         h.rx[0].duration = 24;
         h.rx[0].svr = svrx.gt1.sof_sim.gt1a.f4.default;
         h.rx[0].rating = svrx.gt1.sof_sim.gt1a.f4.rating;    
-        addRiba(h,h.rx[0],true);
+        addRiba(h,true);
     }
 
 }
@@ -1125,7 +1220,7 @@ function rxGT1AASLDnaive1b (h) {
         h.rx[0].duration = 24;
         h.rx[0].svr = svrx.gt1.sof_dac.gt1b.f4.default;
         h.rx[0].rating = svrx.gt1.sof_dac.gt1b.f4.rating;
-        addRiba(h,h.rx[0],true);
+        addRiba(h,true);
 
     }
     // harvoni
@@ -1159,7 +1254,7 @@ function rxGT1AASLDnaive1b (h) {
         h.rx[0].duration = 24;
         h.rx[0].svr = svrx.gt1.sof_sim.gt1b.f4.default;
         h.rx[0].rating = svrx.gt1.sof_sim.gt1b.f4.rating;    
-        addRiba(h,h.rx[0],true);
+        addRiba(h,true);
     }
 
 }
@@ -1267,31 +1362,31 @@ function noRiba24weeks(svr) {
     return greenText('Can use 24 weeks without Ribavrin in patients with contraindications or poor tolerance to ribavirin. Expected SVR: ' + svr +'%')
 }
 
-function addRiba(h,rx,optional) {
+function addRiba(h,optional) {
 
     if (! h.riba) {
         var msg = 'Sorry, we can\'t accurately add Ribavirin without Ribavirin details. Please add them and recalculate.';
         $("#riba").prop('checked', true);
         $("#ribavirin").show();
         errorDialog(msg, "#platelets");
-        rx.notes.push(redText(msg));
+        h.rx[0].notes.push(redText(msg));
     }
-    var ribaDose = h.riba ? calcRibaDose(h,rx) : 1000;
-    // need to clone drugs.riba so we can have multiple riba notes associated with various Rx options
+    var ribaDose = h.riba ? calcRibaDose(h) : 1000;
+    // need to clone drugs.riba so we can have multiple riba notes associated with various rx options
     var riba = $.extend(true,{},drugs.riba);
     riba.optional = optional ? true : false;
     riba.dose = [ribaDose + 'mg'];
-    rx.medication.push(riba);
+    h.rx[0].medication.push(riba);
     if (riba.optional) {
-        rx.notes.push(greenText('Ribavirin is optional'));
+        h.rx[0].notes.push(greenText('Ribavirin is optional'));
     }
     else {
-        rx.notes.push(redText('Ribavirin is mandatory'));        
+        h.rx[0].notes.push(redText('Ribavirin is mandatory'));        
     }
-    rx.notes.push('Ribavirin use requires frequent monitoring for pancytopaenia');
-    if ( h.platelets < 50 ) rx.notes.push(redText('Low platelets are a relative contraindication to Ribavirin'));
-    rx.notes.push('Ribavirin (200mg Capsules): ' + calcRibaCaps(ribaDose));
-    rx.notes.push('Ribavirin (Ibavyr 400mg &amp; 600mg Tablets): ' + calcRibaTabs(ribaDose));
+    h.rx[0].notes.push('Ribavirin use requires frequent monitoring for pancytopaenia');
+    if ( h.platelets < 50 ) h.rx[0].notes.push(redText('Low platelets are a relative contraindication to Ribavirin'));
+    h.rx[0].notes.push('Ribavirin (200mg Capsules): ' + calcRibaCaps(ribaDose));
+    h.rx[0].notes.push('Ribavirin (Ibavyr 400mg &amp; 600mg Tablets): ' + calcRibaTabs(ribaDose));
 }
 
 function setRibaWeight() {
@@ -1316,7 +1411,7 @@ function showFullWeightOptions() {
     $('#sfwHR').show();
 }
 
-function calcRibaDose (h,rx) {
+function calcRibaDose (h) {
 
     if ( ! h.riba ) return 0;
     var dose = 0;
@@ -1336,7 +1431,7 @@ function calcRibaDose (h,rx) {
         alert('Error for weight: ' + h.weight );
     }
     if ( h.eGFR < 60 ) {
-        rx.notes.push(redText('Specialist advice highly recommended about Ribavirin dose'));
+        h.rx[0].notes.push(redText('Specialist advice highly recommended about Ribavirin dose'));
         dose =  h.eGFR > 30 ? dose/2 : dose/3;
     }
   
@@ -1457,6 +1552,28 @@ function setFibrosisHepascore () {
     }
 }
 
+function setFibrosisELFscore () {
+
+    var ELFscore = parseFloat($("#ELFscore").val());
+
+    if (isNaN(ELFscore)) {
+        return;
+    }
+
+    if ( ELFscore > 11.3 ) {
+        $("#fibrosis").val('F4');
+    }
+    else if ( ELFscore >= 9.8 ) {
+        $("#fibrosis").val('F3');
+    }
+    else if ( ELFscore >= 7.7 ) {
+        $("#fibrosis").val('F2');
+    }
+    else {
+        $("#fibrosis").val('F1');
+    }
+}
+
 function toggleRiba () {
 
     $("#riba:checked").length == 1 ? $("#ribavirin").slideDown() : $("#ribavirin").hide(400);
@@ -1573,9 +1690,9 @@ function googleTranslateElementInit() {
           <option>F3-F4</option>
           <option>F4</option>
         </select>
-        kPa
-        <input type="text" class="narrow" id="kpa" onblur="setFibrosisFromKPa()"> Hepascore
-        <input type="text" class="narrow" id="hepascore" onblur="setFibrosisHepascore()">
+        <span class="nowrap"> kPa <input type="text" class="narrow" id="kpa" onblur="setFibrosisFromKPa()"></span>
+        <span class="nowrap"> Hepascore <input type="text" class="narrow" id="hepascore" onblur="setFibrosisHepascore()"></span>
+        <span class="nowrap"> ELF Score <input type="text" class="narrow" id="ELFscore" onblur="setFibrosisELFscore()"></span>
       </td>
     </tr>
     <tr>
