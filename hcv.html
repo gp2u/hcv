@@ -462,7 +462,7 @@ var svrx = {
         sof_dac: {
             // AASLD-2015 http://www.clinicaloptions.com/Hepatitis/Conference%20Coverage/AASLD%202015/Highlights/Capsules/206.aspx
             // Presented at AASLD Nov 2015
-            default: 89,    // UN-NAMED IIb (24wk) 89% (16/18) ALLY-3 97% (73/75) AASLD-2015 96% (24/45)
+            default: 97,    // UN-NAMED IIb (24wk) 89% (16/18) ALLY-3 97% (73/75) AASLD-2015 96% (24/25) Aggregate 97% (97/100)
             w24: 100,       // AASLD-2015 100% (29/29)
             rating: {
                 aasld: undefined,
@@ -1096,7 +1096,7 @@ function rxGT3EASL (h) {
         addRiba(h,true);
         h.rx[0].duration = 24;
         h.rx[0].svr = h.fail ? svrx.gt3.sof_dac.fail.riba24 : svrx.gt3.sof_riba.f4.riba24;
-        h.rx[0].notes.push(greenText('EASL Guidelines 2015 say add Riba for 24 weeks pending clarification  but AASLD 2015 n=468 GT3 F3/F4 series showed inferior performance in all 24 week + Riba groups. For F4 SVR was 90% and treatment-experienced 86% http://www.clinicaloptions.com/Hepatitis/Conference%20Coverage/AASLD%202015/Highlights/Capsules/206.aspx'))
+        h.rx[0].notes.push(greenText('EASL Guidelines 2015 say add Riba for 24 weeks pending clarification  but AASLD 2015 n=468 GT3 F3/F4 series showed inferior performance in all 24 week + Riba groups. For 24 week groups WITHOUT Riba F4 SVR was 90% and treatment-experienced 86% http://www.clinicaloptions.com/Hepatitis/Conference%20Coverage/AASLD%202015/Highlights/Capsules/206.aspx'))
     }
 
 }
@@ -1527,6 +1527,8 @@ function setFibrosisFromKPa () {
  
 }
 
+// Reference http://www.mayomedicallaboratories.com/test-updates/attachment.php?id=34741
+
 function setFibrosisHepascore () {
 
     var hepascore = parseFloat($("#hepascore").val());
@@ -1535,20 +1537,29 @@ function setFibrosisHepascore () {
         return;
     }
 
-    if ( hepascore >= 0.7 ) {
+    if ( hepascore >= 0.74 ) {
         $("#fibrosis").val('F4');
     }
-    else if ( hepascore >= 0.5 ) {
+    else if ( hepascore >= 0.72 ) {
         $("#fibrosis").val('F3-F4');
     }
-    else if ( hepascore >= 0.3 ) {
+    else if ( hepascore >= 0.58 ) {
+        $("#fibrosis").val('F3');
+    }
+    else if ( hepascore >= 0.48 ) {
         $("#fibrosis").val('F2');
     }
-    else if ( hepascore >= 0.15 ) {
+    else if ( hepascore >= 0.31 ) {
+        $("#fibrosis").val('F1-F2');
+    }
+    else if ( hepascore >= 0.27 ) {
         $("#fibrosis").val('F1');
     }
-    else {
+    else if ( hepascore >= 0.21 ) {
         $("#fibrosis").val('F0-F1');
+    }
+    else {
+        $("#fibrosis").val('F0');
     }
 }
 
