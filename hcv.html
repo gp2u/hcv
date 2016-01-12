@@ -870,10 +870,10 @@ function renderRx(h) {
             h.rx[m].notes.push( '<b>' + drug.generic + ' brand names: </b>' + drugSort.join(', '));
         }
         html += '<hr>' +
-                '<b>Medications:</b> '  + medication + '<br>' +
-                '<b>Duration:</b> '     + h.rx[m].duration + ' weeks (' + days + ')<br>' +
-                '<b>Expected SVR:</b> ' + h.rx[m].svr + '% (Odds of SVR are '  + svrOdds + ':1)<br>' +
-                '<b>Trial(s):</b> '     + h.rx[m].trials + '<br>';
+                '<b>Medications: </b>'  + medication + '<br>' +
+                '<b>Duration: </b>'     + h.rx[m].duration + ' weeks (' + days + ')<br>' +
+                '<b>Expected SVR: </b>' + h.rx[m].svr + '% (Odds of SVR are '  + svrOdds + ':1)<br>' +
+                '<b>Trials: </b>'       + h.rx[m].trials + '<br>';
 
         if (typeof h.rx[m].rating !== 'undefined') html += '<b>Rating:</b> <a href="javascript:evidence()">' + h.rx[m].rating + '</a><br>';
 
@@ -947,19 +947,19 @@ function rxGT1AUS (h) {
     h.rx.unshift({ 
         medication:[ drugs.sof, drugs.dac ], 
         duration: 12,
-        svr: svrx.gt1.sof_dac.default.svr,
+        svr:    svrx.gt1.sof_dac.default.svr,
         trials: svrx.gt1.sof_dac.default.trials,
         notes: []
     });
     pushNotes(h.rx[0]);
     if ( h.past == 'PROTEASE' ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = svrx.gt1.sof_dac.fail.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_dac.fail.default.svr;
         h.rx[0].trials = svrx.gt1.sof_dac.fail.default.trials;
         h.rx[0].notes.push('24 weeks recommended for patients who have failed a protease inhibitor');
     }
     if ( h.f4 ) {
-        h.rx[0].svr = svrx.gt1.sof_dac.f4.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_dac.f4.default.svr;
         h.rx[0].trials = svrx.gt1.sof_dac.f4.default.trials;
         if ( h.past != 'PROTEASE' ) {
             h.rx[0].notes.push(redText('Consider adding Ribavirin or extending treatment to 24 weeks'));
@@ -969,14 +969,14 @@ function rxGT1AUS (h) {
     h.rx.unshift({
         medication: [ drugs.viek, drugs.viekx ],
         duration: 12,
-        svr: svrx.gt1.viek.gt1b.default.svr,
+        svr:    svrx.gt1.viek.gt1b.default.svr,
         trials: svrx.gt1.viek.gt1b.default.trials,
         notes: []
     });
     pushNotes(h.rx[0]);
     if ( ! h.genotype.match(/1b/)) {
         addRiba(h,false);
-        h.rx[0].svr = svrx.gt1.viek_riba.gt1a.default.svr;
+        h.rx[0].svr    = svrx.gt1.viek_riba.gt1a.default.svr;
         h.rx[0].trials = svrx.gt1.viek_riba.gt1a.default.trials;
     }
     // harvoni
@@ -984,18 +984,18 @@ function rxGT1AUS (h) {
     h.rx.unshift({
         medication: [ drugs.sof_led ],
         duration: 12,
-        svr: svrx.gt1.sof_led.default.svr,
+        svr:    svrx.gt1.sof_led.default.svr,
         trials: svrx.gt1.sof_led.default.trials,
         notes: []
     });
     pushNotes(h.rx[0]);
     if ( h.genotype.match(/1b/)) {
-        h.rx[0].svr = svrx.gt1.sof_led.gt1b.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials
     }
     if ( h.f4 && h.fail ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = svrx.gt1.sof_led.fail.w24.svr;
+        h.rx[0].svr    = svrx.gt1.sof_led.fail.w24.svr;
         h.rx[0].trials = svrx.gt1.sof_led.fail.w24.trials;
         h.rx[0].notes.push('12 weeks + Ribavirin may be considered');
     }
@@ -1010,7 +1010,7 @@ function rxGT2AUS (h) {
     h.rx.unshift({
         medication: [ drugs.sof ],
         duration: 12,
-        svr: svrx.gt2.sof_riba.default.svr,
+        svr:    svrx.gt2.sof_riba.default.svr,
         trials: svrx.gt2.sof_riba.default.trials,
         notes: []
     });
@@ -1018,11 +1018,11 @@ function rxGT2AUS (h) {
     addRiba(h);
     if ( h.f4  || h.fail ) {
         if ( h.f4 ) {
-            h.rx[0].svr = svrx.gt2.sof_riba.f4.default.svr;
+            h.rx[0].svr    = svrx.gt2.sof_riba.f4.default.svr;
             h.rx[0].trials = svrx.gt2.sof_riba.f4.default.trials;
         } 
         else {
-            h.rx[0].svr = svrx.gt2.sof_riba.fail.default.svr;
+            h.rx[0].svr    = svrx.gt2.sof_riba.fail.default.svr;
             h.rx[0].trials = svrx.gt2.sof_riba.fail.default.trials;
         } 
         h.rx[0].notes.push(redText('SVR rates may be increased by extending duration to 16-24 weeks'));
@@ -1035,35 +1035,35 @@ function rxGT3AUS (h) {
     h.rx.unshift({ 
         medication:[ drugs.sof, drugs.dac ], 
         duration: 12,
-        svr: svrx.gt3.sof_dac.default.svr,
+        svr:    svrx.gt3.sof_dac.default.svr,
         trials: svrx.gt3.sof_dac.default.trials,
         notes: [] 
     });
     pushNotes(h.rx[0]);
     if ( h.f4 ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = svrx.gt3.sof_dac.f4.w24.svr;
+        h.rx[0].svr    = svrx.gt3.sof_dac.f4.w24.svr;
         h.rx[0].trials = svrx.gt3.sof_dac.f4.w24.trials;
     }
     // sof riba
     h.rx.unshift({
         medication: [ drugs.sof ],
         duration: 24,
-        svr: svrx.gt3.sof_riba.default.svr,
+        svr:    svrx.gt3.sof_riba.default.svr,
         trials: svrx.gt3.sof_riba.default.trials,
         notes: []
     });
     addRiba(h);
     if ( h.f4 ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = svrx.gt3.sof_riba.f4.default.svr;
+        h.rx[0].svr    = svrx.gt3.sof_riba.f4.default.svr;
         h.rx[0].trials = svrx.gt3.sof_riba.f4.default.trials;
     }
     // sof peg riba
     h.rx.unshift({
         medication: [ drugs.sof, drugs.peg ],
         duration: 12,
-        svr: svrx.gt3.sof_peg_riba.default.svr,
+        svr:    svrx.gt3.sof_peg_riba.default.svr,
         trials: svrx.gt3.sof_peg_riba.default.trials,
         notes: []
     });
@@ -1131,46 +1131,73 @@ function rxGT1EASL (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.peg ],
         duration: 12,
-        svr: svrx.gt1.sof_peg_riba.default.svr,
+        svr:    svrx.gt1.sof_peg_riba.default.svr,
+        trials: svrx.gt1.sof_peg_riba.default.trials,
         rating: svrx.gt1.sof_peg_riba.rating.easl,
         notes: []
     });
     pushNotes(h.rx[0]);
     addRiba(h);
     if ( h.genotype.match(/1a/) ) {
-        h.rx[0].svr = svrx.gt1.sof_peg_riba.gt1a.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_peg_riba.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_peg_riba.gt1a.default.trials;
     }
     if ( h.genotype.match(/1b/) ) {
-        h.rx[0].svr = svrx.gt1.sof_peg_riba.gt1b.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_peg_riba.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_peg_riba.gt1b.default.trials;
     }
     if ( h.f4 ) {
-        h.rx[0].svr = svrx.gt1.sof_peg_riba.f4.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_peg_riba.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_peg_riba.f4.default.trials;
     }
     if ( h.fail ) {
-        h.rx[0].svr = h.f4 ? svrx.gt1.sof_peg_riba.fail.f4 : svrx.gt1.sof_peg_riba.fail.default.svr;
+        if ( h.f4) {
+            h.rx[0].svr    = svrx.gt1.sof_peg_riba.fail.f4.default.svr;
+            h.rx[0].trials = svrx.gt1.sof_peg_riba.fail.f4.default.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt1.sof_peg_riba.fail.default.svr; 
+            h.rx[0].trials = svrx.gt1.sof_peg_riba.fail.default.trials;  
+        }   
     }
 
     // sim peg riba
     h.rx.unshift({
         medication: [ drugs.sim, drugs.peg ],
         duration: 12,
-        svr: svrx.gt1.sim_peg_riba.default.svr,
+        svr:    svrx.gt1.sim_peg_riba.default.svr,
+        trials: svrx.gt1.sim_peg_riba.default.trials,
         rating: svrx.gt1.sim_peg_riba.rating.easl,
         notes: [ 'HCV RNA levels should be monitored on treatment. Treatment should be stopped if HCV RNA level is ≥25 IU/ml at treatment week 4, week 12 or week 24 (A2)']
     });
     pushNotes(h.rx[0]);
     addRiba(h);
     if ( h.genotype.match(/1a/) ) {
-        h.rx[0].svr = svrx.gt1.sim_peg_riba.gt1a.default.svr;
+        h.rx[0].svr    = svrx.gt1.sim_peg_riba.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.sim_peg_riba.gt1a.default.trials;
     }
     if ( h.genotype.match(/1b/) ) {
-        h.rx[0].svr = svrx.gt1.sim_peg_riba.gt1b.default.svr;
+        h.rx[0].svr    = svrx.gt1.sim_peg_riba.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sim_peg_riba.gt1b.default.trials;
     }
     if ( h.f4 ) {
-        h.rx[0].svr = svrx.gt1.sim_peg_riba.f4.default.svr;
+        h.rx[0].svr    = svrx.gt1.sim_peg_riba.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sim_peg_riba.f4.default.trials;
     }
     if ( h.fail && ! h.f4 ) {
-        h.rx[0].svr = h.genotype.match(/1a/) ? svrx.gt1.sim_peg_riba.fail.gt1a : h.genotype.match(/1b/) ? svrx.gt1.sim_peg_riba.fail.gt1b : svrx.gt1.sim_peg_riba.fail.default.svr;
+        if ( h.genotype.match(/1a/) ) {
+            h.rx[0].svr    = svrx.gt1.sim_peg_riba.fail.gt1a.svr;
+            h.rx[0].trials = svrx.gt1.sim_peg_riba.fail.gt1a.trials;
+        }
+        else if ( h.genotype.match(/1b/) ) {
+            h.rx[0].svr    = svrx.gt1.sim_peg_riba.fail.gt1b.svr;
+            h.rx[0].trials = svrx.gt1.sim_peg_riba.fail.gt1b.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt1.sim_peg_riba.fail.default.svr;
+            h.rx[0].trials = svrx.gt1.sim_peg_riba.fail.default.trials;   
+        }
+
     }
 
     // sof_led
@@ -1178,64 +1205,75 @@ function rxGT1EASL (h) {
         h.rx.unshift({
             medication: [ drugs.sof_led ],
             duration: 12,
-            svr: svrx.gt1.sof_led.default.svr,
+            svr:    svrx.gt1.sof_led.default.svr,
+            trials: svrx.gt1.sof_led.default.trials,
             rating: svrx.gt1.sof_led.rating.easl,
             notes: []
         });
         pushNotes(h.rx[0]);
 
         if ( h.genotype.match(/1a/) ) {
-            h.rx[0].svr = svrx.gt1.sof_led.gt1a.default.svr;
+            h.rx[0].svr    = svrx.gt1.sof_led.gt1a.default.svr;
+            h.rx[0].trials = svrx.gt1.sof_led.gt1a.default.trials;
         }
         if ( h.genotype.match(/1b/) ) {
-            h.rx[0].svr = svrx.gt1.sof_led.gt1b.default.svr;
+            h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
+            h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials;
         }
         if ( h.f4 ) {
             addRiba(h);
             if ( negativePredictorsOfResponse(h) ) {
                 h.rx[0].duration = 24;
                 h.rx[0].rating = svrx.gt1.sof_led.fail.rating.easl;
-                h.rx[0].svr = svrx.gt1.sof_led.fail.w24riba;
+                h.rx[0].svr    = svrx.gt1.sof_led.fail.w24riba.svr;
+                h.rx[0].trials = svrx.gt1.sof_led.fail.w24riba.trials;
             }
             else {
                 h.rx[0].rating = svrx.gt1.sof_led.f4.rating.easl;
-                h.rx[0].svr = svrx.gt1.sof_led.f4.w12riba;
+                h.rx[0].svr    = svrx.gt1.sof_led.f4.w12riba.svr;
+                h.rx[0].trials = svrx.gt1.sof_led.f4.w12riba.trials;
             }
-            h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.w24));
+            h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.w24.svr,svrx.gt1.sof_led.f4.w24.trials));
         }
     }
-
 
     // viek and viek riba
     h.rx.unshift({
         medication: [ drugs.viek ],
         duration: 12,
-        svr: svrx.gt1.viek.default.svr,
+        svr:    svrx.gt1.viek.default.svr,
+        trials: svrx.gt1.viek.default.trials,
         rating: svrx.gt1.viek.rating.easl,
         notes: []
     });
     pushNotes(h.rx[0]);
 
     if ( h.genotype.match(/1b/)) {
-        h.rx[0].svr = svrx.gt1.viek.gt1b.default.svr;
+        h.rx[0].svr    = svrx.gt1.viek.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.viek.gt1b.default.trials;
         if ( h.f4 ) {
             addRiba(h); 
-            h.rx[0].svr = svrx.gt1.viek_riba.f4.gt1b;          
+            h.rx[0].svr    = svrx.gt1.viek_riba.f4.gt1b.svr; 
+            h.rx[0].trials = svrx.gt1.viek_riba.f4.gt1b.trials;           
         }
         else if ( h.fail) {
             addRiba(h); 
-            h.rx[0].svr = svrx.gt1.viek_riba.fail.gt1b;             
+            h.rx[0].svr    = svrx.gt1.viek_riba.fail.gt1b.svr; 
+            h.rx[0].trials = svrx.gt1.viek_riba.fail.gt1b.trials;            
         }
     }
     else {
         addRiba(h);
-        h.rx[0].svr = svrx.gt1.viek_riba.gt1a.default.svr;
+        h.rx[0].svr    = svrx.gt1.viek_riba.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.viek_riba.gt1a.default.trials;
         if ( h.f4 ) {
             h.rx[0].duration = 24;
-            h.rx[0].svr = svrx.gt1.viek_riba.f4.gt1a;
+            h.rx[0].svr    = svrx.gt1.viek_riba.f4.gt1a.svr;
+            h.rx[0].trials = svrx.gt1.viek_riba.f4.gt1a.trials;
         }
         else if ( h.fail) {
-            h.rx[0].svr = svrx.gt1.viek_riba.fail.gt1a;             
+            h.rx[0].svr    = svrx.gt1.viek_riba.fail.gt1a.svr; 
+            h.rx[0].trials = svrx.gt1.viek_riba.fail.gt1a.trials;             
         }
     }
 
@@ -1243,25 +1281,30 @@ function rxGT1EASL (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.sim ],
         duration: 12,
-        svr: svrx.gt1.sof_sim.default.svr,
+        svr:    svrx.gt1.sof_sim.default.svr,
+        trials: svrx.gt1.sof_sim.default.trials,
         rating: svrx.gt1.sof_sim.rating.easl,
         notes: []
     });
     pushNotes(h.rx[0]);
 
     if ( h.genotype.match(/1b/) ) {
-        h.rx[0].svr = svrx.gt1.sof_sim.gt1b.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1b.default.trials;
     }
     else {
-        h.rx[0].svr = svrx.gt1.sof_sim.gt1a.default.svr;        
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1a.default.svr; 
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1a.default.trials;        
     }
     if ( h.fail ) {
-        h.rx[0].svr = svrx.gt1.sof_sim.fail.w12;
+        h.rx[0].svr    = svrx.gt1.sof_sim.fail.w12.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.fail.w12.trials;
     }
     if ( h.f4 ) {
         addRiba(h);
-        h.rx[0].svr = svrx.gt1.sof_sim.f4.w12riba;
-        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_sim.f4.w24));
+        h.rx[0].svr    = svrx.gt1.sof_sim.f4.w12riba.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.f4.w12riba.trials;
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_sim.f4.w24.svr,svrx.gt1.sof_sim.f4.w24.trials));
     }
 
 
@@ -1269,22 +1312,26 @@ function rxGT1EASL (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.dac ],
         duration: 12,
-        svr: svrx.gt1.sof_dac.default.svr,
+        svr:    svrx.gt1.sof_dac.default.svr,
+        trials: svrx.gt1.sof_dac.default.trials,
         rating: svrx.gt1.sof_dac.rating.easl,
         notes: []
     });
     pushNotes(h.rx[0]);
 
     if ( h.genotype.match(/1b/) ) {
-        h.rx[0].svr = svrx.gt1.sof_dac.gt1b.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_dac.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.gt1b.default.trials;
     }
     else {
-        h.rx[0].svr = svrx.gt1.sof_dac.gt1a.default.svr;        
+        h.rx[0].svr    = svrx.gt1.sof_dac.gt1a.default.svr;  
+        h.rx[0].trials = svrx.gt1.sof_dac.gt1a.default.trials;      
     }
     if ( h.f4 ) {
         addRiba(h);
-        h.rx[0].svr = svrx.gt1.sof_dac.f4.default.svr;
-        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.default));
+        h.rx[0].svr    = svrx.gt1.sof_dac.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.f4.default.trials;
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.default.svr,svrx.gt1.sof_led.f4.default.trials));
     }
 
 }
@@ -1295,7 +1342,8 @@ function rxGT2EASL (h) {
     h.rx.unshift({
         medication: [ drugs.sof ],
         duration: 12,
-        svr: svrx.gt2.sof_riba.default.svr,
+        svr:    svrx.gt2.sof_riba.default.svr,
+        trials: svrx.gt2.sof_riba.default.trials,
         rating: svrx.gt2.sof_riba.rating.easl,
         notes: []
     });
@@ -1303,7 +1351,14 @@ function rxGT2EASL (h) {
     addRiba(h);
 
     if ( h.f4 || h.fail ) {
-        h.rx[0].svr = h.f4 ? svrx.gt2.sof_riba.f4.default : svrx.gt2.sof_riba.fail.default.svr;
+        if ( h.f4 ) {
+            h.rx[0].svr    = svrx.gt2.sof_riba.f4.default.svr;
+            h.rx[0].trials = svrx.gt2.sof_riba.f4.default.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt2.sof_riba.fail.default.svr;
+            h.rx[0].trials = svrx.gt2.sof_riba.fail.default.trials;
+        }
         h.rx[0].rating = svrx.gt2.sof_riba.f4.rating.easl;
         h.rx[0].duration = 16;
         h.rx[0].notes.push(greenText('Therapy should be prolonged to 16 or 20 weeks in patients with cirrhosis, especially if they are treatment experienced.'));
@@ -1313,7 +1368,8 @@ function rxGT2EASL (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.peg ],
         duration: 12,
-        svr: svrx.gt2.sof_peg_riba.default.svr,
+        svr:    svrx.gt2.sof_peg_riba.default.svr,
+        trials: svrx.gt2.sof_peg_riba.default.trials,
         rating: svrx.gt2.sof_peg_riba.rating.easl,
         notes: []
     });
@@ -1324,7 +1380,8 @@ function rxGT2EASL (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.dac ],
         duration: 12,
-        svr: svrx.gt2.sof_dac.default.svr,
+        svr:    svrx.gt2.sof_dac.default.svr,
+        trials: svrx.gt2.sof_dac.default.trials,
         rating: svrx.gt2.sof_dac.rating.easl,
         notes: []
     });
@@ -1338,7 +1395,8 @@ function rxGT3EASL (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.peg ],
         duration: 12,
-        svr: svrx.gt3.sof_peg_riba.default.svr,
+        svr:    svrx.gt3.sof_peg_riba.default.svr,
+        trials: svrx.gt3.sof_peg_riba.default.trials,
         rating: svrx.gt3.sof_peg_riba.rating.easl,
         notes: []
     });
@@ -1349,7 +1407,8 @@ function rxGT3EASL (h) {
     h.rx.unshift({
         medication: [ drugs.sof ],
         duration: 24,
-        svr: svrx.gt3.sof_riba.default.svr,
+        svr:    svrx.gt3.sof_riba.default.svr,
+        trials: svrx.gt3.sof_riba.default.trials,
         rating: svrx.gt3.sof_riba.rating.easl,
         notes: []
     });
@@ -1358,7 +1417,19 @@ function rxGT3EASL (h) {
 
     if ( h.f4 || h.fail ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = (h.fail && h.f4) ? svrx.gt3.sof_riba.fail.f4 : h.fail ? svrx.gt3.sof_riba.fail.default : svrx.gt3.sof_riba.f4.default.svr;
+        if ( h.fail && h.f4 ) {
+            h.rx[0].svr    = svrx.gt3.sof_riba.fail.f4.svr;
+            h.rx[0].trials = svrx.gt3.sof_riba.fail.f4.trials;
+        }
+        else if ( h.fail ) {
+            h.rx[0].svr    = svrx.gt3.sof_riba.fail.default.svr;
+            h.rx[0].trials = svrx.gt3.sof_riba.fail.default.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt3.sof_riba.f4.default.svr;
+            h.rx[0].trials = svrx.gt3.sof_riba.f4.default.trials;    
+        }
+        
         h.rx[0].notes.push(redText(' This therapy is suboptimal in treatment-experienced cirrhotic patients and in patients who failed to achieve an SVR after sofosbuvir plus ribavirin treatment, who should be offered an alternative treatment option (B1)'));
     }
 
@@ -1366,7 +1437,8 @@ function rxGT3EASL (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.dac ],
         duration: 12,
-        svr: svrx.gt3.sof_dac.default.svr,
+        svr:    svrx.gt3.sof_dac.default.svr,
+        trials: svrx.gt3.sof_dac.default.trials,
         rating: svrx.gt3.sof_dac.rating.easl,
         notes: []
     });
@@ -1374,7 +1446,14 @@ function rxGT3EASL (h) {
     if ( h.f4 ) {
         addRiba(h,true);
         h.rx[0].duration = 24;
-        h.rx[0].svr = h.fail ? svrx.gt3.sof_dac.fail.riba24 : svrx.gt3.sof_riba.f4.riba24;
+        if ( h.fail) {
+            h.rx[0].svr    = svrx.gt3.sof_dac.fail.riba24.svr;
+            h.rx[0].trials = svrx.gt3.sof_dac.fail.riba24.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt3.sof_riba.f4.riba24.svr;
+            h.rx[0].trials = svrx.gt3.sof_riba.f4.riba24.trials;    
+        }
         h.rx[0].notes.push(greenText('EASL Guidelines 2015 say add Riba for 24 weeks pending clarification  but AASLD 2015 n=468 GT3 F3/F4 series showed inferior performance in all 24 week + Riba groups. For 24 week groups WITHOUT Riba F4 SVR was 90% and treatment-experienced 86% http://www.clinicaloptions.com/Hepatitis/Conference%20Coverage/AASLD%202015/Highlights/Capsules/206.aspx'))
     }
 
@@ -1433,13 +1512,16 @@ function rxGT1AASLDnaive1a (h) {
     h.rx.unshift({ 
         medication:[ drugs.sof, drugs.dac ], 
         duration: 12,
-        svr: svrx.gt1.sof_dac.gt1a.default.svr, 
+        svr:    svrx.gt1.sof_dac.gt1a.default.svr, 
+        trials: svrx.gt1.sof_dac.gt1a.default.trials,
         rating: svrx.gt1.sof_dac.gt1a.rating,
-        notes: drugs.dac.notes.slice()
+        notes: []
     });
+    pushNotes(h.rx[0]);
     if ( h.f4 ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = svrx.gt1.sof_dac.gt1a.f4.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_dac.gt1a.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.gt1a.f4.default.trials;
         h.rx[0].rating = svrx.gt1.sof_dac.gt1a.f4.rating;
         addRiba(h,true);
 
@@ -1449,36 +1531,44 @@ function rxGT1AASLDnaive1a (h) {
         h.rx.unshift({
             medication: [ drugs.sof_led ],
             duration: 12,
-            svr: svrx.gt1.sof_led.gt1a.default.svr,
+            svr:    svrx.gt1.sof_led.gt1a.default.svr,
+            trials: svrx.gt1.sof_led.gt1a.default.trials,
             rating: svrx.gt1.sof_led.gt1a.rating,           
-            notes: drugs.sof_led.notes.slice()
+            notes: []
         });
+        pushNotes(h.rx[0]);
     }
     // viekira pak
     h.rx.unshift({
         medication: [ drugs.viek, drugs.viekx ],
         duration: 12,
-        svr: svrx.gt1.viek.gt1a.default.svr,
+        svr:    svrx.gt1.viek.gt1a.default.svr,
+        trials: svrx.gt1.viek.gt1a.default.trials,
         rating: svrx.gt1.viek.gt1a.rating,
-        notes: drugs.viek.notes.slice()
+        notes: []
     });
+    pushNotes(h.rx[0]);
     addRiba(h);    
     if ( h.f4 ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = svrx.gt1.viek.gt1a.f4.default.svr;
+        h.rx[0].svr    = svrx.gt1.viek.gt1a.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.viek.gt1a.f4.default.trials;
         h.rx[0].rating = svrx.gt1.viek.gt1a.f4.rating;
     }
     // sofosbuvir simeprevir
     h.rx.unshift({ 
         medication:[ drugs.sof, drugs.sim ], 
         duration: 12,
-        svr: svrx.gt1.sof_sim.gt1a.default.svr,
+        svr:    svrx.gt1.sof_sim.gt1a.default.svr,
+        trials: svrx.gt1.sof_sim.gt1a.default.trials,
         rating: svrx.gt1.sof_sim.gt1a.rating, 
-        notes: drugs.sim.notes.slice()
+        notes: []
     });
+    pushNotes(h.rx[0]);
     if ( h.f4 ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = svrx.gt1.sof_sim.gt1a.f4.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1a.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1a.f4.default.trials;
         h.rx[0].rating = svrx.gt1.sof_sim.gt1a.f4.rating;    
         addRiba(h,true);
     }
@@ -1491,13 +1581,16 @@ function rxGT1AASLDnaive1b (h) {
     h.rx.unshift({ 
         medication:[ drugs.sof, drugs.dac ], 
         duration: 12,
-        svr: svrx.gt1.sof_dac.gt1b.default.svr, 
+        svr:    svrx.gt1.sof_dac.gt1b.default.svr, 
+        trials: svrx.gt1.sof_dac.gt1b.default.trials,
         rating: svrx.gt1.sof_dac.gt1b.rating,
-        notes: drugs.dac.notes.slice()
+        notes: []
     });
+    pushNotes(h.rx[0]);
     if ( h.f4 ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = svrx.gt1.sof_dac.gt1b.f4.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_dac.gt1b.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.gt1b.f4.default.trials;
         h.rx[0].rating = svrx.gt1.sof_dac.gt1b.f4.rating;
         addRiba(h,true);
 
@@ -1507,31 +1600,38 @@ function rxGT1AASLDnaive1b (h) {
         h.rx.unshift({
             medication: [ drugs.sof_led ],
             duration: 12,
-            svr: svrx.gt1.sof_led.gt1b.default.svr,
+            svr:    svrx.gt1.sof_led.gt1b.default.svr,
+            trials: svrx.gt1.sof_led.gt1b.default.trials,
             rating: svrx.gt1.sof_led.gt1b.rating,           
-            notes: drugs.sof_led.notes.slice()
+            notes: []
         });
+        pushNotes(h.rx[0]);
     }
     // viekira pak
     h.rx.unshift({
         medication: [ drugs.viek, drugs.viekx ],
         duration: 12,
-        svr: svrx.gt1.viek.gt1b.default.svr,
+        svr:    svrx.gt1.viek.gt1b.default.svr,
+        trials: svrx.gt1.viek.gt1b.default.trials,
         rating: svrx.gt1.viek.gt1b.rating,
-        notes: drugs.viek.notes.slice()
+        notes: []
     });
+    pushNotes(h.rx[0]);
 
     // sofosbuvir simeprevir
     h.rx.unshift({ 
         medication:[ drugs.sof, drugs.sim ], 
         duration: 12,
-        svr: svrx.gt1.sof_sim.gt1b.default.svr,
+        svr:    svrx.gt1.sof_sim.gt1b.default.svr,
+        trials: svrx.gt1.sof_sim.gt1b.default.trials,
         rating: svrx.gt1.sof_sim.gt1b.rating, 
-        notes: drugs.sim.notes.slice()
+        notes: []
     });
+    pushNotes(h.rx[0]);
     if ( h.f4 ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr = svrx.gt1.sof_sim.gt1b.f4.default.svr;
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1b.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1b.f4.default.trials;
         h.rx[0].rating = svrx.gt1.sof_sim.gt1b.f4.rating;    
         addRiba(h,true);
     }
@@ -1636,9 +1736,9 @@ function negativePredictorsOfResponse (h) {
     }
 }
 
-function noRiba24weeks(svr) {
+function noRiba24weeks(svr,trials) {
 
-    return greenText('Can use 24 weeks without Ribavrin in patients with contraindications or poor tolerance to ribavirin. Expected SVR: ' + svr +'%')
+    return greenText('Can use 24 weeks without Ribavrin in patients with contraindications or poor tolerance to ribavirin. Expected SVR: ' + svr +'% Trials: ' + trials)
 }
 
 function addRiba(h,optional) {
