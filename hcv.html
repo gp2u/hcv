@@ -10,17 +10,23 @@
 <style>
 
 p,td,input,div,select { font-family: sans-serif; font-size:1em;}
-td { padding: 2px 0;}
+td { padding: 2px 0; line-height: 1.5em; vertical-align: top;}
+td label { white-space: nowrap;}
 label { float:right; padding-right:3px;}
 button:focus {outline:0;}
 
 .narrow { width:40px; font-size:0.8em;}
 .notes { font-size:0.9em;}
+.hidden { display: none; }
 .red { color:red;}
 .green { color:green;}
 .title { font-weight: 700; padding-top:0.5em;}
 .grading { font-size:0.9em;}
 .nowrap { white-space: nowrap;}
+.fl { float: left;}
+.cl { clear: left;}
+.clear { clear: both;}
+.tool-title{ float:left;padding:0.2em 2em 0.5em 0; font-weight: 700;}
 
 @media print {
     #print { display:none;}
@@ -275,7 +281,7 @@ var svrx = {
             gt1b: {
                 default: {
                     svr: 100,
-                    trials: 'ALLY-2 naive 100% (12/12) experienced 100% (11/11)'
+                    trials: 'ALLY-2 naive 100% (12/12) experienced 100% (11/11) Aggregate 100% (23/23)'
                 },
                 rating: {
                     aasld: ratings.classILevelB,
@@ -285,7 +291,7 @@ var svrx = {
             f4: {
                 default: {
                     svr: 91,
-                    trials: 'ALLY-2 naive 89% (8/9) experienced 92% (12/13) Aggregate 90.9 (20/22)'
+                    trials: 'ALLY-2 naive 89% (8/9) experienced 92% (12/13) Aggregate 90.9% (20/22)'
                 },
                 rating: {
                     aasld: undefined,
@@ -851,7 +857,7 @@ function renderDemographics(h) {
 function renderRx(h) {
 
     h.rx = [];
-    getRxOptions(h); //alert(JSON.stringify(h));
+    getRxOptions(h);
     var html = '';
     // display by descending SVR
     h.rx.sort(function(a, b){return b.svr-a.svr});
@@ -884,11 +890,75 @@ function renderRx(h) {
         }
         html += '</ol></div>';
     }
-    html += '<div id="print"><hr><input type="button" value="Print" onclick="window.print()"></div>'
+    html += '<div id="print"><hr><input type="button" value="Print" onclick="window.print()"> <input type="button" value="Show Trial Data" onclick="showTrialData()"> </div>'
+    html += '<div id="data" class="notes hidden">' + getTrialData(h) + '</div>';
     $("#rx").html(html);
 }
 
+function showTrialData () {
+    $('#data').show();
+    var offset = $('#data').offset();
+    $('html,body').animate({scrollTop: offset.top});
+}
 
+function getTrialData(h) {
+   
+    var gt = '';
+    var re = /([1-6])/;
+    if ( h.genotype.match(/1/) ) gt = 'gt1';
+    if ( h.genotype.match(/2/) ) gt = 'gt2';   
+    if ( h.genotype.match(/3/) ) gt = 'gt3';
+    if ( h.genotype.match(/4/) ) gt = 'gt4';
+    if ( h.genotype.match(/5/) ) gt = 'gt5';
+    if ( h.genotype.match(/6/) ) gt = 'gt6';
+    if (gt == '' ) return '';
+    var match = re.exec(h.genotype);
+    var html = '<h2 class="data-heading">Trials Data For Genotype ' + match[1] + '<h2><hr>'
+    for (var key in svrx[gt]) {
+        var meds = key;
+        meds = meds.replace(/_/g,' ');
+        meds = meds.replace('sof','Sofosbuvir');
+        meds = meds.replace('led','Ledipasvir');
+        meds = meds.replace('dac','Daclatasvir');
+        meds = meds.replace('sim','Simeprevir');
+        meds = meds.replace('peg','Peg Interferon');
+        meds = meds.replace('viek','Paritaprevir Ritonavir Ombitasvir');
+        meds = meds.replace('riba','Ribavirin');
+        html += "<h3>" + meds + "</h3>" + data2string(svrx[gt][key]);
+    } 
+    html = html.replace(/<br><br>/g,'<br>');
+    html = html.replace(/<br>,/g,'<br>');
+    html = html.replace(/,/g,', ');
+    return html; 
+}
+
+function data2string(obj) {
+
+    if ( typeof(obj) != "object" || obj === null) {
+        return String(obj);
+    } else {
+        var n, v, data = [];
+        for (n in obj) {
+            if ( n == 'rating') continue;
+            v = obj[n];
+            if (obj.hasOwnProperty(n)) {
+                if (typeof(v) == "object" && v !== null){
+                    v = data2string(v);  // recurse
+                }
+                if ( n == 'f4' || n == 'fail' ) {
+                    data.push( '<b>' + n.toUpperCase() + '</b><br>' + String(v) );
+                }
+                else if ( n == 'svr' ) {
+                    data.push( n + ': ' + String(v) + '%' );
+                }
+                else {
+                    data.push( n + ': ' + String(v) );
+                }
+            }
+        }
+        return String(data) + "<br>";
+    }
+}
 
 function getRxOptions(h) {
 
@@ -2029,9 +2099,9 @@ function evidence() {
 </script>
 
 <div id="dataInput">
-<div style="float:left;padding:4px 40px 0 0"><b>HCV Decision Support Tool</b></div>
-<div style="float:left;" id="google_translate_element"></div>
-<div style="clear:both"></div>
+<div class="tool-title">HCV Decision Support Tool</div>
+<div class="fl" id="google_translate_element"></div>
+<div class="clear"></div>
 <hr>
 <script type="text/javascript">
 function googleTranslateElementInit() {
@@ -2126,13 +2196,12 @@ function googleTranslateElementInit() {
         <label>Ribavirin<label>
       </td>
       <td>
-        <input type="checkbox" id="riba" onChange="toggleRiba()"> (Check this box to include ribavirin options)</td>
+        <input type="checkbox" id="riba" onChange="toggleRiba()"> (Check this box to open dose calculator)</td>
     </tr>
     <tr>
-      <td> </td>
-      <td>
-        <fieldset id="ribavirin" style="display:none">
-          <legend>Ribavirin Only</legend>
+      <td colspan="2">
+        <fieldset id="ribavirin" class="hidden">
+          <legend>Ribavirin Dose Calculator</legend>
           <table>
             <tr>
               <td>
@@ -2147,16 +2216,16 @@ function googleTranslateElementInit() {
                 <label>Weight<label>
               </td>
               <td>
-                <div id="weightFull" style="display:none">
-                <input type="radio" name="weight" value="&lt;66"> &lt; 66kg
-                <input type="radio" name="weight" value="66-80"> 66-80kg
-                <input type="radio" name="weight" value="81-105"> 81-105kg
-                <input type="radio" name="weight" value="&gt;105"> &gt; 105kg
+                <div id="weightFull" class="hidden">
+                <span class="nowrap"><input type="radio" name="weight" value="&lt;66"> &lt; 66kg</span>
+                <span class="nowrap"><input type="radio" name="weight" value="66-80"> 66-80kg</span>
+                <span class="nowrap"><input type="radio" name="weight" value="81-105"> 81-105kg</span>
+                <span class="nowrap"><input type="radio" name="weight" value="&gt;105"> &gt; 105kg</span>
                 </div>
-                <div id="weight75" style="clear:left">
-                <hr id="sfwHR" style="display:none">
-                <input type="radio" name="weight" value="&lt;75"> &lt; 75kg
-                <input type="radio" name="weight" value="&gt;75"> &gt; 75kg
+                <div id="weight75" class="cl">
+                <hr id="sfwHR" class="hidden">
+                <span class="nowrap"><input type="radio" name="weight" value="&lt;75"> &lt; 75kg</span>
+                <span class="nowrap"><input type="radio" name="weight" value="&gt;75"> &gt; 75kg</span>
                 <a id="sfw" href="javascript:showFullWeightOptions()">Show full weight options</a>
                 </div>
               </td>
@@ -2187,7 +2256,7 @@ function googleTranslateElementInit() {
 
 <p>Please make your selections and press the calculate button</p>
 
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+<p class="notes">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -2201,7 +2270,7 @@ SOFTWARE.</p>
 
 <div id="error"></div>
 
-<div id="gradingAASLD" class="grading" style="display:none;">
+<div id="gradingAASLD" class="grading hidden">
 
 <div class="title">Class I</div>
 <div class="description">Conditions for which there is evidence and/or general agreement that a given diagnostic evaluation, procedure, or treatment is beneficial, useful, and effective</div>
@@ -2233,7 +2302,7 @@ SOFTWARE.</p>
 
 </div>
 
-<div id="gradingEASL" class="grading" style="display:none;">
+<div id="gradingEASL" class="grading hidden">
 
 <div class="title">Evidence Quality</div>
 
