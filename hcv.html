@@ -27,6 +27,20 @@ button:focus {outline:0;}
 .cl { clear: left;}
 .clear { clear: both;}
 .tool-title{ float:left;padding:0.2em 2em 0.5em 0; font-weight: 700;}
+.ui-dialog { position: fixed; padding: 0em; width: 300px; overflow: hidden; }
+input[type=button] {
+    color:#ffffff;
+    background-color:#499ff9;
+    padding: 0.3em 1.5em;
+    border: 1px solid #3e94f7;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    outline: none;
+}
+input[type=button]:hover {
+    background-color: #3e94f7;
+}
 
 @media print {
     #print { display:none;}
@@ -107,7 +121,8 @@ var drugs = {
         ],
         route: 'PO',
         freq: 'daily',
-        notes: ['The dose of daclatasvir may need to be increased or decreased when used concomitantly with cytochrome P450 3A/4 inducers and inhibitors, respectively.'
+        notes: ['The dose of daclatasvir may need to be increased or decreased when used concomitantly with cytochrome P450 3A/4 inducers and inhibitors, respectively.',
+            'Grapefruit, Paw Paw, Star Fruit and Pomegranate are potent inhibitors of CYP3A4 and should be avoided.'
         ]
     },
     riba: {
@@ -377,7 +392,7 @@ var svrx = {
             }
         },
 
-        viek: {
+        viek_viekx: {
             default: {
                 svr: 90,
                 trials: 'PEARL-IV 90% (185/205)'
@@ -415,7 +430,7 @@ var svrx = {
             }
         },
 
-        viek_riba: {
+        viek_viekx_riba: {
             default: {
                 svr: 96,
                 trials: 'SAPHIRE-I 95% (307/322)// PEARL-IV 97% (97/100) Aggregate 95.7% (404/422)'
@@ -555,7 +570,7 @@ var svrx = {
             f4: {
                 default: {
                     svr: 60,
-                    trials: 'QUEST-1 and QUEST-2 (29/48)'
+                    trials: 'QUEST-1 and QUEST-2  60% (29/48)'
                 }
             },
             fail: {
@@ -751,13 +766,186 @@ var svrx = {
     },
     
     gt4: {
+        sof_peg_riba: {
+            default: {
+                svr: 90,
+                trials: 'NEUTRINO 96% (27/28)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            },
+            f4: {
+                default: {
+                    svr: 90,
+                    trials: 'No Trials'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 90,
+                    trials: 'No Trials'
+                }
+            }
+        },
+        sim_peg_riba: {
+            default: {
+                svr: 83,
+                trials: 'RESTORE 83% (29/35)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+ 
+            fail: {
+                default: {
+                    svr: 86,
+                    trials: 'RESTORE 86% (19/22)'
+                }
+            }
+        },
+        sof_led: {
+            default: {
+                svr: 97,
+                trials: 'NIAID SYNERGY 100% (13/13) http://www.natap.org/2015/EASL/EASL_80.htm 96% (21/22) Aggregate 97.1% (34/35)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+            f4: {
+                default: {
+                    svr: 100,
+                    trials: 'NIAID SYNERGY 100% (7/7) http://www.natap.org/2015/EASL/EASL_80.htm 100% (10/10)'
+                },
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.B1
+                }
+            },
+            fail: {
+                default: {
+                    svr: 91,
+                    trials: 'http://www.natap.org/2015/EASL/EASL_80.htm 91% (20/221'
+                }
+            }
+        },
+        viek_riba: {
+            default: {
+                svr: 100,
+                trials: 'PEARL-I 100% (42/42)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+            f4: {
+                default: {
+                    svr: 0,
+                    trials: 'No Trials'
+                },
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.B1
+                }
+            },
+            fail: {
+                default: {
+                    svr: 100,
+                    trials: 'PEARL-I 100% (49/49)'
+                }
+            }
+        },
+        sof_sim: {
+            default: {
+                svr: 89,
+                trials: 'No Trials - Based on GT1 extrapolation'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B2
+            }
+        },
+        sof_dac: {
+            default: {
+                svr: 97,
+                trials: 'No Trials - Based on GT1 extrapolation'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B2
+            },
+        }
 
     },
     gt5: {
-
+        sof_peg_riba: {
+            default: {
+                svr: 100,
+                trials: 'NEUTRINO 100% (1/1)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            }
+        },
+        sof_led: {
+            default: {
+                svr: 95,
+                trials: 'http://www.natap.org/2015/EASL/EASL_80.htm 95% (20/21)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            }
+        },
+        sof_dac: {
+            default: {
+                svr: 97,
+                trials: 'No Trials - Based on GT1 extrapolation'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            },
+        }
     },
     gt6: {
-
+        sof_peg_riba: {
+            default: {
+                svr: 100,
+                trials: 'NEUTRINO 100% GT6 (6/6)'
+            },
+            w24: {
+                svr: 100,
+                trials: 'ATOMIC 100% GT6 (5/5)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            }
+        },
+        sof_led: {
+            default: {
+                svr: 96,
+                trials: 'NCT01826981 96% GT6 (24/25)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            }
+        },
+        sof_dac: {
+            default: {
+                svr: 97,
+                trials: 'No Trials - Based on GT1 extrapolation'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            }
+        }
     }
 }
 
@@ -832,6 +1020,8 @@ function doCalculation (h) {
 
     renderDemographics(h);
     renderRx(h);
+    var offset = $('#resultsHR').offset();
+    $('html,body').animate({scrollTop: offset.top});
 }
 
 function renderDemographics(h) {
@@ -898,7 +1088,7 @@ function renderRx(h) {
 function showTrialData () {
     $('#data').show();
     var offset = $('#data').offset();
-    $('html,body').animate({scrollTop: offset.top});
+    $('html,body').animate({scrollTop: offset.top-10});
 }
 
 function getTrialData(h) {
@@ -921,10 +1111,11 @@ function getTrialData(h) {
         meds = meds.replace('led','Ledipasvir');
         meds = meds.replace('dac','Daclatasvir');
         meds = meds.replace('sim','Simeprevir');
-        meds = meds.replace('peg','Peg Interferon');
+        meds = meds.replace('peg','PegIFN-&alpha;');
         meds = meds.replace('viek','Paritaprevir Ritonavir Ombitasvir');
+        meds = meds.replace('viekx','Dasabuvir');
         meds = meds.replace('riba','Ribavirin');
-        html += "<h3>" + meds + "</h3>" + data2string(svrx[gt][key]);
+        html += "<h3>" + meds + "</h3><b>NAIVE</b><br>" + data2string(svrx[gt][key]);
     } 
     html = html.replace(/<br><br>/g,'<br>');
     html = html.replace(/<br>,/g,'<br>');
@@ -1035,22 +1226,23 @@ function rxGT1AUS (h) {
             h.rx[0].notes.push(redText('Consider adding Ribavirin or extending treatment to 24 weeks'));
         }
     }
+
     // viekira pak
     h.rx.unshift({
         medication: [ drugs.viek, drugs.viekx ],
         duration: 12,
-        svr:    svrx.gt1.viek.gt1b.default.svr,
-        trials: svrx.gt1.viek.gt1b.default.trials,
+        svr:    svrx.gt1.viek_viekx.gt1b.default.svr,
+        trials: svrx.gt1.viek_viekx.gt1b.default.trials,
         notes: []
     });
     pushNotes(h.rx[0]);
     if ( ! h.genotype.match(/1b/)) {
         addRiba(h,false);
-        h.rx[0].svr    = svrx.gt1.viek_riba.gt1a.default.svr;
-        h.rx[0].trials = svrx.gt1.viek_riba.gt1a.default.trials;
+        h.rx[0].svr    = svrx.gt1.viek_viekx_riba.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.viek_viekx_riba.gt1a.default.trials;
     }
+
     // harvoni
-    if (hasHarvoniCI(h)) return;
     h.rx.unshift({
         medication: [ drugs.sof_led ],
         duration: 12,
@@ -1058,6 +1250,7 @@ function rxGT1AUS (h) {
         trials: svrx.gt1.sof_led.default.trials,
         notes: []
     });
+    hasHarvoniCI(h);
     pushNotes(h.rx[0]);
     if ( h.genotype.match(/1b/)) {
         h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
@@ -1115,6 +1308,7 @@ function rxGT3AUS (h) {
         h.rx[0].svr    = svrx.gt3.sof_dac.f4.w24.svr;
         h.rx[0].trials = svrx.gt3.sof_dac.f4.w24.trials;
     }
+
     // sof riba
     h.rx.unshift({
         medication: [ drugs.sof ],
@@ -1123,12 +1317,14 @@ function rxGT3AUS (h) {
         trials: svrx.gt3.sof_riba.default.trials,
         notes: []
     });
+    pushNotes(h.rx[0]);
     addRiba(h);
     if ( h.f4 ) {
         h.rx[0].duration = 24;
         h.rx[0].svr    = svrx.gt3.sof_riba.f4.default.svr;
         h.rx[0].trials = svrx.gt3.sof_riba.f4.default.trials;
     }
+
     // sof peg riba
     h.rx.unshift({
         medication: [ drugs.sof, drugs.peg ],
@@ -1137,6 +1333,7 @@ function rxGT3AUS (h) {
         trials: svrx.gt3.sof_peg_riba.default.trials,
         notes: []
     });
+    pushNotes(h.rx[0]);
     addRiba(h);    
 }
 
@@ -1146,17 +1343,22 @@ function rxGT4AUS (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.peg ],
         duration: 12,
-        svr: 90,
+        svr:    svrx.gt4.sof_peg_riba.default.svr,
+        trials: svrx.gt4.sof_peg_riba.default.trials,
         notes: []
     });
-    addRiba(h); 
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
     // sim peg riba
     h.rx.unshift({
         medication: [ drugs.sim, drugs.peg ],
         duration: 48,
-        svr: 85,
+        svr:    svrx.gt4.sim_peg_riba.default.svr,
+        trials: svrx.gt4.sim_peg_riba.default.trials,
         notes: [ 'Duration 24-48 weeks']
     });
+    pushNotes(h.rx[0]);
     addRiba(h);
 }
 
@@ -1166,9 +1368,11 @@ function rxGT5AUS (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.peg ],
         duration: 12,
-        svr: 90,
+        svr:    svrx.gt5.sof_peg_riba.default.svr,
+        trials: svrx.gt5.sof_peg_riba.default.trials,
         notes: []
     });
+    pushNotes(h.rx[0]);
     addRiba(h); 
 }
 
@@ -1178,9 +1382,11 @@ function rxGT6AUS (h) {
     h.rx.unshift({
         medication: [ drugs.sof, drugs.peg ],
         duration: 12,
-        svr: 90,
+        svr:    svrx.gt6.sof_peg_riba.default.svr,
+        trials: svrx.gt6.sof_peg_riba.default.trials,
         notes: []
     });
+    pushNotes(h.rx[0]);
     addRiba(h);    
 }
 
@@ -1271,79 +1477,78 @@ function rxGT1EASL (h) {
     }
 
     // sof_led
-    if ( ! hasHarvoniCI(h)) {
-        h.rx.unshift({
-            medication: [ drugs.sof_led ],
-            duration: 12,
-            svr:    svrx.gt1.sof_led.default.svr,
-            trials: svrx.gt1.sof_led.default.trials,
-            rating: svrx.gt1.sof_led.rating.easl,
-            notes: []
-        });
-        pushNotes(h.rx[0]);
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt1.sof_led.default.svr,
+        trials: svrx.gt1.sof_led.default.trials,
+        rating: svrx.gt1.sof_led.rating.easl,
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
 
-        if ( h.genotype.match(/1a/) ) {
-            h.rx[0].svr    = svrx.gt1.sof_led.gt1a.default.svr;
-            h.rx[0].trials = svrx.gt1.sof_led.gt1a.default.trials;
+    if ( h.genotype.match(/1a/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_led.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_led.gt1a.default.trials;
+    }
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials;
+    }
+    if ( h.f4 ) {
+        addRiba(h);
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+            h.rx[0].rating = svrx.gt1.sof_led.fail.rating.easl;
+            h.rx[0].svr    = svrx.gt1.sof_led.fail.w24riba.svr;
+            h.rx[0].trials = svrx.gt1.sof_led.fail.w24riba.trials;
         }
-        if ( h.genotype.match(/1b/) ) {
-            h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
-            h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials;
+        else {
+            h.rx[0].rating = svrx.gt1.sof_led.f4.rating.easl;
+            h.rx[0].svr    = svrx.gt1.sof_led.f4.w12riba.svr;
+            h.rx[0].trials = svrx.gt1.sof_led.f4.w12riba.trials;
         }
-        if ( h.f4 ) {
-            addRiba(h);
-            if ( negativePredictorsOfResponse(h) ) {
-                h.rx[0].duration = 24;
-                h.rx[0].rating = svrx.gt1.sof_led.fail.rating.easl;
-                h.rx[0].svr    = svrx.gt1.sof_led.fail.w24riba.svr;
-                h.rx[0].trials = svrx.gt1.sof_led.fail.w24riba.trials;
-            }
-            else {
-                h.rx[0].rating = svrx.gt1.sof_led.f4.rating.easl;
-                h.rx[0].svr    = svrx.gt1.sof_led.f4.w12riba.svr;
-                h.rx[0].trials = svrx.gt1.sof_led.f4.w12riba.trials;
-            }
-            h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.w24.svr,svrx.gt1.sof_led.f4.w24.trials));
-        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.w24.svr,svrx.gt1.sof_led.f4.w24.trials));
     }
 
     // viek and viek riba
     h.rx.unshift({
-        medication: [ drugs.viek ],
+        medication: [ drugs.viek, drugs.viekx ],
         duration: 12,
-        svr:    svrx.gt1.viek.default.svr,
-        trials: svrx.gt1.viek.default.trials,
-        rating: svrx.gt1.viek.rating.easl,
+        svr:    svrx.gt1.viek_viekx.default.svr,
+        trials: svrx.gt1.viek_viekx.default.trials,
+        rating: svrx.gt1.viek_viekx.rating.easl,
         notes: []
     });
     pushNotes(h.rx[0]);
 
     if ( h.genotype.match(/1b/)) {
-        h.rx[0].svr    = svrx.gt1.viek.gt1b.default.svr;
-        h.rx[0].trials = svrx.gt1.viek.gt1b.default.trials;
+        h.rx[0].svr    = svrx.gt1.viek_viekx.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.viek_viekx.gt1b.default.trials;
         if ( h.f4 ) {
             addRiba(h); 
-            h.rx[0].svr    = svrx.gt1.viek_riba.f4.gt1b.svr; 
-            h.rx[0].trials = svrx.gt1.viek_riba.f4.gt1b.trials;           
+            h.rx[0].svr    = svrx.gt1.viek_viekx_riba.f4.gt1b.svr; 
+            h.rx[0].trials = svrx.gt1.viek_viekx_riba.f4.gt1b.trials;           
         }
         else if ( h.fail) {
             addRiba(h); 
-            h.rx[0].svr    = svrx.gt1.viek_riba.fail.gt1b.svr; 
-            h.rx[0].trials = svrx.gt1.viek_riba.fail.gt1b.trials;            
+            h.rx[0].svr    = svrx.gt1.viek_viekx_riba.fail.gt1b.svr; 
+            h.rx[0].trials = svrx.gt1.viek_viekx_riba.fail.gt1b.trials;            
         }
     }
     else {
         addRiba(h);
-        h.rx[0].svr    = svrx.gt1.viek_riba.gt1a.default.svr;
-        h.rx[0].trials = svrx.gt1.viek_riba.gt1a.default.trials;
+        h.rx[0].svr    = svrx.gt1.viek_viekx_riba.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.viek_viekx_riba.gt1a.default.trials;
         if ( h.f4 ) {
             h.rx[0].duration = 24;
-            h.rx[0].svr    = svrx.gt1.viek_riba.f4.gt1a.svr;
-            h.rx[0].trials = svrx.gt1.viek_riba.f4.gt1a.trials;
+            h.rx[0].svr    = svrx.gt1.viek_viekx_riba.f4.gt1a.svr;
+            h.rx[0].trials = svrx.gt1.viek_viekx_riba.f4.gt1a.trials;
         }
         else if ( h.fail) {
-            h.rx[0].svr    = svrx.gt1.viek_riba.fail.gt1a.svr; 
-            h.rx[0].trials = svrx.gt1.viek_riba.fail.gt1a.trials;             
+            h.rx[0].svr    = svrx.gt1.viek_viekx_riba.fail.gt1a.svr; 
+            h.rx[0].trials = svrx.gt1.viek_viekx_riba.fail.gt1a.trials;             
         }
     }
 
@@ -1376,7 +1581,6 @@ function rxGT1EASL (h) {
         h.rx[0].trials = svrx.gt1.sof_sim.f4.w12riba.trials;
         h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_sim.f4.w24.svr,svrx.gt1.sof_sim.f4.w24.trials));
     }
-
 
     // sof dac
     h.rx.unshift({
@@ -1459,6 +1663,7 @@ function rxGT2EASL (h) {
     pushNotes(greenText('In AI444040 96% (25/26) patients achieved SVR12 after 24 weeks treatment.'));
 
 }
+
 function rxGT3EASL (h) {
 
     // sof peg riba
@@ -1528,14 +1733,221 @@ function rxGT3EASL (h) {
     }
 
 }
+
 function rxGT4EASL (h) {
-    blockMessage('EASL GT4 not yet implemented',2000);
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt4.sof_peg_riba.default.svr,
+        trials: svrx.gt4.sof_peg_riba.default.trials,
+        rating: svrx.gt4.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sim peg riba
+    h.rx.unshift({
+        medication: [ drugs.sim, drugs.peg ],
+        duration: 24,
+        svr:    svrx.gt4.sim_peg_riba.default.svr,
+        trials: svrx.gt4.sim_peg_riba.default.trials,
+        rating: svrx.gt4.sim_peg_riba.rating.easl,
+        notes: [ redText('Simeprevir is administered for the first 12 weeks only') ]
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 48;
+        h.rx[0].svr    = svrx.gt4.sim_peg_riba.fail.default.svr;
+        h.rx[0].trials = svrx.gt4.sim_peg_riba.fail.default.trials;
+        h.rx[0].notes.push(greenText('HCV RNA levels should be monitored on treatment. Treatment should be stopped if HCV RNA level is ≥25 IU/ml at treatment week 4, week 12 or week 24'))
+    }
+
+    // sof led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt4.sof_led.default.svr,
+        trials: svrx.gt4.sof_led.default.trials,
+        rating: svrx.gt4.sof_led.rating.easl,
+        notes: []
+    });
+    hasHarvoniCI(h)
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].rating = svrx.gt4.sof_led.f4.rating.easl;
+        h.rx[0].svr    = svrx.gt4.sof_led.f4.default.svr;
+        h.rx[0].trials = svrx.gt4.sof_led.f4.default.trials;
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+            h.rx[0].svr = svrx.gt1.sof_led.fail.w24riba.svr;
+            h.rx[0].trials = 'No Trials - based on GT1 and ION-3';
+        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.fail.w24.svr,'No Trials - based on GT1 extrapolation'));
+    }
+    
+    // viek riba
+    h.rx.unshift({
+        medication: [ drugs.viek ],
+        duration: 12,
+        svr:    svrx.gt4.viek_riba.default.svr,
+        trials: svrx.gt4.viek_riba.default.trials,
+        rating: svrx.gt4.viek_riba.rating.easl,
+        notes: []
+    });
+    addRiba(h);
+    pushNotes(h.rx[0]);
+    if ( h.fail) {
+        h.rx[0].svr    = svrx.gt4.viek_riba.fail.default.svr;
+        h.rx[0].trials = svrx.gt4.viek_riba.fail.default.trials;
+    }
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt4.viek_riba.f4.default.svr;
+        h.rx[0].trials = svrx.gt4.viek_riba.f4.default.trials;
+        h.rx[0].rating = svrx.gt4.viek_riba.f4.rating.easl;
+    }
+
+    // sof sim
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.sim ],
+        duration: 12,
+        svr:    svrx.gt4.sof_sim.default.svr,
+        trials: svrx.gt4.sof_sim.default.trials,
+        rating: svrx.gt4.sof_sim.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_sim.fail.w24.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt4.sof_dac.default.svr,
+        trials: svrx.gt4.sof_dac.default.trials,
+        rating: svrx.gt4.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_dac.f4.default.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
 }
+
 function rxGT5EASL (h) {
-    blockMessage('EASL GT5 not yet implemented',2000);
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt5.sof_peg_riba.default.svr,
+        trials: svrx.gt5.sof_peg_riba.default.trials,
+        rating: svrx.gt5.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sof led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt5.sof_led.default.svr,
+        trials: svrx.gt5.sof_led.default.trials,
+        rating: svrx.gt5.sof_led.rating.easl,
+        notes: []
+    });
+    hasHarvoniCI(h)
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+            h.rx[0].svr = svrx.gt1.sof_led.fail.w24riba.svr;
+            h.rx[0].trials = 'No Trials - based on GT1 and ION-3';
+        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.fail.w24.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt5.sof_dac.default.svr,
+        trials: svrx.gt5.sof_dac.default.trials,
+        rating: svrx.gt5.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_dac.f4.default.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
 }
 function rxGT6EASL (h) {
-    blockMessage('EASL GT6 not yet implemented',2000);
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt6.sof_peg_riba.default.svr,
+        trials: svrx.gt6.sof_peg_riba.default.trials,
+        rating: svrx.gt6.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sof led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt6.sof_led.default.svr,
+        trials: svrx.gt6.sof_led.default.trials,
+        rating: svrx.gt6.sof_led.rating.easl,
+        notes: []
+    });
+    hasHarvoniCI(h)
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+            h.rx[0].svr = svrx.gt1.sof_led.fail.w24riba.svr;
+            h.rx[0].trials = 'No Trials - based on GT1 and ION-3';
+        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.fail.w24.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt6.sof_dac.default.svr,
+        trials: svrx.gt6.sof_dac.default.trials,
+        rating: svrx.gt6.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_dac.f4.default.svr,'No Trials - based on GT1 extrapolation'));
+    }
+    
 }
 
 /*
@@ -1597,17 +2009,17 @@ function rxGT1AASLDnaive1a (h) {
 
     }
     // harvoni
-    if ( ! hasHarvoniCI(h)) {
-        h.rx.unshift({
-            medication: [ drugs.sof_led ],
-            duration: 12,
-            svr:    svrx.gt1.sof_led.gt1a.default.svr,
-            trials: svrx.gt1.sof_led.gt1a.default.trials,
-            rating: svrx.gt1.sof_led.gt1a.rating,           
-            notes: []
-        });
-        pushNotes(h.rx[0]);
-    }
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt1.sof_led.gt1a.default.svr,
+        trials: svrx.gt1.sof_led.gt1a.default.trials,
+        rating: svrx.gt1.sof_led.gt1a.rating,           
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+
     // viekira pak
     h.rx.unshift({
         medication: [ drugs.viek, drugs.viekx ],
@@ -1666,17 +2078,16 @@ function rxGT1AASLDnaive1b (h) {
 
     }
     // harvoni
-    if ( ! hasHarvoniCI(h)) {
-        h.rx.unshift({
-            medication: [ drugs.sof_led ],
-            duration: 12,
-            svr:    svrx.gt1.sof_led.gt1b.default.svr,
-            trials: svrx.gt1.sof_led.gt1b.default.trials,
-            rating: svrx.gt1.sof_led.gt1b.rating,           
-            notes: []
-        });
-        pushNotes(h.rx[0]);
-    }
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt1.sof_led.gt1b.default.svr,
+        trials: svrx.gt1.sof_led.gt1b.default.trials,
+        rating: svrx.gt1.sof_led.gt1b.rating,           
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
     // viekira pak
     h.rx.unshift({
         medication: [ drugs.viek, drugs.viekx ],
@@ -1789,7 +2200,7 @@ function pushNotes (rx) {
 function hasHarvoniCI (h) {
 
     if (h.harvoniCI) {
-        var msg = redText('Sofosbuvir/Ledipasvir not being recommended due to Harvoni CI(s)');
+        var msg = redText('Sofosbuvir/Ledipasvir not recommended due to Harvoni CI(s)');
         blockMessage(msg);
         h.rx[0].notes.push(msg);
         return true;
@@ -2121,11 +2532,7 @@ function googleTranslateElementInit() {
           <option>1a</option>
           <option>1b</option>
           <option>2</option>
-          <option>2a</option>
-          <option>2b</option>
           <option>3</option>
-          <option>3a</option>
-          <option>3b</option>
           <option>4</option>
           <option>5</option>
           <option>6</option>
@@ -2249,7 +2656,7 @@ function googleTranslateElementInit() {
       </td>
     </tr>
   </table>
-  <hr>
+  <hr id="resultsHR">
 </div>
 
 <div id="demographics">
