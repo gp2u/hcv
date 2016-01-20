@@ -949,6 +949,11 @@ var svrx = {
     }
 }
 
+/**
+ * Main entry point.
+ * Parse and validate form values.
+ * Call the actual calculations.
+ */
 function supportDecision () {
 
     $("#demographics").html('');
@@ -1016,6 +1021,11 @@ function supportDecision () {
     setTimeout(function(){doCalculation(h)},450);
 }
 
+/**
+ * Call render commands.
+ * Change the UI to show results.
+ * @param {Object} h
+ */
 function doCalculation (h) {
 
     renderDemographics(h);
@@ -1024,6 +1034,10 @@ function doCalculation (h) {
     $('html,body').animate({scrollTop: offset.top});
 }
 
+/**
+ * Render demographics data.
+ * @param {Object} h
+ */
 function renderDemographics(h) {
 
     var demographics = 'Guidelines:     ' + h.guidelines + '\n' +
@@ -1044,6 +1058,10 @@ function renderDemographics(h) {
     $("#demographics").html(demographics);
 } 
 
+/**
+ * Render medical prescription.
+ * @param {Object} h
+ */
 function renderRx(h) {
 
     h.rx = [];
@@ -1085,12 +1103,19 @@ function renderRx(h) {
     $("#rx").html(html);
 }
 
+/**
+ * Change the UI to show results.
+ */
 function showTrialData () {
     $('#data').show();
     var offset = $('#data').offset();
     $('html,body').animate({scrollTop: offset.top-10});
 }
 
+/**
+ * Get trial data.
+ * @param {Object} h
+ */
 function getTrialData(h) {
    
     var gt = '';
@@ -1123,6 +1148,10 @@ function getTrialData(h) {
     return html; 
 }
 
+/**
+ * Stringify data object.
+ * @param {Object} obj
+ */
 function data2string(obj) {
 
     if ( typeof(obj) != "object" || obj === null) {
@@ -1151,6 +1180,10 @@ function data2string(obj) {
     }
 }
 
+/**
+ * Get medical prescription options.
+ * @param {Object} h
+ */
 function getRxOptions(h) {
 
     if (h.guidelines == 'AUS') {
@@ -1202,6 +1235,10 @@ function getRxOptions(h) {
 *
 */
 
+/**
+ * Medical prescription options for HCV genotype 1 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
 function rxGT1AUS (h) {
 
     // sof dac
@@ -1267,6 +1304,10 @@ function rxGT1AUS (h) {
     }
 }
 
+/**
+ * Medical prescription options for HCV genotype 2 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
 function rxGT2AUS (h) {
 
     // sof riba
@@ -1292,6 +1333,10 @@ function rxGT2AUS (h) {
     }
 }
 
+/**
+ * Medical prescription options for HCV genotype 3 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
 function rxGT3AUS (h) {
 
     // sof dac
@@ -1337,6 +1382,10 @@ function rxGT3AUS (h) {
     addRiba(h);    
 }
 
+/**
+ * Medical prescription options for HCV genotype 4 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
 function rxGT4AUS (h) {
 
     // sof peg riba
@@ -1362,6 +1411,10 @@ function rxGT4AUS (h) {
     addRiba(h);
 }
 
+/**
+ * Medical prescription options for HCV genotype 5 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
 function rxGT5AUS (h) {
 
     // sof peg riba
@@ -1376,6 +1429,10 @@ function rxGT5AUS (h) {
     addRiba(h); 
 }
 
+/**
+ * Medical prescription options for HCV genotype 6 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
 function rxGT6AUS (h) {
 
     // sof peg riba
@@ -1401,6 +1458,10 @@ function rxGT6AUS (h) {
 */
 
 
+/**
+ * Medical prescription options for HCV genotype 1 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT1EASL (h) {
 
     // sof peg riba
@@ -1610,6 +1671,10 @@ function rxGT1EASL (h) {
 
 }
 
+/**
+ * Medical prescription options for HCV genotype 2 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT2EASL (h) {
 
     // sof riba
@@ -1664,6 +1729,10 @@ function rxGT2EASL (h) {
 
 }
 
+/**
+ * Medical prescription options for HCV genotype 3 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT3EASL (h) {
 
     // sof peg riba
@@ -1734,6 +1803,10 @@ function rxGT3EASL (h) {
 
 }
 
+/**
+ * Medical prescription options for HCV genotype 4 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT4EASL (h) {
 
     // sof peg riba
@@ -1847,6 +1920,10 @@ function rxGT4EASL (h) {
 
 }
 
+/**
+ * Medical prescription options for HCV genotype 5 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT5EASL (h) {
 
     // sof peg riba
@@ -1898,6 +1975,10 @@ function rxGT5EASL (h) {
     }
 
 }
+/**
+ * Medical prescription options for HCV genotype 6 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT6EASL (h) {
 
     // sof peg riba
@@ -1960,6 +2041,10 @@ function rxGT6EASL (h) {
 *
 */
 
+/**
+ * Medical prescription options for HCV genotype 1 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT1AASLD (h) {
     if ( h.fail ) {
         if ( h.past == 'PEGRIBA' ) {
@@ -1988,6 +2073,10 @@ function rxGT1AASLD (h) {
     }
 }
 
+/**
+ * Medical prescription options for HCV genotype 1a according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT1AASLDnaive1a (h) {
 
     // sofosbuvir daclatasvir
@@ -2057,6 +2146,10 @@ function rxGT1AASLDnaive1a (h) {
 
 }
 
+/**
+ * Medical prescription options for HCV genotype 1b according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT1AASLDnaive1b (h) {
 
     // sofosbuvir daclatasvir
@@ -2119,37 +2212,85 @@ function rxGT1AASLDnaive1b (h) {
 
 }
 
+/**
+ * Medical prescription options for HCV genotype 1
+ * with previous failed Interfaron + Riba treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT1AASLDpegriba (h) {
     //alert(arguments.callee.name)
     blockMessage('AASLD xGT1AASLDpegriba not yet implemented',2000);
 }
 
+/**
+ * Medical prescription options for HCV genotype 1
+ * with previous failed Sofosbuvir + Ribavirin +/- Interferon treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT1AASLDsofriba (h) {
     alert(arguments.callee.name)
     blockMessage('AASLD rxGT1AASLDsofriba not yet implemented',2000);
 }
 
+/**
+ * Medical prescription options for HCV genotype 1
+ * with previous failed Protease + Interferon + Riba treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT1AASLDprotease (h) {
     alert(arguments.callee.name)
     blockMessage('AASLD rxGT1AASLDprotease not yet implemented',2000);
 }
 
+/**
+ * Medical prescription options for HCV genotype 1
+ * with previous failed Sofosbuvir + NS5A (Led or Dac) or Viekira Pak treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT1AASLDsofNS5A (h) {
     blockMessage('AASLD GT1AASLDsofNS5A not yet implemented',2000);
 }
 
+/**
+ * Medical prescription options for HCV genotype 2 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT2AASLD (h) {
     blockMessage('AASLD GT2 not yet implemented',2000);
 }
+
+/**
+ * Medical prescription options for HCV genotype 3 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT3AASLD (h) {
     blockMessage('AASLD GT3 not yet implemented',2000);
 }
+
+/**
+ * Medical prescription options for HCV genotype 4 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT4AASLD (h) {
     blockMessage('AASLD GT4 not yet implemented',2000);
 }
+
+/**
+ * Medical prescription options for HCV genotype 5 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT5AASLD (h) {
     blockMessage('AASLD GT5 not yet implemented',2000);
 }
+
+/**
+ * Medical prescription options for HCV genotype 6 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
 function rxGT6AASLD (h) {
     blockMessage('AASLD GT6 not yet implemented',2000);
 }
@@ -2164,30 +2305,58 @@ function rxGT6AASLD (h) {
 *
 */
 
+/**
+ * Medical prescription options for HCV genotype 1 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
 function rxGT1 (h) {
     blockMessage('PEG Riba Free GT1 not yet implemented',2000);
 }
 
+/**
+ * Medical prescription options for HCV genotype 2 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
 function rxGT2 (h) {
     blockMessage('PEG Riba Free GT2 not yet implemented',2000);
 }
 
+/**
+ * Medical prescription options for HCV genotype 3 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
 function rxGT3 (h) {
     blockMessage('PEG Riba Free GT3 not yet implemented',2000);
 }
 
+/**
+ * Medical prescription options for HCV genotype 4 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
 function rxGT4 (h) {
     blockMessage('PEG Riba Free GT4 not yet implemented',2000);
 }
 
+/**
+ * Medical prescription options for HCV genotype 5 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
 function rxGT5 (h) {
     blockMessage('PEG Riba Free GT5 not yet implemented',2000);
 }
 
+/**
+ * Medical prescription options for HCV genotype 6 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
 function rxGT6 (h) {
     blockMessage('PEG Riba Free GT6 not yet implemented',2000);
 }
 
+/**
+ * Append medication notes to medical prescription notes.
+ * @param {Object} h
+ */
 function pushNotes (rx) {
 
     for ( var m in rx.medication ) {
@@ -2197,6 +2366,11 @@ function pushNotes (rx) {
     }
 }
 
+/**
+ * Special case for Harvoni CI.
+ * @param {Object} h
+ * @returns {Boolean}
+ */
 function hasHarvoniCI (h) {
 
     if (h.harvoniCI) {
@@ -2208,6 +2382,11 @@ function hasHarvoniCI (h) {
     return false;
 }
 
+/**
+ * Check for negative predictors of response.
+ * @param {Object} h
+ * @returns {Boolean}
+ */
 function negativePredictorsOfResponse (h) {
     if ( h.f4 && (h.fail || h.platelets < 75) ) {
         return true;
@@ -2217,11 +2396,22 @@ function negativePredictorsOfResponse (h) {
     }
 }
 
+/**
+ * Return message about 24 weeks without Ribavirin.
+ * @param {Number} svr
+ * @param {String} trials
+ * @returns {String}
+ */
 function noRiba24weeks(svr,trials) {
 
     return greenText('Can use 24 weeks without Ribavrin in patients with contraindications or poor tolerance to ribavirin. Expected SVR: ' + svr +'% Trials: ' + trials)
 }
 
+/**
+ * Append notes about using Ribaverin.
+ * @param {Object} h
+ * @param {Boolena} optional
+ */
 function addRiba(h,optional) {
 
     if (! h.riba) {
@@ -2249,6 +2439,9 @@ function addRiba(h,optional) {
     h.rx[0].notes.push('Ribavirin (Ibavyr 400mg &amp; 600mg Tablets): ' + calcRibaTabs(ribaDose));
 }
 
+/**
+ * Set weight to calculate Ribaverin dose.
+ */
 function setRibaWeight() {
 
     var guidelines= $("input[name=guidelines]:checked").val();
@@ -2264,6 +2457,9 @@ function setRibaWeight() {
     }
 }
 
+/**
+ * Show full weight options UI.
+ */
 function showFullWeightOptions() {
 
     $('#weightFull').show()
@@ -2271,6 +2467,10 @@ function showFullWeightOptions() {
     $('#sfwHR').show();
 }
 
+/**
+ * Calculate Ribaverin dose.
+ * @param {Object} h
+ */
 function calcRibaDose (h) {
 
     if ( ! h.riba ) return 0;
@@ -2298,7 +2498,12 @@ function calcRibaDose (h) {
     return 100 * Math.round(dose/100);
 }
 
-// standard Riba formulation is 200 mg capsules
+/**
+ * Calculate the amount of Ribaverin caplules to take.
+ * Standard Ribaverin formulation is 200 mg capsules.
+ * @param {Number} dose
+ * @returns {String}
+ */
 function calcRibaCaps (dose) {
 
     if ( dose >=1400 ) {
@@ -2328,7 +2533,12 @@ function calcRibaCaps (dose) {
     return redText('No Riba dose!');
 }
 
-// Ibavyr tablets come in 400mg and 600mg scored
+/**
+ * Calculate the amount of Ribaverin caplules to take.
+ * Ibavyr tablets come in 400mg and 600mg scored
+ * @param {Number} dose
+ * @returns {String}
+ */
 function calcRibaTabs (dose) {
 
     if ( dose >=1400 ) {
@@ -2358,6 +2568,9 @@ function calcRibaTabs (dose) {
     return redText('No Riba dose!');
 }
 
+/**
+ * Set fibrosis value based on kilopascal parameter.
+ */
 function setFibrosisFromKPa () {
 
     var kpa = parseFloat($("#kpa").val());
@@ -2387,8 +2600,10 @@ function setFibrosisFromKPa () {
  
 }
 
-// Reference http://www.mayomedicallaboratories.com/test-updates/attachment.php?id=34741
-
+/**
+ * Set fibrosis value based on Hepascore parameter.
+ * @see {@link http://www.mayomedicallaboratories.com/test-updates/attachment.php?id=34741}
+ */
 function setFibrosisHepascore () {
 
     var hepascore = parseFloat($("#hepascore").val());
@@ -2423,6 +2638,9 @@ function setFibrosisHepascore () {
     }
 }
 
+/*
+ * Set fibrosis value based on ELF Score parameter.
+ */
 function setFibrosisELFscore () {
 
     var ELFscore = parseFloat($("#ELFscore").val());
@@ -2445,11 +2663,19 @@ function setFibrosisELFscore () {
     }
 }
 
+/**
+ * Toggle Ribavirin dose calculator.
+ */
 function toggleRiba () {
 
     $("#riba:checked").length == 1 ? $("#ribavirin").slideDown() : $("#ribavirin").hide(400);
 }
 
+/**
+ * Display message in a modal window.
+ * @param {String} message
+ * @param {Number} timeout
+ */
 function blockMessage(message,timeout) {
 
     if (timeout === undefined) timeout = 3000;
@@ -2469,16 +2695,31 @@ function blockMessage(message,timeout) {
     });
 }
 
+/**
+ * Set text color to red.
+ * @param {String} text
+ * @returns {String}
+ */
 function redText(text) {
 
     return '<span class="red">' + text + '</span>';
 }
 
+/**
+ * Set text color to green.
+ * @param {String} text
+ * @returns {String}
+ */
 function greenText(text) {
 
     return '<span class="green">' + text + '</span>';
 }
 
+/**
+ * Show error dialog modal window.
+ * @param {String} text
+ * @param {String|Element} e
+ */
 function errorDialog(text,e) {
 
     $('#error').html(redText(text)).dialog({
@@ -2488,6 +2729,9 @@ function errorDialog(text,e) {
     })
 };
 
+/**
+ * Show grading system information.
+ */
 function evidence() {
     if ($("input[name=guidelines]:checked").val() == 'AASLD') {
         $("#gradingAASLD").dialog({
