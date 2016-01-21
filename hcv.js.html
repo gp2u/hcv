@@ -1,0 +1,2749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: hcv.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: hcv.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var version = '1.3';
+
+var ratings = {
+    classILevelA   : 'Class I, Level A',
+    classILevelB   : 'Class I, Level B',
+    classIILevelA  : 'Class II, Level A',
+    classIILevelB  : 'Class II, Level B',
+    classIIaLevelA : 'Class IIa, Level A',
+    classIIaLevelB : 'Class IIa, Level B',
+    classIIbLevelA : 'Class IIb, Level A',
+    classIIbLevelB : 'Class IIb, Level B',
+    A1: 'A1 - High Quality Evidence, Strong Recommendation',
+    A2: 'A2 - High Quality Evidence, Weak Recommendation',
+    B1: 'B1 - Moderate Quality Evidence, Strong Recommendation',
+    B2: 'B2 - Moderate Quality Evidence, Weak Recommendation',
+    C1: 'C1 - Low Quality Evidence, Strong Recommendation',
+    C2: 'C2 - Low Quality Evidence, Weak Recommendation'
+}
+
+var drugs = {
+    sof: {
+        generic: 'Sofosbuvir',
+        dose: ['400mg'],
+        brand: [
+        'Solvadi',
+        'Hopetavir (Incepta)',
+        'Sofovir (Hetero)',
+        'Hepcinat (Natco)',
+        'Soforal (Beacon)',
+        'Hepcvir (Cipla)',
+        'Sofovir-C (Beximco)',
+        'Hepcee (Julphar)',
+        'MyHep (Mylan)'
+        ],
+        route: 'PO',
+        freq: 'daily',
+        notes: []
+   },
+    sof_led: {
+        generic: 'Sofosbuvir/Ledipasvir',
+        dose: ['400mg/90mg'],
+        brand: [
+        'Harvoni',
+        'Twinvir (Incepta)',
+        'Hepcvir-L (Cipla)',
+        'Ledifos (Hetero)',
+        'Hepcinat LP (Natco)',
+        'Lesovir-C (Beximco)',
+        'Combicee (Julphar)',
+        'MyHep LVIR (Mylan)'
+        ],
+        route: 'PO',
+        freq: 'daily',
+        notes: ['In the ION-3 trial, patients without cirrhosis and a baseline HCV RNA levels less than 6 million IU/mL had similar relapse rates when treated with 8 weeks versus 12 weeks. Decreasing the length of the regimen to 8 weeks should be done with caution.'
+        ]
+    },
+    dac: {
+        generic: 'Daclatasvir',
+        dose: ['60mg','30mg'],
+        brand: [
+        'Daklinza',
+        'Virodacla (Incepta)',
+        'Daclahep (Hetero)',
+        'Daclavir (Beacon)',
+        'Daclacee (Julphar)'
+        ],
+        route: 'PO',
+        freq: 'daily',
+        notes: ['The dose of daclatasvir may need to be increased or decreased when used concomitantly with cytochrome P450 3A/4 inducers and inhibitors, respectively.',
+            'Grapefruit, Paw Paw, Star Fruit and Pomegranate are potent inhibitors of CYP3A4 and should be avoided.'
+        ]
+    },
+    riba: {
+        generic: 'Ribavirin',
+        dose: ['200mg','400mg','600mg'],
+        brand: [
+        'Ibavyr',
+        'Celbarin (Incepta)',
+        'Ribacee (Julphar)'
+        ],
+        route: 'PO',
+        freq: 'daily divided into 2 doses',
+        notes: []
+    },
+    viek: {
+        generic: 'Paritaprevir/Ritonavir/Ombitasvir',
+        dose: [ '75mg/50mg/12.5mg' ],
+        brand: [ 'Viekira Pak' ],
+        route: 'PO',
+        freq: 'two tablets once daily',
+        notes: ['Contraindicated in patients with Child-Turcotte-Pugh class B or C hepatic impairment.']
+    },
+    viekx: {
+        generic: 'Dasabuvir',
+        dose: [ '250mg' ],
+        brand: [ 'Viekira Pak' ],
+        route: 'PO',
+        freq: 'twice daily',
+        notes: []
+    },
+    peg: {
+        generic: 'PegInterferon-&amp;alpha;2a',
+        dose: [ '180&amp;mu;g'],
+        brand: [ 'Pegasys' ],
+        route: 'SC',
+        freq: 'weekly',
+        notes: [
+            'Treatment of chronic hepatitis C with PegIFN-a and ribavirin containing regimens is absolutely contra-indicated in the following patient groups: uncontrolled depression, psychosis or epilepsy; pregnant women or couples unwilling to comply with adequate contraception; severe concurrent medical diseases and comorbidities including retinal disease, autoimmune thyroid disease; decompensated liver disease.',
+            'The use of PegIFN-a is not recommended in patients with absolute neutrophil counts &amp;lt;1500/mm3 and/or platelet counts &amp;lt;90,000/mm3.'
+        ]
+    },
+    peg2b: {
+        generic: 'PegInterferon-&amp;alpha;2b',
+        dose: [ '1.5&amp;mu;g/kg'],
+        brand: [ 'PegIntron' ],
+        route: 'SC',
+        freq: 'weekly',
+        note: []
+    },
+    sim: {
+        generic: 'Simeprevir',
+        dose: [ '150mg' ],
+        brand: [ 'Olysio' ],
+        route: 'PO',
+        freq: 'daily',
+        notes: ['Not recommended in patients who have a detectable Q80K substitution in the NS3 protease sequence at baseline, as assessed by population sequencing (direct sequence analysis)']
+    }
+};
+
+var svrx = {
+    
+    gt1: {
+        
+        sof_led: {
+            default: {
+                svr: 97,
+                trials: 'ION-1 98% (142/145) ION-3 96% 96% (165/172) Aggregate 96.8% (307/317)'
+            },
+            rating: {
+                aasld: ratings.classILevelA,
+                easl: ratings.A1
+            },
+            gt1a: {
+                default: {
+                    svr: 97,
+                    trials: 'ION-1 98% (142/145) ION-3 96% 96% (165/172) Aggregate 96.8% (307/317)'
+                },
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: ratings.A1                                   
+                }
+            },
+            gt1b: {
+                default: {
+                    svr: 99,
+                    trials: 'ION-1 100% (67/67) ION-3 98% (43/44) Aggregate 99.1% (110/111)'
+                },
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: ratings.A1                                  
+                }
+            },
+            f4: { 
+                default: {
+                    svr: 97,
+                    trials: 'ION-1 97% (32/33)'
+                },
+                rating: {
+                    aasld: ratings.classILevelB,
+                    easl: ratings.B1                                   
+                },
+                w12: {
+                    svr: 97,
+                    trials: 'ION-1 97% (32/33)'
+                },
+                w12riba: {
+                    svr: 100,
+                    trials: 'ION-1 100% (33/33)'
+                },
+                w24: {
+                    svr: 97,
+                    trials: 'ION-1 97% (31/32)'
+                },
+                w24riba: {
+                    svr: 100,
+                    trials: 'ION-1 100% (36/36)'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 94,
+                    trials: 'ION-3 94% (102/109)'
+                },
+                rating: {
+                    aasld: ratings.classILevelB,
+                    easl: ratings.B2
+                },
+                w12: {
+                    svr: 94,
+                    trials: 'ION-3 94% (102/109)'
+                }, 
+                w12riba: { 
+                    svr: 96,
+                    trials: 'ION-3 96% (107/111)'
+                }, 
+                w24: {
+                    svr: 99,
+                    trials: 'ION-3 99% (108/109)'
+                },
+                w24riba: {
+                    svr: 99,
+                    trials: 'ION-3 99% (110/111)'
+                }
+            }
+
+        },
+
+        sof_dac: {
+            default: {
+                svr: 97,
+                trials: 'ALLY-2  naive (80/83) experienced (43/44) Aggregate 96.8% (123/127)'
+            },
+            w24: {
+                svr: 100,
+                trials: 'AI444040 (24wk) 100% (44/44)'
+            },
+            rating: {
+                aasld: ratings.classILevelB,
+                easl: ratings.A1
+            },
+            gt1a: {
+                default: {
+                    svr: 96,
+                    trials: 'ALLY-2 naive 96% (68/71) experienced 97% (32/33) Aggregate 96.2% (100/104)'
+                },
+                rating: {
+                    aasld: ratings.classILevelB,
+                    easl: undefined
+                }
+            },
+            gt1b: {
+                default: {
+                    svr: 100,
+                    trials: 'ALLY-2 naive 100% (12/12) experienced 100% (11/11) Aggregate 100% (23/23)'
+                },
+                rating: {
+                    aasld: ratings.classILevelB,
+                    easl: undefined
+                }
+            },
+            f4: {
+                default: {
+                    svr: 91,
+                    trials: 'ALLY-2 naive 89% (8/9) experienced 92% (12/13) Aggregate 90.9% (20/22)'
+                },
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.B1
+                },
+            },
+            fail: {
+                default: {
+                    svr: 98,
+                    trials: 'ALLY-2 98% (43/44)'
+                }
+            }
+        },
+
+        sof_sim: {
+            default: {
+                svr: 89,
+                trials: 'TARGET 2.0 89% (269/303) TRIO 90% (263/292) Aggregate 89.4% (532/595)'
+            },
+            rating: {
+                aasld: ratings.classILevelA,
+                easl: ratings.A1
+            },
+            gt1a: {
+                default: {
+                    svr: 91,
+                    trials: 'TARGET 2.0 89% (47/53) TRIO 92% (79/86) Aggregate 90.6% (126/139)'
+                },
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: ratings.A1
+                }
+            },
+            gt1b: {
+                default: {
+                    svr: 96,
+                    trials: 'TARGET 2.0 95% (88/93) TRIO 98% (39/40) Aggregate 95.5% (127/133)'
+                },
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: ratings.A1
+                }
+            },
+            f4: {
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.B1
+                },
+                w12: {
+                    svr: 84,
+                    trials: 'COSMOS 93% (13/14) TRIO 83% (110/133) Aggregate 83.7% (123/147)'
+                },
+                w12riba: {
+                    svr: 93,
+                    trials: 'COSMOS 96% (25/27)'
+                },
+                w24: {
+                    svr: 100,
+                    trials: 'COSMOS 100% (16/16)'
+                },
+                w24riba: {
+                    svr: 93,
+                    trials: 'COSMOS 79% (28/30)'
+                }               
+            },
+            fail: {
+                w12: {
+                    svr: 88,
+                    trials: 'COSMOS 93% (13/14) TRIO 87% (137/157) Aggregate 87.7% (150/171)'
+                },
+                w12riba: {
+                    svr: 96,
+                    trials: 'COSMOS 96% (26/27)'
+                },
+                w24: {
+                    svr: 93,
+                    trials: 'COSMOS 93% (14/15)'
+                },
+                w24riba: {
+                    svr: 79,
+                    trials: 'COSMOS 79% (19/24)'
+                }
+            }
+        },
+
+        viek_viekx: {
+            default: {
+                svr: 90,
+                trials: 'PEARL-IV 90% (185/205)'
+            },
+            rating: {
+                aasld: ratings.classILevelA,
+                easl: ratings.A1
+            },
+            gt1a: {
+                default: {
+                    svr: 90,
+                    trials: 'PEARL-IV 90% (185/205)'
+                },
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: ratings.A1
+                }
+            },
+            gt1b: {
+                default: {
+                    svr: 99,
+                    trials: 'PEARL-III 99% (207/209)'
+                },
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: ratings.A1
+                }
+            },
+            f4: {},
+            fail: {
+                gt1b: {
+                    svr: 100,
+                    trials: 'PEARL-II 100% (91/91)'
+                }
+            }
+        },
+
+        viek_viekx_riba: {
+            default: {
+                svr: 96,
+                trials: 'SAPHIRE-I 95% (307/322)// PEARL-IV 97% (97/100) Aggregate 95.7% (404/422)'
+            },
+            rating: {
+                aasld: ratings.classILevelA,
+                easl: ratings.A1
+            },
+            gt1a: {
+                default: {
+                    svr: 96,
+                    trials: 'SAPHIRE-I 95% (307/322)// PEARL-IV 97% (97/100) Aggregate 95.7% (404/422)'
+                },
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: ratings.A1
+                }
+            },
+            gt1b: {
+                default: {
+                    svr: 99,
+                    trials: 'SAPHIRE-I 98% (148/151) PEARL-III 99% (209/210) Aggregate 98.9% (357/361)'
+                },
+                rating: {
+                    aasld: ratings.classILevelA,
+                    easl: ratings.A1
+                }
+            },
+            f4: {
+                w12: {
+                    svr: 92,
+                    trials: 'TURQUOISE-II 92% (191/208)'
+                },
+                w24: {
+                    svr: 96,
+                    trials: 'TURQUOISE-II 96% (165/172)'
+                },
+                gt1a: {
+                    svr: 92,
+                    trials: 'TURQUOISE-II 92% (239/261)'
+                },
+                gt1b: {
+                    svr: 99,
+                    trials: 'TURQUOISE-II 99% (118/119)'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 96,
+                    trials: 'SAPHIRE-II 96% (166/173)'
+                },
+                gt1a: {
+                    svr: 96,
+                    trials: 'SAPHIRE-II 96% (166/173)'
+                },
+                gt1b: {
+                    svr: 97,
+                    trials: 'SAPHIRE-II 97% (119/123) PEARL-II 97% (85/88)'
+                }
+            }
+        },
+        sof_peg_riba: {
+            default: {
+                svr: 87,
+                trials: 'NEUTRINO 89% (259/291) TARGET2.0 90% (114/127) TRIO 81% (112/138) Aggregate  87.2% (485/556)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+            gt1a: {
+                default: {
+                    svr: 92,
+                    trials: 'NEUTRINO 92% (206/225)'
+                },
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.A1
+                }
+            },
+            gt1b: {
+                default: {
+                    svr: 82,
+                    trials: 'NEUTRINO 82% (54/66)'
+                },
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.A1
+                }
+            },
+            f4: {
+                default: {
+                    svr: 77,
+                    trials: 'NEUTRINO 80% (43/54) TARGET2.0 70% (26/37) TRIO 81% (25/31) Aggregate 77.0% (94/122)'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 77,
+                    trials: 'TRIO 77% (30/39)'
+                }, 
+                f4: {
+                    svr: 62,
+                    trials: 'TRIO 62% (53/85)'
+                }
+            }
+        },
+        sim_peg_riba: {
+            default: {
+                svr: 80,
+                trials: 'QUEST-1 80% (210/264) QUEST-2 81 (209/257) Aggregate  80.4% (419/521)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+            gt1a: {
+                default: {
+                    svr: 84,
+                    trials: 'QUEST-1 and QUEST-2 84% (138/165)'
+                },
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.A1
+                }
+            },
+            gt1b: {
+                default: {
+                    svr: 85,
+                    trials: 'QUEST-1 and QUEST-2 85% (228/267)'
+                },
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.A1
+                }
+            },
+            f4: {
+                default: {
+                    svr: 60,
+                    trials: 'QUEST-1 and QUEST-2  60% (29/48)'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 70,
+                    trials: 'QUEST 70% (78/111)'
+                },
+                gt1a: {
+                    svr: 70,
+                    trials: 'QUEST 70% (78/111)'
+                },
+                gt1b: {
+                    svr: 86,
+                    trials: 'QUEST 86% (128/149)'
+                }
+            }
+        }
+    },
+    
+    
+    gt2: {
+        sof_riba: {
+            default: {
+                svr: 95,
+                trials: 'FISSION 97% (58/59) FUSION (12wk) 96% (25/26) POSITRON 92% (85/92) VALENCE 97% (29/30) Aggregate 95.1% (197/207)'
+            },
+            w16: {
+                svr: 100,
+                trials: 'FUSION (16wk) 100% (23/23)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+            f4: {
+                default: {
+                    svr: 83,
+                    trials: 'FISSION 91% (10/11) FUSION (12wk) 60% (6/10) POSITRON 94% (16/17) VALENCE 100% (2/2) Aggregate 82.9% (34/41)'
+                },
+                w16: {
+                    svr: 78,
+                    trials: 'FUSION (16wk) 78% (7/9)'
+                },
+                rating: {
+                    easl: ratings.B1,
+                    aasld: undefined
+                }
+            },
+            fail: {
+                default: {
+                    svr: 92,
+                    trials: 'FUSION 92% (24/26) VALENCE 91% (30/33) Aggregate 91.5% (54/59)'
+                },
+                w16: {
+                    svr: 96,
+                    trials: 'FUSION 96% (23/24)'
+                },
+                f4: {
+                    svr: 88,
+                    trials: 'VALENCE (7/8)'
+                }
+            }
+        },
+        sof_peg_riba: {
+            default: {
+                svr: 96,
+                trials: 'LONESTAR 96% (22/23)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            },
+        },
+        sof_dac: {
+            default: {
+                svr: 92,
+                trials: 'UN-NAMED http://www.ncbi.nlm.nih.gov/pubmed/24428467 92% (24/26) AI444040 (24wk) 96% (25/26)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            }
+        }
+    },
+    
+    
+    gt3: {
+        sof_peg_riba: {
+            default: {
+                svr: 90,
+                trials: 'UN-NAMED 90% (9/10) UN-NAMED 91% (20/22) BOSON 95% (117/123) Aggregate 94.1% (146/155)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            },
+            f4: {
+                default: {
+                    svr: 88,
+                    trials: 'BOSON 88% (51/58)'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 91,
+                    trials: 'BOSON 91% (79/87)'
+                }
+            }
+        },
+        sof_riba: {
+            default: {
+                svr: 88,
+                trials: 'BOSON 24 weeks 88% (83/94) VALENCE 95% (87/92)'
+            },
+            w16: {
+                svr: 71,
+                trials: 'BOSON 71% (128/181)'
+            },
+            w24: {
+                svr: 84,
+                trials: 'BOSON 84% (153/182)'
+            }, 
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+            f4: {
+                default: {
+                    svr: 81,
+                    trials: 'BOSON 79% (44/56) VALENCE 92% (12/13) Aggregate 81.1% (56/69)'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 83,
+                    trials: 'BOSON 80% (70/88) VALENCE 87% (85/98) Aggregate 83.3% (155/186)'
+                },
+                f4: {
+                    svr: 62,
+                    trials: 'VALENCE 62% (29/47)'
+                }
+            }
+        },
+        sof_dac: {
+            // AASLD-2015 http://www.clinicaloptions.com/Hepatitis/Conference%20Coverage/AASLD%202015/Highlights/Capsules/206.aspx
+            // Presented at AASLD Nov 2015
+            default: {
+                svr: 97,
+                trials: 'UN-NAMED IIb (24wk) 89% (16/18) ALLY-3 97% (73/75) AASLD-2015 96% (24/25) Aggregate 97% (97/100)'
+            },
+            w24: {
+                svr: 100,
+                trials: 'AASLD-2015 100% (29/29)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            },
+            f4: {
+                default: {
+                    svr: 65,
+                    trials: 'ALLY-3 58% (11/19) AASLD-2015 70% (23/33) Aggregate 65.4% (34/52)'
+                },
+                w24: {
+                    svr: 90,
+                    trials: 'AASLD-2015 86% (116/135) overall but Child-Pugh A 90% (90/100)'
+                },
+                riba24: {
+                    svr: 81,
+                    trials: 'AASL-2015 81% (39/48)'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 86,
+                    trials: 'ALLY-3 94% (32/34) AASLD-2015 86% (89/103) (bias by F3/F4)'
+                },
+                f4: {
+                    svr: 64,
+                    trials: 'ALLY-3 69% (9/13)'
+                }, 
+                w24: {
+                    svr: 86,
+                    trials: 'AASLD-2015 86% (89/103)'
+                },
+                riba24: {
+                    svr: 80,
+                    trials: 'AASLD-2015 80% (28/35)'
+                }
+            }
+        }        
+
+    },
+    
+    gt4: {
+        sof_peg_riba: {
+            default: {
+                svr: 90,
+                trials: 'NEUTRINO 96% (27/28)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            },
+            f4: {
+                default: {
+                    svr: 90,
+                    trials: 'No Trials'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 90,
+                    trials: 'No Trials'
+                }
+            }
+        },
+        sim_peg_riba: {
+            default: {
+                svr: 83,
+                trials: 'RESTORE 83% (29/35)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+ 
+            fail: {
+                default: {
+                    svr: 86,
+                    trials: 'RESTORE 86% (19/22)'
+                }
+            }
+        },
+        sof_led: {
+            default: {
+                svr: 97,
+                trials: 'NIAID SYNERGY 100% (13/13) http://www.natap.org/2015/EASL/EASL_80.htm 96% (21/22) Aggregate 97.1% (34/35)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+            f4: {
+                default: {
+                    svr: 100,
+                    trials: 'NIAID SYNERGY 100% (7/7) http://www.natap.org/2015/EASL/EASL_80.htm 100% (10/10)'
+                },
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.B1
+                }
+            },
+            fail: {
+                default: {
+                    svr: 91,
+                    trials: 'http://www.natap.org/2015/EASL/EASL_80.htm 91% (20/221'
+                }
+            }
+        },
+        viek_riba: {
+            default: {
+                svr: 100,
+                trials: 'PEARL-I 100% (42/42)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            },
+            f4: {
+                default: {
+                    svr: 0,
+                    trials: 'No Trials'
+                },
+                rating: {
+                    aasld: undefined,
+                    easl: ratings.B1
+                }
+            },
+            fail: {
+                default: {
+                    svr: 100,
+                    trials: 'PEARL-I 100% (49/49)'
+                }
+            }
+        },
+        sof_sim: {
+            default: {
+                svr: 89,
+                trials: 'No Trials - Based on GT1 extrapolation'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B2
+            }
+        },
+        sof_dac: {
+            default: {
+                svr: 97,
+                trials: 'No Trials - Based on GT1 extrapolation'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B2
+            },
+        }
+
+    },
+    gt5: {
+        sof_peg_riba: {
+            default: {
+                svr: 100,
+                trials: 'NEUTRINO 100% (1/1)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            }
+        },
+        sof_led: {
+            default: {
+                svr: 95,
+                trials: 'http://www.natap.org/2015/EASL/EASL_80.htm 95% (20/21)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            }
+        },
+        sof_dac: {
+            default: {
+                svr: 97,
+                trials: 'No Trials - Based on GT1 extrapolation'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            },
+        }
+    },
+    gt6: {
+        sof_peg_riba: {
+            default: {
+                svr: 100,
+                trials: 'NEUTRINO 100% GT6 (6/6)'
+            },
+            w24: {
+                svr: 100,
+                trials: 'ATOMIC 100% GT6 (5/5)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            }
+        },
+        sof_led: {
+            default: {
+                svr: 96,
+                trials: 'NCT01826981 96% GT6 (24/25)'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.A1
+            }
+        },
+        sof_dac: {
+            default: {
+                svr: 97,
+                trials: 'No Trials - Based on GT1 extrapolation'
+            },
+            rating: {
+                aasld: undefined,
+                easl: ratings.B1
+            }
+        }
+    }
+}
+
+/**
+ * Main entry point.
+ * Parse and validate form values.
+ * Call the actual calculations.
+ */
+function supportDecision () {
+
+    $("#demographics").html('');
+    $("#rx").html('');
+    var h = {};
+    h.genotype  = $("#genotype option:selected").text();
+    h.fibrosis  = $("#fibrosis option:selected").text();
+    h.harvoniCI = $("input[name=harvoniCI]:checked").val();
+    h.guidelines= $("input[name=guidelines]:checked").val();
+    h.past      = $("#past option:selected").val();
+    h.pastTxt    = $("#past option:selected").text();
+    h.riba      = $("#riba:checked").length == 1 ? true : false;
+    h.platelets = parseInt($("#platelets").val());
+    h.weight    = $("input[name=weight]:checked").val();
+    h.eGFR      = $("#eGFR").val();
+    h.eGFR      = h.eGFR.replace('>','');
+    h.eGFR      = parseInt(h.eGFR);
+    h.locale    = h.guidelines == 'AASLD' ? 'en-US' : h.guidelines == 'EASL' ? 'en-GB' : 'en-AU';
+
+    var error = '';
+    var errorFocus = ''
+    if (h.genotype  == '' ) { 
+        error += 'Please select Genotype&lt;br>'; 
+        if (errorFocus == '') errorFocus = '#genotype' 
+    }
+    if (h.fibrosis  == '' ) { 
+        error += 'Please select Fibrosis&lt;br>'; 
+        if (errorFocus == '') errorFocus = '#fibrosis' 
+    }
+    if (h.pastTxt   == '' ) { 
+        error += 'Please select Past Treament&lt;br>'; 
+        if (errorFocus == '') errorFocus = '#past' 
+    }
+    if (h.harvoniCI === undefined &amp;&amp; ! ( h.genotype.match(/2/) || h.genotype.match(/3/) ) ) { 
+        error += 'Please select Harvoni CI&lt;br>'; 
+        if (errorFocus == '') errorFocus = '#harvoniCI' 
+    }
+    if (h.riba) {
+        if (isNaN(h.platelets)) { 
+            error += 'Please input Platelets&lt;br>'; 
+            if (errorFocus == '') errorFocus = '#platelets' 
+        }
+        if (typeof h.weight === "undefined") { 
+            error += 'Please select Weight&lt;br>'; 
+            if (errorFocus == '') errorFocus = '#weight' 
+        }
+        if (isNaN(h.eGFR)) { 
+            error += 'Please input eGFR&lt;br>'; 
+            if (errorFocus == '') errorFocus = '#eGFR' 
+        }
+    }
+    if (error != '') {
+        errorDialog(error,errorFocus)
+        setTimeout(function(){$("#demographics").html(redText(error))},1000);      
+        return;
+    }
+
+    h.f4        = h.fibrosis.match(/F4/);
+    h.fail      = (h.past == 'naive' || h.past == 'PEG' ) ? false : true;
+    h.harvoniCI = (h.harvoniCI == 'yes') ? true : false;
+
+    // visual feedback to user
+    blockMessage('Calculating...',500);
+    $("#calculate").val('Recalculate');
+    setTimeout(function(){doCalculation(h)},450);
+}
+
+/**
+ * Call render commands.
+ * Change the UI to show results.
+ * @param {Object} h
+ */
+function doCalculation (h) {
+
+    renderDemographics(h);
+    renderRx(h);
+    var offset = $('#resultsHR').offset();
+    $('html,body').animate({scrollTop: offset.top});
+}
+
+/**
+ * Render demographics data.
+ * @param {Object} h
+ */
+function renderDemographics(h) {
+
+    var demographics = 'Guidelines:     ' + h.guidelines + '\n' +
+                       'Genotype:       ' + h.genotype   + '\n' +
+                       'Fibrosis:       ' + h.fibrosis   + '\n' + 
+                       'Past Treatment: ' + h.pastTxt    + '\n' +
+                       'Past Failure:   ' + h.fail       + '\n' +
+                       'Harvoni CI:     ' + h.harvoniCI  + '\n' +
+                       'Ribavirin:      ' + h.riba       + '\n';
+    if ( h.riba ) {
+        demographics += 
+                       'Platelets:      ' + h.platelets      + '\n' +
+                       'Weight:         ' + h.weight + ' kg' + '\n' +
+                       'eGFR:           ' + $("#eGFR").val() + '\n';
+    }
+    var d = new Date();
+    demographics = '&lt;p>&lt;b>HCV Decision Support v' + version + ' ' + d.toLocaleString(h.locale) + '&lt;/b>&lt;/p>&lt;pre>' + demographics + '&lt;/pre>';
+    $("#demographics").html(demographics);
+} 
+
+/**
+ * Render medical prescription.
+ * @param {Object} h
+ */
+function renderRx(h) {
+
+    h.rx = [];
+    getRxOptions(h);
+    var html = '';
+    // display by descending SVR
+    h.rx.sort(function(a, b){return b.svr-a.svr});
+
+    for ( var m in h.rx ) {
+        var svrOdds = Math.round(100/(100-h.rx[m].svr)) - 1;
+        var days = h.rx[m].duration == 24 ? '84 days + 1 repeat' : '84 days + no repeats';
+        var medication = '';
+        for ( var d in h.rx[m].medication ) {
+            var drug = h.rx[m].medication[d];
+            if ( parseInt(d) > 0 ) medication += drug.optional ? ' &amp;plusmn; ' : ' + ';
+            //alert(JSON.stringify(drug));
+            medication += drug.generic + ' (' + drug.brand[0] + ') ' + drug.dose[0] + ' ' + drug.route +', ' + drug.freq;
+            var drugSort = drug.brand.slice();
+            drugSort.sort();
+            h.rx[m].notes.push( '&lt;b>' + drug.generic + ' brand names: &lt;/b>' + drugSort.join(', '));
+        }
+        html += '&lt;hr>' +
+                '&lt;b>Medications: &lt;/b>'  + medication + '&lt;br>' +
+                '&lt;b>Duration: &lt;/b>'     + h.rx[m].duration + ' weeks (' + days + ')&lt;br>' +
+                '&lt;b>Expected SVR: &lt;/b>' + h.rx[m].svr + '% (Odds of SVR are '  + svrOdds + ':1)&lt;br>' +
+                '&lt;b>Trials: &lt;/b>'       + h.rx[m].trials + '&lt;br>';
+
+        if (typeof h.rx[m].rating !== 'undefined') html += '&lt;b>Rating:&lt;/b> &lt;a href="javascript:evidence()">' + h.rx[m].rating + '&lt;/a>&lt;br>';
+
+        h.rx[m].notes.unshift('Check for interactions using &lt;a href="http://www.hep-druginteractions.org/Interactions.aspx" target="_new">http://www.hep-druginteractions.org/Interactions.aspx&lt;/a>');
+        html += '&lt;br>&lt;div class="notes">&lt;b>Notes:&lt;/b>&lt;ol>';
+        for (var i in h.rx[m].notes) {
+            html += '&lt;li>' + h.rx[m].notes[i] + '&lt;/li>';
+        }
+        html += '&lt;/ol>&lt;/div>';
+    }
+    html += '&lt;div id="print">&lt;hr>&lt;input type="button" value="Print" onclick="window.print()"> &lt;input type="button" value="Show Trial Data" onclick="showTrialData()"> &lt;/div>'
+    html += '&lt;div id="data" class="notes hidden">' + getTrialData(h) + '&lt;/div>';
+    $("#rx").html(html);
+}
+
+/**
+ * Change the UI to show results.
+ */
+function showTrialData () {
+    $('#data').show();
+    var offset = $('#data').offset();
+    $('html,body').animate({scrollTop: offset.top-10});
+}
+
+/**
+ * Get trial data.
+ * @param {Object} h
+ */
+function getTrialData(h) {
+   
+    var gt = '';
+    var re = /([1-6])/;
+    if ( h.genotype.match(/1/) ) gt = 'gt1';
+    if ( h.genotype.match(/2/) ) gt = 'gt2';   
+    if ( h.genotype.match(/3/) ) gt = 'gt3';
+    if ( h.genotype.match(/4/) ) gt = 'gt4';
+    if ( h.genotype.match(/5/) ) gt = 'gt5';
+    if ( h.genotype.match(/6/) ) gt = 'gt6';
+    if (gt == '' ) return '';
+    var match = re.exec(h.genotype);
+    var html = '&lt;h2 class="data-heading">Trials Data For Genotype ' + match[1] + '&lt;h2>&lt;hr>'
+    for (var key in svrx[gt]) {
+        var meds = key;
+        meds = meds.replace(/_/g,' ');
+        meds = meds.replace('sof','Sofosbuvir');
+        meds = meds.replace('led','Ledipasvir');
+        meds = meds.replace('dac','Daclatasvir');
+        meds = meds.replace('sim','Simeprevir');
+        meds = meds.replace('peg','PegIFN-&amp;alpha;');
+        meds = meds.replace('viek','Paritaprevir Ritonavir Ombitasvir');
+        meds = meds.replace('viekx','Dasabuvir');
+        meds = meds.replace('riba','Ribavirin');
+        html += "&lt;h3>" + meds + "&lt;/h3>&lt;b>NAIVE&lt;/b>&lt;br>" + data2string(svrx[gt][key]);
+    } 
+    html = html.replace(/&lt;br>&lt;br>/g,'&lt;br>');
+    html = html.replace(/&lt;br>,/g,'&lt;br>');
+    html = html.replace(/,/g,', ');
+    return html; 
+}
+
+/**
+ * Stringify data object.
+ * @param {Object} obj
+ */
+function data2string(obj) {
+
+    if ( typeof(obj) != "object" || obj === null) {
+        return String(obj);
+    } else {
+        var n, v, data = [];
+        for (n in obj) {
+            if ( n == 'rating') continue;
+            v = obj[n];
+            if (obj.hasOwnProperty(n)) {
+                if (typeof(v) == "object" &amp;&amp; v !== null){
+                    v = data2string(v);  // recurse
+                }
+                if ( n == 'f4' || n == 'fail' ) {
+                    data.push( '&lt;b>' + n.toUpperCase() + '&lt;/b>&lt;br>' + String(v) );
+                }
+                else if ( n == 'svr' ) {
+                    data.push( n + ': ' + String(v) + '%' );
+                }
+                else {
+                    data.push( n + ': ' + String(v) );
+                }
+            }
+        }
+        return String(data) + "&lt;br>";
+    }
+}
+
+/**
+ * Get medical prescription options.
+ * @param {Object} h
+ */
+function getRxOptions(h) {
+
+    if (h.guidelines == 'AUS') {
+        if ( h.genotype.match(/1/) ) rxGT1AUS(h);
+        if ( h.genotype.match(/2/) ) rxGT2AUS(h);   
+        if ( h.genotype.match(/3/) ) rxGT3AUS(h);
+        if ( h.genotype.match(/4/) ) rxGT4AUS(h);
+        if ( h.genotype.match(/5/) ) rxGT5AUS(h);
+        if ( h.genotype.match(/6/) ) rxGT6AUS(h);       
+    }
+    else if (h.guidelines == 'EASL') {
+        if ( h.genotype.match(/1/) ) rxGT1EASL(h);
+        if ( h.genotype.match(/2/) ) rxGT2EASL(h);   
+        if ( h.genotype.match(/3/) ) rxGT3EASL(h);
+        if ( h.genotype.match(/4/) ) rxGT4EASL(h);
+        if ( h.genotype.match(/5/) ) rxGT5EASL(h);
+        if ( h.genotype.match(/6/) ) rxGT6EASL(h); 
+    }
+    else if (h.guidelines == 'AASLD') {
+        if ( h.genotype.match(/1/) ) rxGT1AASLD(h);
+        if ( h.genotype.match(/2/) ) rxGT2AASLD(h);   
+        if ( h.genotype.match(/3/) ) rxGT3AASLD(h);
+        if ( h.genotype.match(/4/) ) rxGT4AASLD(h);
+        if ( h.genotype.match(/5/) ) rxGT5AASLD(h);
+        if ( h.genotype.match(/6/) ) rxGT6AASLD(h); 
+    }
+    else if (h.guidelines == 'FIXHEPC') {
+        if ( h.genotype.match(/1/) ) rxGT1(h);
+        if ( h.genotype.match(/2/) ) rxGT2(h);   
+        if ( h.genotype.match(/3/) ) rxGT3(h);
+        if ( h.genotype.match(/4/) ) rxGT4(h);
+        if ( h.genotype.match(/5/) ) rxGT5(h);
+        if ( h.genotype.match(/6/) ) rxGT6(h);       
+    }
+    else {
+        alert('OMG, the flux capacitor has imploded!');
+    }
+
+}
+
+
+/*
+*
+*
+*
+* AUS Treatment Protocols
+*
+*
+*
+*/
+
+/**
+ * Medical prescription options for HCV genotype 1 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
+function rxGT1AUS (h) {
+
+    // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr:    svrx.gt1.sof_dac.default.svr,
+        trials: svrx.gt1.sof_dac.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.past == 'PROTEASE' ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_dac.fail.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.fail.default.trials;
+        h.rx[0].notes.push('24 weeks recommended for patients who have failed a protease inhibitor');
+    }
+    if ( h.f4 ) {
+        h.rx[0].svr    = svrx.gt1.sof_dac.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.f4.default.trials;
+        if ( h.past != 'PROTEASE' ) {
+            h.rx[0].notes.push(redText('Consider adding Ribavirin or extending treatment to 24 weeks'));
+        }
+    }
+
+    // viekira pak
+    h.rx.unshift({
+        medication: [ drugs.viek, drugs.viekx ],
+        duration: 12,
+        svr:    svrx.gt1.viek_viekx.gt1b.default.svr,
+        trials: svrx.gt1.viek_viekx.gt1b.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( ! h.genotype.match(/1b/)) {
+        addRiba(h,false);
+        h.rx[0].svr    = svrx.gt1.viek_viekx_riba.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.viek_viekx_riba.gt1a.default.trials;
+    }
+
+    // harvoni
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt1.sof_led.default.svr,
+        trials: svrx.gt1.sof_led.default.trials,
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+    if ( h.genotype.match(/1b/)) {
+        h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials
+    }
+    if ( h.f4 &amp;&amp; h.fail ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_led.fail.w24.svr;
+        h.rx[0].trials = svrx.gt1.sof_led.fail.w24.trials;
+        h.rx[0].notes.push('12 weeks + Ribavirin may be considered');
+    }
+    if ( ! h.fail &amp;&amp; ! h.f4 ) {
+        h.rx[0].notes.push('8 weeks may be considered if HCV RNA &lt; 6 x 10^6 IU/ml');
+    }
+}
+
+/**
+ * Medical prescription options for HCV genotype 2 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
+function rxGT2AUS (h) {
+
+    // sof riba
+    h.rx.unshift({
+        medication: [ drugs.sof ],
+        duration: 12,
+        svr:    svrx.gt2.sof_riba.default.svr,
+        trials: svrx.gt2.sof_riba.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.f4  || h.fail ) {
+        if ( h.f4 ) {
+            h.rx[0].svr    = svrx.gt2.sof_riba.f4.default.svr;
+            h.rx[0].trials = svrx.gt2.sof_riba.f4.default.trials;
+        } 
+        else {
+            h.rx[0].svr    = svrx.gt2.sof_riba.fail.default.svr;
+            h.rx[0].trials = svrx.gt2.sof_riba.fail.default.trials;
+        } 
+        h.rx[0].notes.push(redText('SVR rates may be increased by extending duration to 16-24 weeks'));
+    }
+}
+
+/**
+ * Medical prescription options for HCV genotype 3 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
+function rxGT3AUS (h) {
+
+    // sof dac
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr:    svrx.gt3.sof_dac.default.svr,
+        trials: svrx.gt3.sof_dac.default.trials,
+        notes: [] 
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt3.sof_dac.f4.w24.svr;
+        h.rx[0].trials = svrx.gt3.sof_dac.f4.w24.trials;
+    }
+
+    // sof riba
+    h.rx.unshift({
+        medication: [ drugs.sof ],
+        duration: 24,
+        svr:    svrx.gt3.sof_riba.default.svr,
+        trials: svrx.gt3.sof_riba.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt3.sof_riba.f4.default.svr;
+        h.rx[0].trials = svrx.gt3.sof_riba.f4.default.trials;
+    }
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt3.sof_peg_riba.default.svr,
+        trials: svrx.gt3.sof_peg_riba.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);    
+}
+
+/**
+ * Medical prescription options for HCV genotype 4 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
+function rxGT4AUS (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt4.sof_peg_riba.default.svr,
+        trials: svrx.gt4.sof_peg_riba.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sim peg riba
+    h.rx.unshift({
+        medication: [ drugs.sim, drugs.peg ],
+        duration: 48,
+        svr:    svrx.gt4.sim_peg_riba.default.svr,
+        trials: svrx.gt4.sim_peg_riba.default.trials,
+        notes: [ 'Duration 24-48 weeks']
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+}
+
+/**
+ * Medical prescription options for HCV genotype 5 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
+function rxGT5AUS (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt5.sof_peg_riba.default.svr,
+        trials: svrx.gt5.sof_peg_riba.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h); 
+}
+
+/**
+ * Medical prescription options for HCV genotype 6 according to AUS Treatment Protocols.
+ * @param {Object} h
+ */
+function rxGT6AUS (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt6.sof_peg_riba.default.svr,
+        trials: svrx.gt6.sof_peg_riba.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);    
+}
+
+/*
+*
+*
+*
+* EASL 2015
+*
+*
+*
+*/
+
+
+/**
+ * Medical prescription options for HCV genotype 1 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT1EASL (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt1.sof_peg_riba.default.svr,
+        trials: svrx.gt1.sof_peg_riba.default.trials,
+        rating: svrx.gt1.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.genotype.match(/1a/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_peg_riba.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_peg_riba.gt1a.default.trials;
+    }
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_peg_riba.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_peg_riba.gt1b.default.trials;
+    }
+    if ( h.f4 ) {
+        h.rx[0].svr    = svrx.gt1.sof_peg_riba.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_peg_riba.f4.default.trials;
+    }
+    if ( h.fail ) {
+        if ( h.f4) {
+            h.rx[0].svr    = svrx.gt1.sof_peg_riba.fail.f4.svr;
+            h.rx[0].trials = svrx.gt1.sof_peg_riba.fail.f4.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt1.sof_peg_riba.fail.default.svr; 
+            h.rx[0].trials = svrx.gt1.sof_peg_riba.fail.default.trials;  
+        }   
+    }
+
+    // sim peg riba
+    h.rx.unshift({
+        medication: [ drugs.sim, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt1.sim_peg_riba.default.svr,
+        trials: svrx.gt1.sim_peg_riba.default.trials,
+        rating: svrx.gt1.sim_peg_riba.rating.easl,
+        notes: [ 'HCV RNA levels should be monitored on treatment. Treatment should be stopped if HCV RNA level is ≥25 IU/ml at treatment week 4, week 12 or week 24 (A2)']
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.genotype.match(/1a/) ) {
+        h.rx[0].svr    = svrx.gt1.sim_peg_riba.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.sim_peg_riba.gt1a.default.trials;
+    }
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sim_peg_riba.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sim_peg_riba.gt1b.default.trials;
+    }
+    if ( h.f4 ) {
+        h.rx[0].svr    = svrx.gt1.sim_peg_riba.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sim_peg_riba.f4.default.trials;
+    }
+    if ( h.fail &amp;&amp; ! h.f4 ) {
+        if ( h.genotype.match(/1a/) ) {
+            h.rx[0].svr    = svrx.gt1.sim_peg_riba.fail.gt1a.svr;
+            h.rx[0].trials = svrx.gt1.sim_peg_riba.fail.gt1a.trials;
+        }
+        else if ( h.genotype.match(/1b/) ) {
+            h.rx[0].svr    = svrx.gt1.sim_peg_riba.fail.gt1b.svr;
+            h.rx[0].trials = svrx.gt1.sim_peg_riba.fail.gt1b.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt1.sim_peg_riba.fail.default.svr;
+            h.rx[0].trials = svrx.gt1.sim_peg_riba.fail.default.trials;   
+        }
+
+    }
+
+    // sof_led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt1.sof_led.default.svr,
+        trials: svrx.gt1.sof_led.default.trials,
+        rating: svrx.gt1.sof_led.rating.easl,
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1a/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_led.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_led.gt1a.default.trials;
+    }
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials;
+    }
+    if ( h.f4 ) {
+        addRiba(h);
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+            h.rx[0].rating = svrx.gt1.sof_led.fail.rating.easl;
+            h.rx[0].svr    = svrx.gt1.sof_led.fail.w24riba.svr;
+            h.rx[0].trials = svrx.gt1.sof_led.fail.w24riba.trials;
+        }
+        else {
+            h.rx[0].rating = svrx.gt1.sof_led.f4.rating.easl;
+            h.rx[0].svr    = svrx.gt1.sof_led.f4.w12riba.svr;
+            h.rx[0].trials = svrx.gt1.sof_led.f4.w12riba.trials;
+        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.w24.svr,svrx.gt1.sof_led.f4.w24.trials));
+    }
+
+    // viek and viek riba
+    h.rx.unshift({
+        medication: [ drugs.viek, drugs.viekx ],
+        duration: 12,
+        svr:    svrx.gt1.viek_viekx.default.svr,
+        trials: svrx.gt1.viek_viekx.default.trials,
+        rating: svrx.gt1.viek_viekx.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1b/)) {
+        h.rx[0].svr    = svrx.gt1.viek_viekx.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.viek_viekx.gt1b.default.trials;
+        if ( h.f4 ) {
+            addRiba(h); 
+            h.rx[0].svr    = svrx.gt1.viek_viekx_riba.f4.gt1b.svr; 
+            h.rx[0].trials = svrx.gt1.viek_viekx_riba.f4.gt1b.trials;           
+        }
+        else if ( h.fail) {
+            addRiba(h); 
+            h.rx[0].svr    = svrx.gt1.viek_viekx_riba.fail.gt1b.svr; 
+            h.rx[0].trials = svrx.gt1.viek_viekx_riba.fail.gt1b.trials;            
+        }
+    }
+    else {
+        addRiba(h);
+        h.rx[0].svr    = svrx.gt1.viek_viekx_riba.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.viek_viekx_riba.gt1a.default.trials;
+        if ( h.f4 ) {
+            h.rx[0].duration = 24;
+            h.rx[0].svr    = svrx.gt1.viek_viekx_riba.f4.gt1a.svr;
+            h.rx[0].trials = svrx.gt1.viek_viekx_riba.f4.gt1a.trials;
+        }
+        else if ( h.fail) {
+            h.rx[0].svr    = svrx.gt1.viek_viekx_riba.fail.gt1a.svr; 
+            h.rx[0].trials = svrx.gt1.viek_viekx_riba.fail.gt1a.trials;             
+        }
+    }
+
+    // sof sim
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.sim ],
+        duration: 12,
+        svr:    svrx.gt1.sof_sim.default.svr,
+        trials: svrx.gt1.sof_sim.default.trials,
+        rating: svrx.gt1.sof_sim.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1b.default.trials;
+    }
+    else {
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1a.default.svr; 
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1a.default.trials;        
+    }
+    if ( h.fail ) {
+        h.rx[0].svr    = svrx.gt1.sof_sim.fail.w12.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.fail.w12.trials;
+    }
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].svr    = svrx.gt1.sof_sim.f4.w12riba.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.f4.w12riba.trials;
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_sim.f4.w24.svr,svrx.gt1.sof_sim.f4.w24.trials));
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt1.sof_dac.default.svr,
+        trials: svrx.gt1.sof_dac.default.trials,
+        rating: svrx.gt1.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_dac.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.gt1b.default.trials;
+    }
+    else {
+        h.rx[0].svr    = svrx.gt1.sof_dac.gt1a.default.svr;  
+        h.rx[0].trials = svrx.gt1.sof_dac.gt1a.default.trials;      
+    }
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].svr    = svrx.gt1.sof_dac.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.f4.default.trials;
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.default.svr,svrx.gt1.sof_led.f4.default.trials));
+    }
+
+}
+
+/**
+ * Medical prescription options for HCV genotype 2 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT2EASL (h) {
+
+    // sof riba
+    h.rx.unshift({
+        medication: [ drugs.sof ],
+        duration: 12,
+        svr:    svrx.gt2.sof_riba.default.svr,
+        trials: svrx.gt2.sof_riba.default.trials,
+        rating: svrx.gt2.sof_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    if ( h.f4 || h.fail ) {
+        if ( h.f4 ) {
+            h.rx[0].svr    = svrx.gt2.sof_riba.f4.default.svr;
+            h.rx[0].trials = svrx.gt2.sof_riba.f4.default.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt2.sof_riba.fail.default.svr;
+            h.rx[0].trials = svrx.gt2.sof_riba.fail.default.trials;
+        }
+        h.rx[0].rating = svrx.gt2.sof_riba.f4.rating.easl;
+        h.rx[0].duration = 16;
+        h.rx[0].notes.push(greenText('Therapy should be prolonged to 16 or 20 weeks in patients with cirrhosis, especially if they are treatment experienced.'));
+    }
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt2.sof_peg_riba.default.svr,
+        trials: svrx.gt2.sof_peg_riba.default.trials,
+        rating: svrx.gt2.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt2.sof_dac.default.svr,
+        trials: svrx.gt2.sof_dac.default.trials,
+        rating: svrx.gt2.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    pushNotes(greenText('In AI444040 96% (25/26) patients achieved SVR12 after 24 weeks treatment.'));
+
+}
+
+/**
+ * Medical prescription options for HCV genotype 3 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT3EASL (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt3.sof_peg_riba.default.svr,
+        trials: svrx.gt3.sof_peg_riba.default.trials,
+        rating: svrx.gt3.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sof riba
+    h.rx.unshift({
+        medication: [ drugs.sof ],
+        duration: 24,
+        svr:    svrx.gt3.sof_riba.default.svr,
+        trials: svrx.gt3.sof_riba.default.trials,
+        rating: svrx.gt3.sof_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+        if ( h.fail &amp;&amp; h.f4 ) {
+            h.rx[0].svr    = svrx.gt3.sof_riba.fail.f4.svr;
+            h.rx[0].trials = svrx.gt3.sof_riba.fail.f4.trials;
+        }
+        else if ( h.fail ) {
+            h.rx[0].svr    = svrx.gt3.sof_riba.fail.default.svr;
+            h.rx[0].trials = svrx.gt3.sof_riba.fail.default.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt3.sof_riba.f4.default.svr;
+            h.rx[0].trials = svrx.gt3.sof_riba.f4.default.trials;    
+        }
+        
+        h.rx[0].notes.push(redText(' This therapy is suboptimal in treatment-experienced cirrhotic patients and in patients who failed to achieve an SVR after sofosbuvir plus ribavirin treatment, who should be offered an alternative treatment option (B1)'));
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt3.sof_dac.default.svr,
+        trials: svrx.gt3.sof_dac.default.trials,
+        rating: svrx.gt3.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h,true);
+        h.rx[0].duration = 24;
+        if ( h.fail) {
+            h.rx[0].svr    = svrx.gt3.sof_dac.fail.riba24.svr;
+            h.rx[0].trials = svrx.gt3.sof_dac.fail.riba24.trials;
+        }
+        else {
+            h.rx[0].svr    = svrx.gt3.sof_riba.f4.riba24.svr;
+            h.rx[0].trials = svrx.gt3.sof_riba.f4.riba24.trials;    
+        }
+        h.rx[0].notes.push(greenText('EASL Guidelines 2015 say add Riba for 24 weeks pending clarification  but AASLD 2015 n=468 GT3 F3/F4 series showed inferior performance in all 24 week + Riba groups. For 24 week groups WITHOUT Riba F4 SVR was 90% and treatment-experienced 86% http://www.clinicaloptions.com/Hepatitis/Conference%20Coverage/AASLD%202015/Highlights/Capsules/206.aspx'))
+    }
+
+}
+
+/**
+ * Medical prescription options for HCV genotype 4 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT4EASL (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt4.sof_peg_riba.default.svr,
+        trials: svrx.gt4.sof_peg_riba.default.trials,
+        rating: svrx.gt4.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sim peg riba
+    h.rx.unshift({
+        medication: [ drugs.sim, drugs.peg ],
+        duration: 24,
+        svr:    svrx.gt4.sim_peg_riba.default.svr,
+        trials: svrx.gt4.sim_peg_riba.default.trials,
+        rating: svrx.gt4.sim_peg_riba.rating.easl,
+        notes: [ redText('Simeprevir is administered for the first 12 weeks only') ]
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 48;
+        h.rx[0].svr    = svrx.gt4.sim_peg_riba.fail.default.svr;
+        h.rx[0].trials = svrx.gt4.sim_peg_riba.fail.default.trials;
+        h.rx[0].notes.push(greenText('HCV RNA levels should be monitored on treatment. Treatment should be stopped if HCV RNA level is ≥25 IU/ml at treatment week 4, week 12 or week 24'))
+    }
+
+    // sof led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt4.sof_led.default.svr,
+        trials: svrx.gt4.sof_led.default.trials,
+        rating: svrx.gt4.sof_led.rating.easl,
+        notes: []
+    });
+    hasHarvoniCI(h)
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].rating = svrx.gt4.sof_led.f4.rating.easl;
+        h.rx[0].svr    = svrx.gt4.sof_led.f4.default.svr;
+        h.rx[0].trials = svrx.gt4.sof_led.f4.default.trials;
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+            h.rx[0].svr = svrx.gt1.sof_led.fail.w24riba.svr;
+            h.rx[0].trials = 'No Trials - based on GT1 and ION-3';
+        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.fail.w24.svr,'No Trials - based on GT1 extrapolation'));
+    }
+    
+    // viek riba
+    h.rx.unshift({
+        medication: [ drugs.viek ],
+        duration: 12,
+        svr:    svrx.gt4.viek_riba.default.svr,
+        trials: svrx.gt4.viek_riba.default.trials,
+        rating: svrx.gt4.viek_riba.rating.easl,
+        notes: []
+    });
+    addRiba(h);
+    pushNotes(h.rx[0]);
+    if ( h.fail) {
+        h.rx[0].svr    = svrx.gt4.viek_riba.fail.default.svr;
+        h.rx[0].trials = svrx.gt4.viek_riba.fail.default.trials;
+    }
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt4.viek_riba.f4.default.svr;
+        h.rx[0].trials = svrx.gt4.viek_riba.f4.default.trials;
+        h.rx[0].rating = svrx.gt4.viek_riba.f4.rating.easl;
+    }
+
+    // sof sim
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.sim ],
+        duration: 12,
+        svr:    svrx.gt4.sof_sim.default.svr,
+        trials: svrx.gt4.sof_sim.default.trials,
+        rating: svrx.gt4.sof_sim.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_sim.fail.w24.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt4.sof_dac.default.svr,
+        trials: svrx.gt4.sof_dac.default.trials,
+        rating: svrx.gt4.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_dac.f4.default.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
+}
+
+/**
+ * Medical prescription options for HCV genotype 5 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT5EASL (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt5.sof_peg_riba.default.svr,
+        trials: svrx.gt5.sof_peg_riba.default.trials,
+        rating: svrx.gt5.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sof led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt5.sof_led.default.svr,
+        trials: svrx.gt5.sof_led.default.trials,
+        rating: svrx.gt5.sof_led.rating.easl,
+        notes: []
+    });
+    hasHarvoniCI(h)
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+            h.rx[0].svr = svrx.gt1.sof_led.fail.w24riba.svr;
+            h.rx[0].trials = 'No Trials - based on GT1 and ION-3';
+        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.fail.w24.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt5.sof_dac.default.svr,
+        trials: svrx.gt5.sof_dac.default.trials,
+        rating: svrx.gt5.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_dac.f4.default.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
+}
+/**
+ * Medical prescription options for HCV genotype 6 according to EASL 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT6EASL (h) {
+
+    // sof peg riba
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt6.sof_peg_riba.default.svr,
+        trials: svrx.gt6.sof_peg_riba.default.trials,
+        rating: svrx.gt6.sof_peg_riba.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sof led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt6.sof_led.default.svr,
+        trials: svrx.gt6.sof_led.default.trials,
+        rating: svrx.gt6.sof_led.rating.easl,
+        notes: []
+    });
+    hasHarvoniCI(h)
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        if ( negativePredictorsOfResponse(h) ) {
+            h.rx[0].duration = 24;
+            h.rx[0].svr = svrx.gt1.sof_led.fail.w24riba.svr;
+            h.rx[0].trials = 'No Trials - based on GT1 and ION-3';
+        }
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.fail.w24.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt6.sof_dac.default.svr,
+        trials: svrx.gt6.sof_dac.default.trials,
+        rating: svrx.gt6.sof_dac.rating.easl,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h);
+        h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_dac.f4.default.svr,'No Trials - based on GT1 extrapolation'));
+    }
+
+}
+
+/*
+*
+*
+*
+* AASLD 2015
+*
+*
+*
+*/
+
+/**
+ * Medical prescription options for HCV genotype 1 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT1AASLD (h) {
+    if ( h.fail ) {
+        if ( h.past == 'PEGRIBA' ) {
+            rxGT1AASLDpegriba(h);
+        }
+        else if ( h.past == 'SOFRIBA') {
+            rxGT1AASLDsofriba(h);
+        }
+        else if ( h.past == 'PROTEASE' ) {
+            rxGT1AASLDprotease(h);
+        }
+        else if ( h.past == 'SOFNS5A' ) {
+            rxGT1AASLDsofNS5A(h);
+        }
+        else {
+            alert('Error - unhandled failure case: ' + h.past )
+        }
+    }
+    else {
+        if ( h.genotype.match(/1b/) ) {
+            rxGT1AASLDnaive1b(h);
+        }
+        else {
+            rxGT1AASLDnaive1a(h);       
+        }
+    }
+}
+
+/**
+ * Medical prescription options for HCV genotype 1a according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT1AASLDnaive1a (h) {
+
+    // sofosbuvir daclatasvir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr:    svrx.gt1.sof_dac.gt1a.default.svr, 
+        trials: svrx.gt1.sof_dac.gt1a.default.trials,
+        rating: svrx.gt1.sof_dac.gt1a.rating,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_dac.gt1a.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.gt1a.f4.default.trials;
+        h.rx[0].rating = svrx.gt1.sof_dac.gt1a.f4.rating;
+        addRiba(h,true);
+
+    }
+    // harvoni
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt1.sof_led.gt1a.default.svr,
+        trials: svrx.gt1.sof_led.gt1a.default.trials,
+        rating: svrx.gt1.sof_led.gt1a.rating,           
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+
+    // viekira pak
+    h.rx.unshift({
+        medication: [ drugs.viek, drugs.viekx ],
+        duration: 12,
+        svr:    svrx.gt1.viek.gt1a.default.svr,
+        trials: svrx.gt1.viek.gt1a.default.trials,
+        rating: svrx.gt1.viek.gt1a.rating,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);    
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.viek.gt1a.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.viek.gt1a.f4.default.trials;
+        h.rx[0].rating = svrx.gt1.viek.gt1a.f4.rating;
+    }
+    // sofosbuvir simeprevir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.sim ], 
+        duration: 12,
+        svr:    svrx.gt1.sof_sim.gt1a.default.svr,
+        trials: svrx.gt1.sof_sim.gt1a.default.trials,
+        rating: svrx.gt1.sof_sim.gt1a.rating, 
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1a.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1a.f4.default.trials;
+        h.rx[0].rating = svrx.gt1.sof_sim.gt1a.f4.rating;    
+        addRiba(h,true);
+    }
+
+}
+
+/**
+ * Medical prescription options for HCV genotype 1b according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT1AASLDnaive1b (h) {
+
+    // sofosbuvir daclatasvir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr:    svrx.gt1.sof_dac.gt1b.default.svr, 
+        trials: svrx.gt1.sof_dac.gt1b.default.trials,
+        rating: svrx.gt1.sof_dac.gt1b.rating,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_dac.gt1b.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.gt1b.f4.default.trials;
+        h.rx[0].rating = svrx.gt1.sof_dac.gt1b.f4.rating;
+        addRiba(h,true);
+
+    }
+    // harvoni
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt1.sof_led.gt1b.default.svr,
+        trials: svrx.gt1.sof_led.gt1b.default.trials,
+        rating: svrx.gt1.sof_led.gt1b.rating,           
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+    // viekira pak
+    h.rx.unshift({
+        medication: [ drugs.viek, drugs.viekx ],
+        duration: 12,
+        svr:    svrx.gt1.viek.gt1b.default.svr,
+        trials: svrx.gt1.viek.gt1b.default.trials,
+        rating: svrx.gt1.viek.gt1b.rating,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+
+    // sofosbuvir simeprevir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.sim ], 
+        duration: 12,
+        svr:    svrx.gt1.sof_sim.gt1b.default.svr,
+        trials: svrx.gt1.sof_sim.gt1b.default.trials,
+        rating: svrx.gt1.sof_sim.gt1b.rating, 
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1b.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1b.f4.default.trials;
+        h.rx[0].rating = svrx.gt1.sof_sim.gt1b.f4.rating;    
+        addRiba(h,true);
+    }
+
+}
+
+/**
+ * Medical prescription options for HCV genotype 1
+ * with previous failed Interfaron + Riba treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT1AASLDpegriba (h) {
+    //alert(arguments.callee.name)
+    blockMessage('AASLD xGT1AASLDpegriba not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 1
+ * with previous failed Sofosbuvir + Ribavirin +/- Interferon treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT1AASLDsofriba (h) {
+    alert(arguments.callee.name)
+    blockMessage('AASLD rxGT1AASLDsofriba not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 1
+ * with previous failed Protease + Interferon + Riba treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT1AASLDprotease (h) {
+    alert(arguments.callee.name)
+    blockMessage('AASLD rxGT1AASLDprotease not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 1
+ * with previous failed Sofosbuvir + NS5A (Led or Dac) or Viekira Pak treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT1AASLDsofNS5A (h) {
+    blockMessage('AASLD GT1AASLDsofNS5A not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 2 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT2AASLD (h) {
+    blockMessage('AASLD GT2 not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 3 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT3AASLD (h) {
+    blockMessage('AASLD GT3 not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 4 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT4AASLD (h) {
+    blockMessage('AASLD GT4 not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 5 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT5AASLD (h) {
+    blockMessage('AASLD GT5 not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 6 according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT6AASLD (h) {
+    blockMessage('AASLD GT6 not yet implemented',2000);
+}
+
+/*
+*
+*
+*
+* PEG/Riba Free
+*
+*
+*
+*/
+
+/**
+ * Medical prescription options for HCV genotype 1 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
+function rxGT1 (h) {
+    blockMessage('PEG Riba Free GT1 not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 2 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
+function rxGT2 (h) {
+    blockMessage('PEG Riba Free GT2 not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 3 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
+function rxGT3 (h) {
+    blockMessage('PEG Riba Free GT3 not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 4 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
+function rxGT4 (h) {
+    blockMessage('PEG Riba Free GT4 not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 5 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
+function rxGT5 (h) {
+    blockMessage('PEG Riba Free GT5 not yet implemented',2000);
+}
+
+/**
+ * Medical prescription options for HCV genotype 6 according to PEG/Riba Free guidelines.
+ * @param {Object} h
+ */
+function rxGT6 (h) {
+    blockMessage('PEG Riba Free GT6 not yet implemented',2000);
+}
+
+/**
+ * Append medication notes to medical prescription notes.
+ * @param {Object} h
+ */
+function pushNotes (rx) {
+
+    for ( var m in rx.medication ) {
+        for ( var i in rx.medication[m].notes ) {
+            rx.notes.push(rx.medication[m].notes[i]);
+        }
+    }
+}
+
+/**
+ * Special case for Harvoni CI.
+ * @param {Object} h
+ * @returns {Boolean}
+ */
+function hasHarvoniCI (h) {
+
+    if (h.harvoniCI) {
+        var msg = redText('Sofosbuvir/Ledipasvir not recommended due to Harvoni CI(s)');
+        blockMessage(msg);
+        h.rx[0].notes.push(msg);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Check for negative predictors of response.
+ * @param {Object} h
+ * @returns {Boolean}
+ */
+function negativePredictorsOfResponse (h) {
+    if ( h.f4 &amp;&amp; (h.fail || h.platelets &lt; 75) ) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+/**
+ * Return message about 24 weeks without Ribavirin.
+ * @param {Number} svr
+ * @param {String} trials
+ * @returns {String}
+ */
+function noRiba24weeks(svr,trials) {
+
+    return greenText('Can use 24 weeks without Ribavrin in patients with contraindications or poor tolerance to ribavirin. Expected SVR: ' + svr +'% Trials: ' + trials)
+}
+
+/**
+ * Append notes about using Ribaverin.
+ * @param {Object} h
+ * @param {Boolean} optional
+ */
+function addRiba(h,optional) {
+
+    if (! h.riba) {
+        var msg = 'Sorry, we can\'t accurately add Ribavirin without Ribavirin details. Please add them and recalculate.';
+        $("#riba").prop('checked', true);
+        $("#ribavirin").show();
+        errorDialog(msg, "#platelets");
+        h.rx[0].notes.push(redText(msg));
+    }
+    var ribaDose = h.riba ? calcRibaDose(h) : 1000;
+    // need to clone drugs.riba so we can have multiple riba notes associated with various rx options
+    var riba = $.extend(true,{},drugs.riba);
+    riba.optional = optional ? true : false;
+    riba.dose = [ribaDose + 'mg'];
+    h.rx[0].medication.push(riba);
+    if (riba.optional) {
+        h.rx[0].notes.push(greenText('Ribavirin is optional'));
+    }
+    else {
+        h.rx[0].notes.push(redText('Ribavirin is mandatory'));        
+    }
+    h.rx[0].notes.push('Ribavirin use requires frequent monitoring for pancytopaenia');
+    if ( h.platelets &lt; 50 ) h.rx[0].notes.push(redText('Low platelets are a relative contraindication to Ribavirin'));
+    h.rx[0].notes.push('Ribavirin (200mg Capsules): ' + calcRibaCaps(ribaDose));
+    h.rx[0].notes.push('Ribavirin (Ibavyr 400mg &amp;amp; 600mg Tablets): ' + calcRibaTabs(ribaDose));
+}
+
+/**
+ * Set weight to calculate Ribaverin dose.
+ */
+function setRibaWeight() {
+
+    var guidelines= $("input[name=guidelines]:checked").val();
+    if ( guidelines == 'AUS' || guidelines == 'AASLD' || guidelines == 'EASL') {
+        $("#weightFull").hide();
+        $("#weight75").show();
+        $("#sfw").show();
+        $("#sfwHR").hide();
+    }
+    else {
+        $("#weightFull").show();
+        $("#weight75").hide();
+    }
+}
+
+/**
+ * Show full weight options UI.
+ */
+function showFullWeightOptions() {
+
+    $('#weightFull').show()
+    $('#sfw').hide();
+    $('#sfwHR').show();
+}
+
+/**
+ * Calculate Ribaverin dose.
+ * @param {Object} h
+ */
+function calcRibaDose (h) {
+
+    if ( ! h.riba ) return 0;
+    var dose = 0;
+    if ( h.weight == '>105' ) {
+        dose = 1400;
+    }
+    else if ( h.weight == '81-105' || h.weight == '>75' ) {
+        dose = 1200;
+    }
+    else if ( h.weight == '66-80' || h.weight == '&lt;75' ) {
+        dose = 1000;  
+    }
+    else if ( h.weight == '&lt;66' ) {
+        dose = 800;
+    }
+    else {
+        alert('Error for weight: ' + h.weight );
+    }
+    if ( h.eGFR &lt; 60 ) {
+        h.rx[0].notes.push(redText('Specialist advice highly recommended about Ribavirin dose'));
+        dose =  h.eGFR > 30 ? dose/2 : dose/3;
+    }
+  
+    return 100 * Math.round(dose/100);
+}
+
+/**
+ * Calculate the amount of Ribaverin caplules to take.
+ * Standard Ribaverin formulation is 200 mg capsules.
+ * @param {Number} dose
+ * @returns {String}
+ */
+function calcRibaCaps (dose) {
+
+    if ( dose >=1400 ) {
+        return '3 in the morning 4 at night';
+    }
+    if ( dose >=1200 ) {
+        return '3 in the morning 3 at night';
+    }
+    if ( dose >=1000 ) {
+        return '2 in the morning 3 at night';
+    }
+    if ( dose >=800 ) {
+        return '2 in the morning 2 at night';
+    }
+    if ( dose >=600 ) {
+        return '1 in the morning 2 at night';
+    }
+    if ( dose >=400 ) {
+        return '1 in the morning 1 at night';
+    }
+    if ( dose >=300 ) {
+        return 'Alternating doses, 1 daily alternating with 2 daily every other day';
+    }
+    if ( dose >=200 ) {
+        return '1 daily';
+    }
+    return redText('No Riba dose!');
+}
+
+/**
+ * Calculate the amount of Ribaverin caplules to take.
+ * Ibavyr tablets come in 400mg and 600mg scored
+ * @param {Number} dose
+ * @returns {String}
+ */
+function calcRibaTabs (dose) {
+
+    if ( dose >=1400 ) {
+        return '2 x 400mg in the morning 600mg at night';
+    }
+    if ( dose >=1200 ) {
+        return '600 mg morning and night';
+    }
+    if ( dose >=1000 ) {
+        return '600mg in the morning 400mg at night';
+    }
+    if ( dose >=800 ) {
+        return '400mg morning and night';
+    }
+    if ( dose >=600 ) {
+        return '&amp;frac12; 600mg morning and night';
+    }
+    if ( dose >=400 ) {
+        return '&amp;frac12; 400mg morning and night';
+    }
+    if ( dose >=300 ) {
+        return '&amp;frac12; 600mg daily';
+    }
+    if ( dose >=200 ) {
+        return '&amp;frac12; 400mg daily';
+    }
+    return redText('No Riba dose!');
+}
+
+/**
+ * Set fibrosis value based on kilopascal parameter.
+ */
+function setFibrosisFromKPa () {
+
+    var kpa = parseFloat($("#kpa").val());
+
+    if (isNaN(kpa)) {
+        return;
+    }
+
+    if ( kpa >= 14.5 ) {
+        $("#fibrosis").val('F4');
+    }
+    else if ( kpa >= 12.5 ) {
+        $("#fibrosis").val('F3-F4');
+    }
+    else if ( kpa >= 9.5 ) {
+        $("#fibrosis").val('F3');
+    }
+    else if ( kpa >= 8.5 ) {
+        $("#fibrosis").val('F2');
+    }
+    else if ( kpa >= 7 ) {
+        $("#fibrosis").val('F1-F2');
+    }
+    else {
+        $("#fibrosis").val('F0-F1'); 
+    }
+ 
+}
+
+/**
+ * Set fibrosis value based on Hepascore parameter.
+ * @see {@link http://www.mayomedicallaboratories.com/test-updates/attachment.php?id=34741}
+ */
+function setFibrosisHepascore () {
+
+    var hepascore = parseFloat($("#hepascore").val());
+
+    if (isNaN(hepascore)) {
+        return;
+    }
+
+    if ( hepascore >= 0.74 ) {
+        $("#fibrosis").val('F4');
+    }
+    else if ( hepascore >= 0.72 ) {
+        $("#fibrosis").val('F3-F4');
+    }
+    else if ( hepascore >= 0.58 ) {
+        $("#fibrosis").val('F3');
+    }
+    else if ( hepascore >= 0.48 ) {
+        $("#fibrosis").val('F2');
+    }
+    else if ( hepascore >= 0.31 ) {
+        $("#fibrosis").val('F1-F2');
+    }
+    else if ( hepascore >= 0.27 ) {
+        $("#fibrosis").val('F1');
+    }
+    else if ( hepascore >= 0.21 ) {
+        $("#fibrosis").val('F0-F1');
+    }
+    else {
+        $("#fibrosis").val('F0');
+    }
+}
+
+/*
+ * Set fibrosis value based on ELF Score parameter.
+ */
+function setFibrosisELFscore () {
+
+    var ELFscore = parseFloat($("#ELFscore").val());
+
+    if (isNaN(ELFscore)) {
+        return;
+    }
+
+    if ( ELFscore > 11.3 ) {
+        $("#fibrosis").val('F4');
+    }
+    else if ( ELFscore >= 9.8 ) {
+        $("#fibrosis").val('F3');
+    }
+    else if ( ELFscore >= 7.7 ) {
+        $("#fibrosis").val('F2');
+    }
+    else {
+        $("#fibrosis").val('F1');
+    }
+}
+
+/**
+ * Toggle Ribavirin dose calculator.
+ */
+function toggleRiba () {
+
+    $("#riba:checked").length == 1 ? $("#ribavirin").slideDown() : $("#ribavirin").hide(400);
+}
+
+/**
+ * Display message in a modal window.
+ * @param {String} message
+ * @param {Number} timeout
+ */
+function blockMessage(message,timeout) {
+
+    if (timeout === undefined) timeout = 3000;
+    $.blockUI({ 
+        message: message, 
+        css: {
+            border: 'none',
+            top: '100px',
+            padding: '10px 20px',
+            backgroundColor: 'rgba(255, 255, 255, 1)',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            'border-radius': '10px',
+            color: '#000'
+        },
+        timeout: timeout,
+    });
+}
+
+/**
+ * Set text color to red.
+ * @param {String} text
+ * @returns {String}
+ */
+function redText(text) {
+
+    return '&lt;span class="red">' + text + '&lt;/span>';
+}
+
+/**
+ * Set text color to green.
+ * @param {String} text
+ * @returns {String}
+ */
+function greenText(text) {
+
+    return '&lt;span class="green">' + text + '&lt;/span>';
+}
+
+/**
+ * Show error dialog modal window.
+ * @param {String} text
+ * @param {String|Element} e
+ */
+function errorDialog(text,e) {
+
+    $('#error').html(redText(text)).dialog({
+        title: "Error",
+        modal: true,
+        open: function(event, ui) { $('.ui-widget-overlay').bind('click', function(){ $("#error").dialog('close'); $(e).select().focus() } ) }
+    })
+};
+
+/**
+ * Show grading system information.
+ */
+function evidence() {
+    if ($("input[name=guidelines]:checked").val() == 'AASLD') {
+        $("#gradingAASLD").dialog({
+            title: 'AASLD Grading System Used For Guidelines',
+            width: "80%",
+            modal: true,
+            open: function(event, ui) { $('.ui-widget-overlay').bind('click', function(){ $("#gradingAASLD").dialog('close') } ) }
+        });
+    }
+    else {
+        $("#gradingEASL").dialog({
+            title: 'EASL Grading System Used For Guidelines',
+            width: "80%",
+            modal: true,
+            open: function(event, ui) { $('.ui-widget-overlay').bind('click', function(){ $("#gradingEASL ").dialog('close') } ) }
+        });
+    }
+}
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addRiba">addRiba</a></li><li><a href="global.html#blockMessage">blockMessage</a></li><li><a href="global.html#calcRibaCaps">calcRibaCaps</a></li><li><a href="global.html#calcRibaDose">calcRibaDose</a></li><li><a href="global.html#calcRibaTabs">calcRibaTabs</a></li><li><a href="global.html#data2string">data2string</a></li><li><a href="global.html#doCalculation">doCalculation</a></li><li><a href="global.html#errorDialog">errorDialog</a></li><li><a href="global.html#evidence">evidence</a></li><li><a href="global.html#getRxOptions">getRxOptions</a></li><li><a href="global.html#getTrialData">getTrialData</a></li><li><a href="global.html#greenText">greenText</a></li><li><a href="global.html#hasHarvoniCI">hasHarvoniCI</a></li><li><a href="global.html#negativePredictorsOfResponse">negativePredictorsOfResponse</a></li><li><a href="global.html#noRiba24weeks">noRiba24weeks</a></li><li><a href="global.html#pushNotes">pushNotes</a></li><li><a href="global.html#redText">redText</a></li><li><a href="global.html#renderDemographics">renderDemographics</a></li><li><a href="global.html#renderRx">renderRx</a></li><li><a href="global.html#rxGT1">rxGT1</a></li><li><a href="global.html#rxGT1AASLD">rxGT1AASLD</a></li><li><a href="global.html#rxGT1AASLDnaive1a">rxGT1AASLDnaive1a</a></li><li><a href="global.html#rxGT1AASLDnaive1b">rxGT1AASLDnaive1b</a></li><li><a href="global.html#rxGT1AASLDpegriba">rxGT1AASLDpegriba</a></li><li><a href="global.html#rxGT1AASLDprotease">rxGT1AASLDprotease</a></li><li><a href="global.html#rxGT1AASLDsofNS5A">rxGT1AASLDsofNS5A</a></li><li><a href="global.html#rxGT1AASLDsofriba">rxGT1AASLDsofriba</a></li><li><a href="global.html#rxGT1AUS">rxGT1AUS</a></li><li><a href="global.html#rxGT1EASL">rxGT1EASL</a></li><li><a href="global.html#rxGT2">rxGT2</a></li><li><a href="global.html#rxGT2AASLD">rxGT2AASLD</a></li><li><a href="global.html#rxGT2AUS">rxGT2AUS</a></li><li><a href="global.html#rxGT2EASL">rxGT2EASL</a></li><li><a href="global.html#rxGT3">rxGT3</a></li><li><a href="global.html#rxGT3AASLD">rxGT3AASLD</a></li><li><a href="global.html#rxGT3AUS">rxGT3AUS</a></li><li><a href="global.html#rxGT3EASL">rxGT3EASL</a></li><li><a href="global.html#rxGT4">rxGT4</a></li><li><a href="global.html#rxGT4AASLD">rxGT4AASLD</a></li><li><a href="global.html#rxGT4AUS">rxGT4AUS</a></li><li><a href="global.html#rxGT4EASL">rxGT4EASL</a></li><li><a href="global.html#rxGT5">rxGT5</a></li><li><a href="global.html#rxGT5AASLD">rxGT5AASLD</a></li><li><a href="global.html#rxGT5AUS">rxGT5AUS</a></li><li><a href="global.html#rxGT5EASL">rxGT5EASL</a></li><li><a href="global.html#rxGT6">rxGT6</a></li><li><a href="global.html#rxGT6AASLD">rxGT6AASLD</a></li><li><a href="global.html#rxGT6AUS">rxGT6AUS</a></li><li><a href="global.html#rxGT6EASL">rxGT6EASL</a></li><li><a href="global.html#setFibrosisFromKPa">setFibrosisFromKPa</a></li><li><a href="global.html#setFibrosisHepascore">setFibrosisHepascore</a></li><li><a href="global.html#setRibaWeight">setRibaWeight</a></li><li><a href="global.html#showFullWeightOptions">showFullWeightOptions</a></li><li><a href="global.html#showTrialData">showTrialData</a></li><li><a href="global.html#supportDecision">supportDecision</a></li><li><a href="global.html#toggleRiba">toggleRiba</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jan 21 2016 16:09:05 GMT+0300 (MSK)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
