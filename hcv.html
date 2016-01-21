@@ -309,7 +309,7 @@ var svrx = {
                     trials: 'ALLY-2 naive 89% (8/9) experienced 92% (12/13) Aggregate 90.9% (20/22)'
                 },
                 rating: {
-                    aasld: undefined,
+                    aasld: ratings.classIIaLevelB,
                     easl: ratings.B1
                 },
             },
@@ -369,7 +369,7 @@ var svrx = {
                 },
                 w24riba: {
                     svr: 93,
-                    trials: 'COSMOS 79% (28/30)'
+                    trials: 'COSMOS 93% (28/30)'
                 }               
             },
             fail: {
@@ -461,20 +461,32 @@ var svrx = {
             },
             f4: {
                 w12: {
-                    svr: 92,
-                    trials: 'TURQUOISE-II 92% (191/208)'
+                    default: {
+                        svr: 92,
+                        trials: 'TURQUOISE-II 92% (191/208)'
+                    },
+                    gt1a: {
+                        svr: 89,
+                        trials: 'TURQUOISE-II 12wk 89% (124/140)'
+                    },
+                    gt1b: {
+                        svr: 99,
+                        trials: 'TURQUOISE-II 12wk 99% (67/68) 24wk'
+                    }
                 },
                 w24: {
-                    svr: 96,
-                    trials: 'TURQUOISE-II 96% (165/172)'
-                },
-                gt1a: {
-                    svr: 92,
-                    trials: 'TURQUOISE-II 92% (239/261)'
-                },
-                gt1b: {
-                    svr: 99,
-                    trials: 'TURQUOISE-II 99% (118/119)'
+                    default: {
+                        svr: 96,
+                        trials: 'TURQUOISE-II 96% (165/172)'
+                    },
+                    gt1a: {
+                        svr: 92,
+                        trials: 'TURQUOISE-II 94% (114/121)'
+                    },
+                    gt1b: {
+                        svr: 98,
+                        trials: 'TURQUOISE-II 12wk 98% (50/51)'
+                    }
                 }
             },
             fail: {
@@ -2085,25 +2097,25 @@ function rxGT1AASLDnaive1a (h) {
         duration: 12,
         svr:    svrx.gt1.sof_dac.gt1a.default.svr, 
         trials: svrx.gt1.sof_dac.gt1a.default.trials,
-        rating: svrx.gt1.sof_dac.gt1a.rating,
+        rating: svrx.gt1.sof_dac.gt1a.rating.aasld,
         notes: []
     });
     pushNotes(h.rx[0]);
     if ( h.f4 ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr    = svrx.gt1.sof_dac.gt1a.f4.default.svr;
-        h.rx[0].trials = svrx.gt1.sof_dac.gt1a.f4.default.trials;
-        h.rx[0].rating = svrx.gt1.sof_dac.gt1a.f4.rating;
         addRiba(h,true);
-
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_dac.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.f4.default.trials;
+        h.rx[0].rating = svrx.gt1.sof_dac.f4.rating.aasld;
     }
+
     // harvoni
     h.rx.unshift({
         medication: [ drugs.sof_led ],
         duration: 12,
         svr:    svrx.gt1.sof_led.gt1a.default.svr,
         trials: svrx.gt1.sof_led.gt1a.default.trials,
-        rating: svrx.gt1.sof_led.gt1a.rating,           
+        rating: svrx.gt1.sof_led.gt1a.rating.aasld,           
         notes: []
     });
     hasHarvoniCI(h);
@@ -2113,35 +2125,34 @@ function rxGT1AASLDnaive1a (h) {
     h.rx.unshift({
         medication: [ drugs.viek, drugs.viekx ],
         duration: 12,
-        svr:    svrx.gt1.viek.gt1a.default.svr,
-        trials: svrx.gt1.viek.gt1a.default.trials,
-        rating: svrx.gt1.viek.gt1a.rating,
+        svr:    svrx.gt1.viek_viekx_riba.gt1a.default.svr,
+        trials: svrx.gt1.viek_viekx_riba.gt1a.default.trials,
+        rating: svrx.gt1.viek_viekx_riba.gt1a.rating.aasld,
         notes: []
     });
     pushNotes(h.rx[0]);
     addRiba(h);    
     if ( h.f4 ) {
         h.rx[0].duration = 24;
-        h.rx[0].svr    = svrx.gt1.viek.gt1a.f4.default.svr;
-        h.rx[0].trials = svrx.gt1.viek.gt1a.f4.default.trials;
-        h.rx[0].rating = svrx.gt1.viek.gt1a.f4.rating;
+        h.rx[0].svr    = svrx.gt1.viek_viekx_riba.f4.w24.gt1a.svr;
+        h.rx[0].trials = svrx.gt1.viek_viekx_riba.f4.w24.gt1a.trials;
     }
+
     // sofosbuvir simeprevir
     h.rx.unshift({ 
         medication:[ drugs.sof, drugs.sim ], 
         duration: 12,
         svr:    svrx.gt1.sof_sim.gt1a.default.svr,
         trials: svrx.gt1.sof_sim.gt1a.default.trials,
-        rating: svrx.gt1.sof_sim.gt1a.rating, 
+        rating: svrx.gt1.sof_sim.gt1a.rating.aasld, 
         notes: []
     });
     pushNotes(h.rx[0]);
     if ( h.f4 ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr    = svrx.gt1.sof_sim.gt1a.f4.default.svr;
-        h.rx[0].trials = svrx.gt1.sof_sim.gt1a.f4.default.trials;
-        h.rx[0].rating = svrx.gt1.sof_sim.gt1a.f4.rating;    
         addRiba(h,true);
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_sim.f4.w24riba.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.f4.w24riba.trials;   
     }
 
 }
@@ -2158,36 +2169,37 @@ function rxGT1AASLDnaive1b (h) {
         duration: 12,
         svr:    svrx.gt1.sof_dac.gt1b.default.svr, 
         trials: svrx.gt1.sof_dac.gt1b.default.trials,
-        rating: svrx.gt1.sof_dac.gt1b.rating,
+        rating: svrx.gt1.sof_dac.gt1b.rating.aasld,
         notes: []
     });
     pushNotes(h.rx[0]);
     if ( h.f4 ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr    = svrx.gt1.sof_dac.gt1b.f4.default.svr;
-        h.rx[0].trials = svrx.gt1.sof_dac.gt1b.f4.default.trials;
-        h.rx[0].rating = svrx.gt1.sof_dac.gt1b.f4.rating;
         addRiba(h,true);
-
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_dac.f4.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.f4.default.trials;
+        h.rx[0].rating = svrx.gt1.sof_dac.f4.rating.aasld;
     }
+
     // harvoni
     h.rx.unshift({
         medication: [ drugs.sof_led ],
         duration: 12,
         svr:    svrx.gt1.sof_led.gt1b.default.svr,
         trials: svrx.gt1.sof_led.gt1b.default.trials,
-        rating: svrx.gt1.sof_led.gt1b.rating,           
+        rating: svrx.gt1.sof_led.gt1b.rating.aasld,           
         notes: []
     });
     hasHarvoniCI(h);
     pushNotes(h.rx[0]);
+
     // viekira pak
     h.rx.unshift({
         medication: [ drugs.viek, drugs.viekx ],
         duration: 12,
-        svr:    svrx.gt1.viek.gt1b.default.svr,
-        trials: svrx.gt1.viek.gt1b.default.trials,
-        rating: svrx.gt1.viek.gt1b.rating,
+        svr:    svrx.gt1.viek_viekx.gt1b.default.svr,
+        trials: svrx.gt1.viek_viekx.gt1b.default.trials,
+        rating: svrx.gt1.viek_viekx.gt1b.rating.aasld,
         notes: []
     });
     pushNotes(h.rx[0]);
@@ -2198,16 +2210,15 @@ function rxGT1AASLDnaive1b (h) {
         duration: 12,
         svr:    svrx.gt1.sof_sim.gt1b.default.svr,
         trials: svrx.gt1.sof_sim.gt1b.default.trials,
-        rating: svrx.gt1.sof_sim.gt1b.rating, 
+        rating: svrx.gt1.sof_sim.gt1b.rating.aasld, 
         notes: []
     });
     pushNotes(h.rx[0]);
     if ( h.f4 ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr    = svrx.gt1.sof_sim.gt1b.f4.default.svr;
-        h.rx[0].trials = svrx.gt1.sof_sim.gt1b.f4.default.trials;
-        h.rx[0].rating = svrx.gt1.sof_sim.gt1b.f4.rating;    
         addRiba(h,true);
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_sim.f4.w24riba.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.f4.w24riba.trials;     
     }
 
 }
