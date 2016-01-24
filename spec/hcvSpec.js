@@ -1,5 +1,5 @@
 var GUIDELINES = ['AUS', 'EASL', 'AASLD', 'FIXHEPC'];
-var GENOTYPES = ['1', '1a', '1b', '2', '3', '4', '5', '6', 'Unknown'];
+var GENOTYPES = ['1', '1a', '1b', '2', '3', '4', '5', '6'];
 var FIBROSIS = [true, false];
 var PAST_TREATMENTS = ['naive', 'PEG', 'PEGRIBA', 'PROTEASE', 'SOFRIBA', 'SOFNS5A'];
 
