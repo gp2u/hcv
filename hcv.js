@@ -604,6 +604,27 @@ var svrx = {
     
     gt4: {
 
+        sof_riba: {
+            default: {
+                svr: 90,
+                trials: 'NEUTRINO 96% (27/28) Egyption Ancestry Genotype 4 79% (11/14) Aggregate 90.4% (38/42)'
+            },
+            w24: {
+                svr: 100,
+                trials: 'Egyptian Ancestry Genotype 4 100% (14/14)'
+            },
+            fail: {
+                default: {
+                    svr: 59,
+                    trials: 'Egyptian Ancestry Genotype 4 100% (10/17)'
+                },
+                w24: {
+                    svr: 87,
+                    trials: 'Egyptian Ancestry Genotype 4 100% (13/15)'
+                }
+            }
+        },
+
         sof_peg_riba: {
             default: {
                 svr: 90,
@@ -2667,12 +2688,136 @@ function rxGT3AASLDpegriba (h) {
  }
 
 /**
- * Medical prescription options for HCV genotype 4 according to AASLD 2015 recommendations.
+ * Medical prescription options for HCV genotype 4 
+ * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
 function rxGT4AASLD (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('AASLD GT4 not yet implemented',2000);
+    if ( h.fail ) {
+        if ( h.past == 'PEGRIBA' ) {
+            rxGT4AASLDpegriba(h);
+        }
+        else {
+            rxGT4AASLDpegriba(h);          
+            blockMessage('Error - unhandled failure case: ' + h.past,2000)
+        }
+    }
+    else {
+        rxGT4AASLDnaive(h);
+    }
+}
+
+ /**
+ * Medical prescription options for HCV genotype 3
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT4AASLDnaive (h) {
+
+    // harvoni
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt4.sof_led.default.svr,
+        trials: svrx.gt4.sof_led.default.trials,
+        rating: ratings.classIIbLevelB,           
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+
+    // viekira pak ribavirin
+    h.rx.unshift({
+        medication: [ drugs.viek ],
+        duration: 12,
+        svr:    svrx.gt4.viek_riba.default.svr,
+        trials: svrx.gt4.viek_riba.default.trials,
+        rating: ratings.classILevelB,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);    
+
+    // sofosbuvir ribavirin
+    h.rx.unshift({ 
+        medication:[ drugs.sof ], 
+        duration: 24,
+        svr:    svrx.gt4.sof_riba.w24.svr,
+        trials: svrx.gt4.sof_riba.w24.trials,
+        rating: ratings.classIIaLevelB, 
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sofosbuvir ribavirin interferon
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.peg ], 
+        duration: 12,
+        svr:    svrx.gt4.sof_peg_riba.default.svr,
+        trials: svrx.gt4.sof_peg_riba.default.trials,
+        rating: ratings.classIILevelB, 
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+}
+
+ /**
+ * Medical prescription options for HCV genotype 3
+ * with previous failed Interferon + Ribavirin treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT4AASLDpegriba (h) {
+
+    // harvoni
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt4.sof_led.fail.default.svr,
+        trials: svrx.gt4.sof_led.fail.default.trials,
+        rating: ratings.classIIaLevelB,           
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+
+    // viekira pak ribavirin
+    h.rx.unshift({
+        medication: [ drugs.viek ],
+        duration: 12,
+        svr:    svrx.gt4.viek_riba.fail.default.svr,
+        trials: svrx.gt4.viek_riba.fail.default.trials,
+        rating: ratings.classIIaLevelB,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);    
+
+    // sofosbuvir ribavirin
+    h.rx.unshift({ 
+        medication:[ drugs.sof ], 
+        duration: 24,
+        svr:    svrx.gt4.sof_riba.fail.w24.svr,
+        trials: svrx.gt4.sof_riba.fail.w24.trials,
+        rating: ratings.classIIaLevelB, 
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sofosbuvir ribavirin interferon
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.peg ], 
+        duration: 12,
+        svr:    svrx.gt4.sof_peg_riba.fail.default.svr,
+        trials: svrx.gt4.sof_peg_riba.fail.default.trials,
+        rating: ratings.classIIaLevelB, 
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
 }
 
 /**
