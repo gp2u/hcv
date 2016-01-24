@@ -3272,7 +3272,7 @@ function addRiba(h,optional) {
 }
 
 /**
- * Set weight to calculate Ribaverin dose.
+ * When changing guidelines default back to < 75 kg and > 75 kg option
  */
 function setRibaWeight() {
 
