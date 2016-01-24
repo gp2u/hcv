@@ -2186,7 +2186,7 @@ function rxGT1AASLDpegriba (h) {
  * @param {Object} h
  */
 function rxGT1AASLDsofriba (h) {
-    alert(arguments.callee.name)
+    //alert(arguments.callee.name)
     blockMessage('AASLD rxGT1AASLDsofriba not yet implemented',2000);
 }
 
@@ -2197,7 +2197,7 @@ function rxGT1AASLDsofriba (h) {
  * @param {Object} h
  */
 function rxGT1AASLDprotease (h) {
-    alert(arguments.callee.name)
+    //alert(arguments.callee.name)
     blockMessage('AASLD rxGT1AASLDprotease not yet implemented',2000);
 }
 
