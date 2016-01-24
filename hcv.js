@@ -2507,13 +2507,164 @@ function rxGT2AASLDpegriba (h) {
  }
 
 /**
- * Medical prescription options for HCV genotype 3 according to AASLD 2015 recommendations.
+ * Medical prescription options for HCV genotype 3 
+ * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
 function rxGT3AASLD (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('AASLD GT3 not yet implemented',2000);
+    if ( h.fail ) {
+        if ( h.past == 'PEGRIBA' ) {
+            rxGT3AASLDpegriba(h);
+        }
+        else if ( h.past == 'SOFRIBA') {
+            rxGT3AASLDsofriba(h);
+        }
+        else {
+            rxGT3AASLDsofriba(h);            
+            blockMessage('Error - unhandled failure case: ' + h.past,2000)
+        }
+    }
+    else {
+        rxGT3AASLDnaive(h);       
+    }
 }
+
+/**
+ * Medical prescription options for HCV genotype 3
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+ function rxGT3AASLDnaive (h){
+
+    // sofosbuvir daclatasvir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr:    svrx.gt3.sof_dac.default.svr, 
+        trials: svrx.gt3.sof_dac.default.trials,
+        rating: ratings.classILevelA,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h,true);
+        h.rx[0].duration = 24;
+        h.rx[0].rating   = ratings.classIIaLevelC;
+        h.rx[0].svr      = svrx.gt3.sof_dac.f4.w24.svr;
+        h.rx[0].trials   = svrx.gt3.sof_dac.f4.w24.trials;
+    }
+
+    // sofosbuvir + ribavirin + interferon
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt3.sof_peg_riba.default.svr,
+        trials: svrx.gt3.sof_peg_riba.default.trials,
+        rating: ratings.classILevelA,           
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.f4 ) {
+        h.rx[0].svr      = svrx.gt3.sof_peg_riba.f4.default.svr;
+        h.rx[0].trials   = svrx.gt3.sof_peg_riba.f4.default.trials;
+    }
+
+    // sofosbuvir + ribavirin (alternative treatment)
+    h.rx.unshift({
+        medication: [ drugs.sof],
+        duration: 24,
+        svr:    svrx.gt3.sof_riba.default.svr,
+        trials: svrx.gt3.sof_riba.default.trials,
+        rating: ratings.classILevelA,           
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.f4 ) {
+        h.rx[0].svr      = svrx.gt3.sof_riba.f4.default.svr;
+        h.rx[0].trials   = svrx.gt3.sof_riba.f4.default.trials;
+    }
+ }
+
+ /**
+ * Medical prescription options for HCV genotype 3
+ * with previous failed Interferon + Ribavirin treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT3AASLDpegriba (h) {
+
+   // sofosbuvir daclatasvir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr:    svrx.gt3.sof_dac.fail.default.svr, 
+        trials: svrx.gt3.sof_dac.fail.default.trials,
+        rating: ratings.classILevelA,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        addRiba(h,true);
+        h.rx[0].duration = 24;
+        h.rx[0].rating   = ratings.classIIaLevelC;
+        h.rx[0].svr      = svrx.gt3.sof_dac.fail.w24.svr;
+        h.rx[0].trials   = svrx.gt3.sof_dac.fail.w24.trials;
+        h.rx[0].notes.push(greenText('For patients NOT eligible to receive interferon'));
+    }
+
+    // sofosbuvir + ribavirin + interferon
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt3.sof_peg_riba.fail.default.svr,
+        trials: svrx.gt3.sof_peg_riba.fail.default.trials,
+        rating: ratings.classILevelA,           
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.f4 ) {
+        h.rx[0].svr      = svrx.gt3.sof_peg_riba.f4.default.svr;
+        h.rx[0].trials   = svrx.gt3.sof_peg_riba.f4.default.trials;
+    }
+
+}
+
+ /**
+ * Medical prescription options for HCV genotype 3
+ * with previous failed Sofosbuvir + Ribavirin treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+ function rxGT3AASLDsofriba (h) {
+
+   // sofosbuvir daclatasvir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 24,
+        svr:    svrx.gt3.sof_dac.fail.w24.svr, 
+        trials: svrx.gt3.sof_dac.fail.w24.trials,
+        rating: ratings.classIIaLevelC,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+ 
+    // sofosbuvir + ribavirin + interferon
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt3.sof_peg_riba.fail.default.svr,
+        trials: svrx.gt3.sof_peg_riba.fail.default.trials,
+        rating: ratings.classIIaLevelC,           
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+ }
 
 /**
  * Medical prescription options for HCV genotype 4 according to AASLD 2015 recommendations.
