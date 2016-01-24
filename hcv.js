@@ -490,8 +490,8 @@ var svrx = {
 
         sof_peg_riba: {
             default: {
-                svr: 96,
-                trials: 'LONESTAR 96% (22/23)'
+                svr: 95,
+                trials: 'LONESTAR 96% (22/23) BOSON 94% (15/16) Aggregate 94.8% (37/39)'
             }
         },
 
@@ -1842,7 +1842,8 @@ function rxGT6EASL (h) {
 */
 
 /**
- * Medical prescription options for HCV genotype 1 according to AASLD 2015 recommendations.
+ * Medical prescription options for HCV genotype 1 
+ * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
 function rxGT1AASLD (h) {
@@ -1878,7 +1879,7 @@ function rxGT1AASLD (h) {
             rxGT1AASLDsofNS5A(h);
         }
         else {
-            alert('Error - unhandled failure case: ' + h.past )
+            blockMessage('Error - unhandled failure case: ' + h.past )
         }
     }
     else {
@@ -1892,7 +1893,8 @@ function rxGT1AASLD (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 1a according to AASLD 2015 recommendations.
+ * Medical prescription options for HCV genotype 1a 
+ * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
 function rxGT1AASLDnaive1a (h) {
@@ -1964,7 +1966,8 @@ function rxGT1AASLDnaive1a (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 1b according to AASLD 2015 recommendations.
+ * Medical prescription options for HCV genotype 1b 
+ * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
 function rxGT1AASLDnaive1b (h) {
@@ -2031,7 +2034,7 @@ function rxGT1AASLDnaive1b (h) {
 
 /**
  * Medical prescription options for HCV genotype 1a
- * with previous failed Interfaron + Riba treatment
+ * with previous failed Interferon + Ribavirin treatment
  * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
@@ -2086,7 +2089,7 @@ function rxGT1AASLDpegriba1a (h) {
 
 /**
  * Medical prescription options for HCV genotype 1b
- * with previous failed Interfaron + Riba treatment
+ * with previous failed Interferon + Ribavirin treatment
  * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
@@ -2142,7 +2145,7 @@ function rxGT1AASLDpegriba1b (h) {
 
 /**
  * Medical prescription options for HCV genotype 1a or 1b and cirrhosis
- * with previous failed Interfaron + Riba treatment
+ * with previous failed Interferon + Ribavirin treatment
  * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
@@ -2264,7 +2267,7 @@ function rxGT1AASLDsofribaF4 (h) {
 
 /**
  * Medical prescription options for HCV genotype 1
- * with previous failed Protease + Interferon + Riba treatment
+ * with previous failed Protease + Interferon + Ribavirin treatment
  * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
@@ -2297,7 +2300,7 @@ function rxGT1AASLDprotease (h) {
 
 /**
  * Medical prescription options for HCV genotype 1 and cirrhosis
- * with previous failed Protease + Interferon + Riba treatment
+ * with previous failed Protease + Interferon + Ribavirin treatment
  * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
@@ -2377,13 +2380,131 @@ function rxGT1AASLDsofNS5A (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 2 according to AASLD 2015 recommendations.
+ * Medical prescription options for HCV genotype 2 
+ * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
 function rxGT2AASLD (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('AASLD GT2 not yet implemented',2000);
+    if ( h.fail ) {
+        if ( h.past == 'PEGRIBA' ) {
+            rxGT2AASLDpegriba(h);
+        }
+        else if ( h.past == 'SOFRIBA') {
+            rxGT2AASLDsofriba(h);
+        }
+        else {
+            rxGT2AASLDsofriba(h);            
+            blockMessage('Error - unhandled failure case: ' + h.past,2000)
+        }
+    }
+    else {
+        rxGT2AASLDnaive(h);       
+    }
 }
+
+/**
+ * Medical prescription options for HCV genotype 2
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+ function rxGT2AASLDnaive (h){
+
+    // sofosbuvir + ribavirin
+    h.rx.unshift({
+        medication: [ drugs.sof ],
+        duration: 12,
+        svr:    svrx.gt2.sof_riba.default.svr,
+        trials: svrx.gt2.sof_riba.default.trials,
+        rating: ratings.classILevelA,           
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+    if ( h.f4 ) {
+        h.rx[0].duration = 16;
+        h.rx[0].rating   = ratings.classIIbLevelC;
+        h.rx[0].svr      = svrx.gt2.sof_riba.f4.w16.svr;
+        h.rx[0].traials  = svrx.gt2.sof_riba.f4.w16.trials;
+    }
+
+    // sofosbuvir daclatasvir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 12,
+        svr:    svrx.gt2.sof_dac.default.svr, 
+        trials: svrx.gt2.sof_dac.default.trials,
+        rating: ratings.classIIaLevelB,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+    }
+ }
+
+ /**
+ * Medical prescription options for HCV genotype 2
+ * with previous failed Interferon + Ribavirin treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+function rxGT2AASLDpegriba (h) {
+    // sofosbuvir + ribavirin
+    h.rx.unshift({
+        medication: [ drugs.sof ],
+        duration: 24,
+        svr:    svrx.gt2.sof_riba.default.svr,
+        trials: svrx.gt2.sof_riba.default.trials,
+        rating: ratings.classILevelA,           
+        notes: [greenText('May use 16 or 24 weeks. The decision to use 16 or 24 weeks should be made on an individual basis')]
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sofosbuvir + ribavirin + interferon
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt2.sof_peg_riba.default.svr,
+        trials: svrx.gt2.sof_peg_riba.default.trials,
+        rating: ratings.classIIaLevelB,           
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+}
+
+ /**
+ * Medical prescription options for HCV genotype 2
+ * with previous failed Sofosbuvir + Ribavirin treatment
+ * according to AASLD 2015 recommendations.
+ * @param {Object} h
+ */
+ function rxGT2AASLDsofriba (h) {
+
+    // sofosbuvir + ribavirin + interferon
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.peg ],
+        duration: 12,
+        svr:    svrx.gt2.sof_peg_riba.default.svr,
+        trials: svrx.gt2.sof_peg_riba.default.trials,
+        rating: ratings.classIIaLevelC,           
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
+    // sofosbuvir daclatasvir
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.dac ], 
+        duration: 24,
+        svr:    svrx.gt2.sof_dac.default.svr, 
+        trials: svrx.gt2.sof_dac.default.trials,
+        rating: ratings.classIIaLevelB,
+        notes: [greenText('For patients NOT eligible to receive interferon')]
+    });
+    addRiba(h,true);
+ }
 
 /**
  * Medical prescription options for HCV genotype 3 according to AASLD 2015 recommendations.
