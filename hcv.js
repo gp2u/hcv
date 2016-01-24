@@ -1,4 +1,4 @@
-var version = '1.3';
+var version = '1.4';
 
 var ratings = {
     classILevelA   : 'Class I, Level A',
@@ -199,7 +199,7 @@ var svrx = {
         sof_dac: {
             default: {
                 svr: 97,
-                trials: 'ALLY-2  naive (80/83) experienced (43/44) Aggregate 96.8% (123/127)'
+                trials: 'ALLY-2  naive 96% (80/83) experienced 98% (43/44) Aggregate 96.8% (123/127)'
             },
             w24: {
                 svr: 100,
@@ -498,7 +498,11 @@ var svrx = {
         sof_dac: {
             default: {
                 svr: 92,
-                trials: 'UN-NAMED http://www.ncbi.nlm.nih.gov/pubmed/24428467 92% (24/26) AI444040 (24wk) 96% (25/26)'
+                trials: 'UN-NAMED http://www.ncbi.nlm.nih.gov/pubmed/24428467 92% (24/26)'
+            },
+            w24: {
+                svr: 96,
+                trials: 'AI444040 (24wk) 96% (25/26)'
             }
         }
     },
@@ -1025,12 +1029,12 @@ function getRxOptions(h) {
         if ( h.genotype.match(/6/) ) rxGT6AASLD(h); 
     }
     else if (h.guidelines == 'FIXHEPC') {
-        if ( h.genotype.match(/1/) ) rxGT1(h);
-        if ( h.genotype.match(/2/) ) rxGT2(h);   
-        if ( h.genotype.match(/3/) ) rxGT3(h);
-        if ( h.genotype.match(/4/) ) rxGT4(h);
-        if ( h.genotype.match(/5/) ) rxGT5(h);
-        if ( h.genotype.match(/6/) ) rxGT6(h);       
+        if ( h.genotype.match(/1/) ) rxGT1FIXHEPC(h);
+        if ( h.genotype.match(/2/) ) rxGT2FIXHEPC(h);   
+        if ( h.genotype.match(/3/) ) rxGT3FIXHEPC(h);
+        if ( h.genotype.match(/4/) ) rxGT4FIXHEPC(h);
+        if ( h.genotype.match(/5/) ) rxGT5FIXHEPC(h);
+        if ( h.genotype.match(/6/) ) rxGT6FIXHEPC(h);       
     }
     else {
         alert('OMG, the flux capacitor has imploded!');
@@ -1050,7 +1054,8 @@ function getRxOptions(h) {
 */
 
 /**
- * Medical prescription options for HCV genotype 1 according to AUS Treatment Protocols.
+ * Medical prescription options for HCV genotype 1 
+ * according to AUS Treatment Protocols.
  * @param {Object} h
  */
 function rxGT1AUS (h) {
@@ -1119,7 +1124,8 @@ function rxGT1AUS (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 2 according to AUS Treatment Protocols.
+ * Medical prescription options for HCV genotype 2 
+ * according to AUS Treatment Protocols.
  * @param {Object} h
  */
 function rxGT2AUS (h) {
@@ -1148,7 +1154,8 @@ function rxGT2AUS (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 3 according to AUS Treatment Protocols.
+ * Medical prescription options for HCV genotype 3 
+ * according to AUS Treatment Protocols.
  * @param {Object} h
  */
 function rxGT3AUS (h) {
@@ -1197,7 +1204,8 @@ function rxGT3AUS (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 4 according to AUS Treatment Protocols.
+ * Medical prescription options for HCV genotype 4 
+ * according to AUS Treatment Protocols.
  * @param {Object} h
  */
 function rxGT4AUS (h) {
@@ -1226,7 +1234,8 @@ function rxGT4AUS (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 5 according to AUS Treatment Protocols.
+ * Medical prescription options for HCV genotype 5 
+ * according to AUS Treatment Protocols.
  * @param {Object} h
  */
 function rxGT5AUS (h) {
@@ -1244,7 +1253,8 @@ function rxGT5AUS (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 6 according to AUS Treatment Protocols.
+ * Medical prescription options for HCV genotype 6 
+ * according to AUS Treatment Protocols.
  * @param {Object} h
  */
 function rxGT6AUS (h) {
@@ -1273,7 +1283,8 @@ function rxGT6AUS (h) {
 
 
 /**
- * Medical prescription options for HCV genotype 1 according to EASL 2015 recommendations.
+ * Medical prescription options for HCV genotype 1 
+ * according to EASL 2015 recommendations.
  * @param {Object} h
  */
 function rxGT1EASL (h) {
@@ -1487,7 +1498,8 @@ function rxGT1EASL (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 2 according to EASL 2015 recommendations.
+ * Medical prescription options for HCV genotype 2 
+ * according to EASL 2015 recommendations.
  * @param {Object} h
  */
 function rxGT2EASL (h) {
@@ -1548,7 +1560,8 @@ function rxGT2EASL (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 3 according to EASL 2015 recommendations.
+ * Medical prescription options for HCV genotype 3 
+ * according to EASL 2015 recommendations.
  * @param {Object} h
  */
 function rxGT3EASL (h) {
@@ -1623,7 +1636,8 @@ function rxGT3EASL (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 4 according to EASL 2015 recommendations.
+ * Medical prescription options for HCV genotype 4 
+ * according to EASL 2015 recommendations.
  * @param {Object} h
  */
 function rxGT4EASL (h) {
@@ -1740,7 +1754,8 @@ function rxGT4EASL (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 5 according to EASL 2015 recommendations.
+ * Medical prescription options for HCV genotype 5 
+ * according to EASL 2015 recommendations.
  * @param {Object} h
  */
 function rxGT5EASL (h) {
@@ -1796,7 +1811,8 @@ function rxGT5EASL (h) {
 
 }
 /**
- * Medical prescription options for HCV genotype 6 according to EASL 2015 recommendations.
+ * Medical prescription options for HCV genotype 6 
+ * according to EASL 2015 recommendations.
  * @param {Object} h
  */
 function rxGT6EASL (h) {
@@ -2821,21 +2837,75 @@ function rxGT4AASLDpegriba (h) {
 }
 
 /**
- * Medical prescription options for HCV genotype 5 according to AASLD 2015 recommendations.
+ * Medical prescription options for HCV genotype 5 
+ * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
 function rxGT5AASLD (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('AASLD GT5 not yet implemented',2000);
+
+    // harvoni
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt5.sof_led.default.svr,
+        trials: svrx.gt5.sof_led.default.trials,
+        rating: ratings.classIIaLevelB,           
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+    if ( h.fail ) {
+        h.rx[0].rating = ratings.classIIaLevelC;
+    }
+
+    // sofosbuvir ribavirin interferon
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.peg ], 
+        duration: 12,
+        svr:    svrx.gt5.sof_peg_riba.default.svr,
+        trials: svrx.gt5.sof_peg_riba.default.trials,
+        rating: ratings.classIIaLevelB, 
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
 }
 
 /**
- * Medical prescription options for HCV genotype 6 according to AASLD 2015 recommendations.
+ * Medical prescription options for HCV genotype 6 
+ * according to AASLD 2015 recommendations.
  * @param {Object} h
  */
 function rxGT6AASLD (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('AASLD GT6 not yet implemented',2000);
+
+    // harvoni
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt5.sof_led.default.svr,
+        trials: svrx.gt5.sof_led.default.trials,
+        rating: ratings.classIIaLevelB,           
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+    if ( h.fail ) {
+        h.rx[0].rating = ratings.classIIaLevelC;
+    }
+
+    // sofosbuvir ribavirin interferon
+    h.rx.unshift({ 
+        medication:[ drugs.sof, drugs.peg ], 
+        duration: 12,
+        svr:    svrx.gt5.sof_peg_riba.default.svr,
+        trials: svrx.gt5.sof_peg_riba.default.trials,
+        rating: ratings.classIIaLevelB, 
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    addRiba(h);
+
 }
 
 /*
@@ -2849,57 +2919,273 @@ function rxGT6AASLD (h) {
 */
 
 /**
- * Medical prescription options for HCV genotype 1 according to PEG/Riba Free guidelines.
+ * Medical prescription options for HCV genotype 1 
+ * according to FIXHEPC 2015 recommendations.
  * @param {Object} h
  */
-function rxGT1 (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('PEG Riba Free GT1 not yet implemented',2000);
+function rxGT1FIXHEPC (h) {
+
+    // sof_led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt1.sof_led.default.svr,
+        trials: svrx.gt1.sof_led.default.trials,
+        notes: []
+    });
+    hasHarvoniCI(h);
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1a/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_led.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_led.gt1a.default.trials;
+    }
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials;
+    }
+
+    if ( negativePredictorsOfResponse(h) ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr    = svrx.gt1.sof_led.fail.w24.svr;
+        h.rx[0].trials = svrx.gt1.sof_led.fail.w24.trials;
+    }
+
+    // viek
+    h.rx.unshift({
+        medication: [ drugs.viek, drugs.viekx ],
+        duration: 12,
+        svr:    svrx.gt1.viek_viekx.default.svr,
+        trials: svrx.gt1.viek_viekx.default.trials,
+        rating: ratings.A1,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.viek_viekx.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.viek_viekx.gt1b.default.trials;
+    }
+
+    // sof sim
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.sim ],
+        duration: 12,
+        svr:    svrx.gt1.sof_sim.default.svr,
+        trials: svrx.gt1.sof_sim.default.trials,
+        rating: ratings.A1,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1b.default.trials;
+    }
+    else {
+        h.rx[0].svr    = svrx.gt1.sof_sim.gt1a.default.svr; 
+        h.rx[0].trials = svrx.gt1.sof_sim.gt1a.default.trials;        
+    }
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr      = svrx.gt1.sof_sim.f4.w12.svr;
+        h.rx[0].trials   = svrx.gt1.sof_sim.f4.w12.trials;
+    }
+    if ( h.fail ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr      = svrx.gt1.sof_sim.fail.w12.svr;
+        h.rx[0].trials   = svrx.gt1.sof_sim.fail.w12.trials;
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt1.sof_dac.default.svr,
+        trials: svrx.gt1.sof_dac.default.trials,
+        rating: ratings.A1,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_dac.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_dac.gt1b.default.trials;
+    }
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+    }
+
 }
 
 /**
- * Medical prescription options for HCV genotype 2 according to PEG/Riba Free guidelines.
+ * Medical prescription options for HCV genotype 2 
+ * according to FIXHEPC 2015 recommendations.
  * @param {Object} h
  */
-function rxGT2 (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('PEG Riba Free GT2 not yet implemented',2000);
+function rxGT2FIXHEPC (h) {
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt2.sof_dac.default.svr,
+        trials: svrx.gt2.sof_dac.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+    }
+
 }
 
 /**
- * Medical prescription options for HCV genotype 3 according to PEG/Riba Free guidelines.
+ * Medical prescription options for HCV genotype 3 
+ * according to FIXHEPC 2015 recommendations.
  * @param {Object} h
  */
-function rxGT3 (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('PEG Riba Free GT3 not yet implemented',2000);
+function rxGT3FIXHEPC (h) {
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt3.sof_dac.default.svr,
+        trials: svrx.gt3.sof_dac.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr      = svrx.gt3.sof_dac.f4.w24.svr;
+        h.rx[0].trials   = svrx.gt3.sof_dac.f4.w24.trials;
+    }
+    if ( h.fail ) {
+        h.rx[0].duration = 24;
+        h.rx[0].svr      = svrx.gt3.sof_dac.fail.w24.svr;
+        h.rx[0].trials   = svrx.gt3.sof_dac.fail.w24.trials;
+    }
+
 }
 
 /**
- * Medical prescription options for HCV genotype 4 according to PEG/Riba Free guidelines.
+ * Medical prescription options for HCV genotype 4 
+ * according to FIXHEPC 2015 recommendations.
  * @param {Object} h
  */
-function rxGT4 (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('PEG Riba Free GT4 not yet implemented',2000);
+function rxGT4FIXHEPC (h) {
+
+    // sof led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt4.sof_led.default.svr,
+        trials: svrx.gt4.sof_led.default.trials,
+        notes: []
+    });
+    hasHarvoniCI(h)
+    pushNotes(h.rx[0]);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+    }
+
+    // sof sim
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.sim ],
+        duration: 12,
+        svr:    svrx.gt4.sof_sim.default.svr,
+        trials: svrx.gt4.sof_sim.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt4.sof_dac.default.svr,
+        trials: svrx.gt4.sof_dac.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+    }
+
 }
 
 /**
- * Medical prescription options for HCV genotype 5 according to PEG/Riba Free guidelines.
+ * Medical prescription options for HCV genotype 5 
+ * according to FIXHEPC 2015 recommendations.
  * @param {Object} h
  */
-function rxGT5 (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('PEG Riba Free GT5 not yet implemented',2000);
-}
+function rxGT5FIXHEPC (h) {
 
+    // sof led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt5.sof_led.default.svr,
+        trials: svrx.gt5.sof_led.default.trials,
+        notes: []
+    });
+    hasHarvoniCI(h)
+    pushNotes(h.rx[0]);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt5.sof_dac.default.svr,
+        trials: svrx.gt5.sof_dac.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+    }
+
+}
 /**
- * Medical prescription options for HCV genotype 6 according to PEG/Riba Free guidelines.
+ * Medical prescription options for HCV genotype 6 
+ * according to FIXHEPC 2015 recommendations.
  * @param {Object} h
  */
-function rxGT6 (h) {
-    h.rx = ['blank']; // will pass testing
-    blockMessage('PEG Riba Free GT6 not yet implemented',2000);
+function rxGT6FIXHEPC (h) {
+
+    // sof led
+    h.rx.unshift({
+        medication: [ drugs.sof_led ],
+        duration: 12,
+        svr:    svrx.gt6.sof_led.default.svr,
+        trials: svrx.gt6.sof_led.default.trials,
+        notes: []
+    });
+    hasHarvoniCI(h)
+    pushNotes(h.rx[0]);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+    }
+
+    // sof dac
+    h.rx.unshift({
+        medication: [ drugs.sof, drugs.dac ],
+        duration: 12,
+        svr:    svrx.gt6.sof_dac.default.svr,
+        trials: svrx.gt6.sof_dac.default.trials,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+    if ( h.f4 || h.fail ) {
+        h.rx[0].duration = 24;
+    }
+
 }
 
 /**
