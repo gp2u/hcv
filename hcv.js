@@ -2957,7 +2957,6 @@ function rxGT1FIXHEPC (h) {
         duration: 12,
         svr:    svrx.gt1.viek_viekx.default.svr,
         trials: svrx.gt1.viek_viekx.default.trials,
-        rating: ratings.A1,
         notes: []
     });
     pushNotes(h.rx[0]);
@@ -2972,7 +2971,6 @@ function rxGT1FIXHEPC (h) {
         duration: 12,
         svr:    svrx.gt1.sof_sim.default.svr,
         trials: svrx.gt1.sof_sim.default.trials,
-        rating: ratings.A1,
         notes: []
     });
     pushNotes(h.rx[0]);
@@ -3002,7 +3000,6 @@ function rxGT1FIXHEPC (h) {
         duration: 12,
         svr:    svrx.gt1.sof_dac.default.svr,
         trials: svrx.gt1.sof_dac.default.trials,
-        rating: ratings.A1,
         notes: []
     });
     pushNotes(h.rx[0]);
