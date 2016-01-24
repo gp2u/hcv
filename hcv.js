@@ -3286,6 +3286,8 @@ function setRibaWeight() {
     else {
         $("#weightFull").show();
         $("#weight75").hide();
+        $('#riba').attr('checked', false);
+        $("#ribavirin").hide(400);
     }
 }
 
