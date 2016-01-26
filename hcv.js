@@ -3306,11 +3306,11 @@ function showRibaWeight() {
 
     var guidelines= $("input[name=guidelines]:checked").val();
     if ( guidelines == 'AUS' || guidelines == 'AASLD' || guidelines == 'EASL') {
-        $('#riba').attr('checked', 'checked');
+        $('#riba').prop('checked', true);
         $("#ribavirin").slideDown()
     }
     else {
-        $('#riba').attr('checked', false);
+        $('#riba').prop('checked', false);
         $("#ribavirin").hide(400);
     }
     if ( $('#calculate').val() == 'Recalculate') {
