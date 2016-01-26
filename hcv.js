@@ -3300,34 +3300,38 @@ function addRiba(h,optional) {
 }
 
 /**
- * When changing guidelines default back to < 75 kg and > 75 kg option
+ * When changing guidelines show/hide riba calculator and recalculate
  */
-function setRibaWeight() {
+function showRibaWeight() {
 
     var guidelines= $("input[name=guidelines]:checked").val();
     if ( guidelines == 'AUS' || guidelines == 'AASLD' || guidelines == 'EASL') {
-        $("#weightFull").hide();
-        $("#weight75").show();
-        $("#sfw").show();
-        $("#sfwHR").hide();
+        $('#riba').attr('checked', 'checked');
+        $("#ribavirin").slideDown()
     }
     else {
-        $("#weightFull").show();
-        $("#weight75").hide();
         $('#riba').attr('checked', false);
         $("#ribavirin").hide(400);
+    }
+    if ( $('#calculate').val() == 'Recalculate') {
+        supportDecision();
     }
 }
 
 /**
- * Show full weight options UI.
+ * Toggle full weight options UI.
  */
-function showFullWeightOptions() {
-
-    $('#weightFull').show()
-    $('#sfw').hide();
-    $('#sfwHR').show();
-}
+ function toggleFullWeightOptions() {
+  
+    if ( $('#weightFull').is(':visible') ) {
+        $("#weightFull").hide();
+        $('#sfw').html('Show full weight options');
+    }
+    else {
+        $('#weightFull').show()
+        $('#sfw').html('Hide full weight options');   
+    }
+ }
 
 /**
  * Calculate Ribaverin dose.

@@ -53,6 +53,7 @@ button:focus {outline:0;}
 .clear { clear: both;}
 .tool-title{ float:left;padding:0.2em 2em 0.5em 0; font-weight: 700;}
 .ui-dialog { position: fixed; padding: 0em; width: 300px; overflow: hidden; }
+#sfw { padding-left:10px;}
 input[type=button] {
     color:#ffffff;
     background-color:#499ff9;
@@ -158,10 +159,10 @@ function googleTranslateElementInit() {
         <label>Guidelines<label>
       </td>
       <td>
-        <input type="radio" name="guidelines" value="AUS" checked="checked" onChange="setRibaWeight()"> AUS
-        <input type="radio" name="guidelines" value="EASL" onChange="setRibaWeight()"> EASL
-        <input type="radio" name="guidelines" value="AASLD" onChange="setRibaWeight()"> AASLD
-        <input type="radio" name="guidelines" value="FIXHEPC" onChange="setRibaWeight()"> PEG/Riba Free
+        <input type="radio" name="guidelines" value="AUS" checked="checked" onChange="showRibaWeight()"> AUS
+        <input type="radio" name="guidelines" value="EASL" onChange="showRibaWeight()"> EASL
+        <input type="radio" name="guidelines" value="AASLD" onChange="showRibaWeight()"> AASLD
+        <input type="radio" name="guidelines" value="FIXHEPC" onChange="showRibaWeight()"> PEG/Riba Free
       </td>
     </tr>
     <tr>
@@ -169,11 +170,11 @@ function googleTranslateElementInit() {
         <label>Ribavirin<label>
       </td>
       <td>
-        <input type="checkbox" id="riba" onChange="toggleRiba()"> (Check this box to open dose calculator)</td>
+        <input type="checkbox" id="riba" onChange="toggleRiba()" checked="checked"> (Check this box to open dose calculator)</td>
     </tr>
     <tr>
       <td colspan="2">
-        <fieldset id="ribavirin" class="hidden">
+        <fieldset id="ribavirin">
           <legend>Ribavirin Dose Calculator</legend>
           <table>
             <tr>
@@ -181,7 +182,7 @@ function googleTranslateElementInit() {
                 <label>Platelets<label>
               </td>
               <td>
-                <input type="text" class="narrow" id="platelets"> * If <50 Ribavirin presents significant risks
+                <input type="text" class="narrow" id="platelets"> * If &lt; 50 Ribavirin presents significant risks
               </td>
             </tr>
             <tr>
@@ -189,17 +190,17 @@ function googleTranslateElementInit() {
                 <label>Weight<label>
               </td>
               <td>
+                <div id="weight75" class="cl">
+                <span class="nowrap"><input type="radio" name="weight" value="&lt;75"> &lt; 75kg</span>
+                <span class="nowrap"><input type="radio" name="weight" value="&gt;75"> &gt; 75kg</span>
+                <a id="sfw" href="javascript:toggleFullWeightOptions()">Show full weight options</a>
+                </div>
                 <div id="weightFull" class="hidden">
+                <hr>
                 <span class="nowrap"><input type="radio" name="weight" value="&lt;66"> &lt; 66kg</span>
                 <span class="nowrap"><input type="radio" name="weight" value="66-80"> 66-80kg</span>
                 <span class="nowrap"><input type="radio" name="weight" value="81-105"> 81-105kg</span>
                 <span class="nowrap"><input type="radio" name="weight" value="&gt;105"> &gt; 105kg</span>
-                </div>
-                <div id="weight75" class="cl">
-                <hr id="sfwHR" class="hidden">
-                <span class="nowrap"><input type="radio" name="weight" value="&lt;75"> &lt; 75kg</span>
-                <span class="nowrap"><input type="radio" name="weight" value="&gt;75"> &gt; 75kg</span>
-                <a id="sfw" href="javascript:showFullWeightOptions()">Show full weight options</a>
                 </div>
               </td>
             </tr>
