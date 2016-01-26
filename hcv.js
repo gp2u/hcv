@@ -2269,7 +2269,7 @@ function rxGT1AASLDpegribaF4 (h) {
     else {
         h.rx[0].svr    = svrx.gt1.viek_viekx_riba.f4.w24.gt1a.svr;
         h.rx[0].trials = svrx.gt1.viek_viekx_riba.f4.w24.gt1a.trials;
-        h.rx[0].notes.push(greenText('Ribavirin is only given for all 24 weeks')); 
+        h.rx[0].notes.push(greenText('Ribavirin is given for all 24 weeks')); 
     }
     addRiba(h,true);    
 
