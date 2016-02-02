@@ -1,5 +1,14 @@
 var GUIDELINES = ['AUS', 'EASL', 'AASLD', 'FIXHEPC'];
-var GENOTYPES = ['1', '1a', '1b', '2', '3', '4', '5', '6'];
+var GENOTYPES = [
+  getGenotype('1'),
+  getGenotype('1a'),
+  getGenotype('1b'),
+  getGenotype('2'),
+  getGenotype('3'),
+  getGenotype('4'),
+  getGenotype('5'),
+  getGenotype('6')
+];
 var FIBROSIS = [true, false];
 var PAST_TREATMENTS = ['naive', 'PEG', 'PEGRIBA', 'PROTEASE', 'SOFRIBA', 'SOFNS5A'];
 

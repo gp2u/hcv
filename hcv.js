@@ -805,7 +805,7 @@ function supportDecision () {
     $("#demographics").html('');
     $("#rx").html('');
     var h = {};
-    h.genotype  = $("#genotype option:selected").text();
+    h.genotype  = getGenotype($("#genotype").val());
     h.fibrosis  = $("#fibrosis option:selected").text();
     h.harvoniCI = $("input[name=harvoniCI]:checked").val();
     h.guidelines= $("input[name=guidelines]:checked").val();
@@ -821,7 +821,8 @@ function supportDecision () {
 
     var error = '';
     var errorFocus = ''
-    if (h.genotype  == '' ) { 
+    console.log(h.genotype);
+    if (h.genotype  === undefined) {
         error += 'Please select Genotype<br>'; 
         if (errorFocus == '') errorFocus = '#genotype' 
     }
@@ -833,7 +834,7 @@ function supportDecision () {
         error += 'Please select Past Treament<br>'; 
         if (errorFocus == '') errorFocus = '#past' 
     }
-    if (h.harvoniCI === undefined && ! ( h.genotype.match(/2/) || h.genotype.match(/3/) ) ) { 
+    if (h.harvoniCI === undefined && h.genotype && [2,3].indexOf(h.genotype.type) === -1) {
         error += 'Please select Harvoni CI<br>'; 
         if (errorFocus == '') errorFocus = '#harvoniCI' 
     }
@@ -865,6 +866,36 @@ function supportDecision () {
     blockMessage('Calculating...',500);
     $("#calculate").val('Recalculate');
     setTimeout(function(){doCalculation(h)},450);
+}
+
+/**
+ * @typedef Genotype
+ * @type {Object}
+ * @property {Number} type
+ * @property {String} subtype
+ */
+
+/**
+ * Get genotype object from genotype string.
+ * @param {String} s
+ * @returns {Genotype}
+ */
+function getGenotype(s) {
+  if (s === '') {
+    return undefined;
+  }
+  var type = parseInt(s);
+  var subtype = s[1];
+  return {
+    type: type,
+    subtype: subtype,
+    toString: function() {
+      if (!!this.subtype) {
+        return this.type + this.subtype;
+      }
+      return this.type;
+    }
+  }
 }
 
 /**
@@ -1031,43 +1062,8 @@ function data2string(obj) {
  * @param {Object} h
  */
 function getRxOptions(h) {
-
-    if (h.guidelines == 'AUS') {
-        if ( h.genotype.match(/1/) ) rxGT1AUS(h);
-        if ( h.genotype.match(/2/) ) rxGT2AUS(h);   
-        if ( h.genotype.match(/3/) ) rxGT3AUS(h);
-        if ( h.genotype.match(/4/) ) rxGT4AUS(h);
-        if ( h.genotype.match(/5/) ) rxGT5AUS(h);
-        if ( h.genotype.match(/6/) ) rxGT6AUS(h);       
-    }
-    else if (h.guidelines == 'EASL') {
-        if ( h.genotype.match(/1/) ) rxGT1EASL(h);
-        if ( h.genotype.match(/2/) ) rxGT2EASL(h);   
-        if ( h.genotype.match(/3/) ) rxGT3EASL(h);
-        if ( h.genotype.match(/4/) ) rxGT4EASL(h);
-        if ( h.genotype.match(/5/) ) rxGT5EASL(h);
-        if ( h.genotype.match(/6/) ) rxGT6EASL(h); 
-    }
-    else if (h.guidelines == 'AASLD') {
-        if ( h.genotype.match(/1/) ) rxGT1AASLD(h);
-        if ( h.genotype.match(/2/) ) rxGT2AASLD(h);   
-        if ( h.genotype.match(/3/) ) rxGT3AASLD(h);
-        if ( h.genotype.match(/4/) ) rxGT4AASLD(h);
-        if ( h.genotype.match(/5/) ) rxGT5AASLD(h);
-        if ( h.genotype.match(/6/) ) rxGT6AASLD(h); 
-    }
-    else if (h.guidelines == 'FIXHEPC') {
-        if ( h.genotype.match(/1/) ) rxGT1FIXHEPC(h);
-        if ( h.genotype.match(/2/) ) rxGT2FIXHEPC(h);   
-        if ( h.genotype.match(/3/) ) rxGT3FIXHEPC(h);
-        if ( h.genotype.match(/4/) ) rxGT4FIXHEPC(h);
-        if ( h.genotype.match(/5/) ) rxGT5FIXHEPC(h);
-        if ( h.genotype.match(/6/) ) rxGT6FIXHEPC(h);       
-    }
-    else {
-        alert('OMG, the flux capacitor has imploded!');
-    }
-
+  var fn = ["rxGT", h.genotype.type, h.guidelines].join("");
+  window[fn](h);
 }
 
 
@@ -1120,7 +1116,7 @@ function rxGT1AUS (h) {
         notes: []
     });
     pushNotes(h.rx[0]);
-    if ( ! h.genotype.match(/1b/)) {
+    if (h.genotype.subtype !== 'b') {
         addRiba(h,false);
         h.rx[0].svr    = svrx.gt1.viek_viekx_riba.gt1a.default.svr;
         h.rx[0].trials = svrx.gt1.viek_viekx_riba.gt1a.default.trials;
@@ -1136,7 +1132,7 @@ function rxGT1AUS (h) {
     });
     hasHarvoniCI(h);
     pushNotes(h.rx[0]);
-    if ( h.genotype.match(/1b/)) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials
     }
@@ -1328,11 +1324,11 @@ function rxGT1EASL (h) {
     });
     pushNotes(h.rx[0]);
     addRiba(h);
-    if ( h.genotype.match(/1a/) ) {
+    if (h.genotype.subtype === 'a') {
         h.rx[0].svr    = svrx.gt1.sof_peg_riba.gt1a.default.svr;
         h.rx[0].trials = svrx.gt1.sof_peg_riba.gt1a.default.trials;
     }
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.sof_peg_riba.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sof_peg_riba.gt1b.default.trials;
     }
@@ -1362,11 +1358,11 @@ function rxGT1EASL (h) {
     });
     pushNotes(h.rx[0]);
     addRiba(h);
-    if ( h.genotype.match(/1a/) ) {
+    if (h.genotype.subtype === 'a') {
         h.rx[0].svr    = svrx.gt1.sim_peg_riba.gt1a.default.svr;
         h.rx[0].trials = svrx.gt1.sim_peg_riba.gt1a.default.trials;
     }
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.sim_peg_riba.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sim_peg_riba.gt1b.default.trials;
     }
@@ -1375,11 +1371,11 @@ function rxGT1EASL (h) {
         h.rx[0].trials = svrx.gt1.sim_peg_riba.f4.default.trials;
     }
     if ( h.fail && ! h.f4 ) {
-        if ( h.genotype.match(/1a/) ) {
+        if (h.genotype.subtype === 'a') {
             h.rx[0].svr    = svrx.gt1.sim_peg_riba.fail.gt1a.svr;
             h.rx[0].trials = svrx.gt1.sim_peg_riba.fail.gt1a.trials;
         }
-        else if ( h.genotype.match(/1b/) ) {
+        else if (h.genotype.subtype === 'b') {
             h.rx[0].svr    = svrx.gt1.sim_peg_riba.fail.gt1b.svr;
             h.rx[0].trials = svrx.gt1.sim_peg_riba.fail.gt1b.trials;
         }
@@ -1402,11 +1398,11 @@ function rxGT1EASL (h) {
     hasHarvoniCI(h);
     pushNotes(h.rx[0]);
 
-    if ( h.genotype.match(/1a/) ) {
+    if (h.genotype.subtype === 'a') {
         h.rx[0].svr    = svrx.gt1.sof_led.gt1a.default.svr;
         h.rx[0].trials = svrx.gt1.sof_led.gt1a.default.trials;
     }
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials;
     }
@@ -1436,7 +1432,7 @@ function rxGT1EASL (h) {
     });
     pushNotes(h.rx[0]);
 
-    if ( h.genotype.match(/1b/)) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.viek_viekx.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.viek_viekx.gt1b.default.trials;
         if ( h.f4 ) {
@@ -1476,7 +1472,7 @@ function rxGT1EASL (h) {
     });
     pushNotes(h.rx[0]);
 
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.sof_sim.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sof_sim.gt1b.default.trials;
     }
@@ -1507,7 +1503,7 @@ function rxGT1EASL (h) {
     });
     pushNotes(h.rx[0]);
 
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.sof_dac.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sof_dac.gt1b.default.trials;
     }
@@ -1917,7 +1913,7 @@ function rxGT1AASLD (h) {
             if ( h.f4 ) {
                 rxGT1AASLDpegribaF4(h);
             }
-            else if ( h.genotype.match(/1b/) ) {
+            else if (h.genotype.subtype === 'b') {
                 rxGT1AASLDpegriba1b(h);
             }
             else {
@@ -1948,7 +1944,7 @@ function rxGT1AASLD (h) {
         }
     }
     else {
-        if ( h.genotype.match(/1b/) ) {
+        if (h.genotype.subtype === 'b') {
             rxGT1AASLDnaive1b(h);
         }
         else {
@@ -2261,7 +2257,7 @@ function rxGT1AASLDpegribaF4 (h) {
         notes: []
     });
     pushNotes(h.rx[0]);
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.viek_viekx_riba.f4.w24.gt1b.svr;
         h.rx[0].trials = svrx.gt1.viek_viekx_riba.f4.w24.gt1b.trials;
         h.rx[0].notes.push(greenText('Ribavirin is only given for 12 weeks')); 
@@ -2964,11 +2960,11 @@ function rxGT1FIXHEPC (h) {
     hasHarvoniCI(h);
     pushNotes(h.rx[0]);
 
-    if ( h.genotype.match(/1a/) ) {
+    if (h.genotype.subtype === 'a') {
         h.rx[0].svr    = svrx.gt1.sof_led.gt1a.default.svr;
         h.rx[0].trials = svrx.gt1.sof_led.gt1a.default.trials;
     }
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials;
     }
@@ -2988,7 +2984,7 @@ function rxGT1FIXHEPC (h) {
         notes: []
     });
     pushNotes(h.rx[0]);
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.viek_viekx.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.viek_viekx.gt1b.default.trials;
     }
@@ -3003,7 +2999,7 @@ function rxGT1FIXHEPC (h) {
     });
     pushNotes(h.rx[0]);
 
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.sof_sim.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sof_sim.gt1b.default.trials;
     }
@@ -3032,7 +3028,7 @@ function rxGT1FIXHEPC (h) {
     });
     pushNotes(h.rx[0]);
 
-    if ( h.genotype.match(/1b/) ) {
+    if (h.genotype.subtype === 'b') {
         h.rx[0].svr    = svrx.gt1.sof_dac.gt1b.default.svr;
         h.rx[0].trials = svrx.gt1.sof_dac.gt1b.default.trials;
     }
