@@ -994,17 +994,8 @@ function showTrialData () {
  */
 function getTrialData(h) {
    
-    var gt = '';
-    var re = /([1-6])/;
-    if ( h.genotype.match(/1/) ) gt = 'gt1';
-    if ( h.genotype.match(/2/) ) gt = 'gt2';   
-    if ( h.genotype.match(/3/) ) gt = 'gt3';
-    if ( h.genotype.match(/4/) ) gt = 'gt4';
-    if ( h.genotype.match(/5/) ) gt = 'gt5';
-    if ( h.genotype.match(/6/) ) gt = 'gt6';
-    if (gt == '' ) return '';
-    var match = re.exec(h.genotype);
-    var html = '<h2 class="data-heading">Trials Data For Genotype ' + match[1] + '<h2><hr>'
+    var gt = 'gt' + h.genotype.type;
+    var html = '<h2 class="data-heading">Trials Data For Genotype ' + h.genotype.type + '<h2><hr>'
     for (var key in svrx[gt]) {
         var meds = key;
         meds = meds.replace(/_/g,' ');
