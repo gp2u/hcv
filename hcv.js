@@ -821,7 +821,6 @@ function supportDecision () {
 
     var error = '';
     var errorFocus = ''
-    console.log(h.genotype);
     if (h.genotype  === undefined) {
         error += 'Please select Genotype<br>'; 
         if (errorFocus == '') errorFocus = '#genotype' 
