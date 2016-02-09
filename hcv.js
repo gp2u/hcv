@@ -2973,7 +2973,7 @@ function rxGT1FIXHEPC (h) {
         h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials;
     }
 
-    if ( negativePredictorsOfResponse(h) ) {
+    if ( negativePredictorsOfResponse(h) || h.fail ) {
         h.rx[0].duration = 24;
         h.rx[0].svr    = svrx.gt1.sof_led.fail.w24.svr;
         h.rx[0].trials = svrx.gt1.sof_led.fail.w24.trials;

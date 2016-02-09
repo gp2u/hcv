@@ -83,9 +83,25 @@ input[type=button]:hover {
 <div class="clear"></div>
 <hr>
 <script type="text/javascript">
+
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
 }
+$( document ).ready(function() {
+  if ( window.location.hash == '#AASLD' ) {
+      $('#AASLD').prop("checked", true);
+  }
+  else if ( window.location.hash == '#EASL' ) {
+      $('#EASL').prop("checked", true);
+  }
+  else if ( window.location.hash == '#AUS' ) {
+      $('#AUS').prop("checked", true);
+  }
+  else {
+      $('#FIXHEPC').prop("checked", true);
+  }
+});
+
 </script>
 <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <table>
@@ -159,10 +175,10 @@ function googleTranslateElementInit() {
         <label>Guidelines<label>
       </td>
       <td>
-        <input type="radio" name="guidelines" value="AUS" checked="checked" onChange="showRibaWeight()"> AUS
-        <input type="radio" name="guidelines" value="EASL" onChange="showRibaWeight()"> EASL
-        <input type="radio" name="guidelines" value="AASLD" onChange="showRibaWeight()"> AASLD
-        <input type="radio" name="guidelines" value="FIXHEPC" onChange="showRibaWeight()"> PEG/Riba Free
+        <input type="radio" name="guidelines" id="AUS" value="AUS" onChange="showRibaWeight()"> AUS
+        <input type="radio" name="guidelines" id="EASL" value="EASL" onChange="showRibaWeight()"> EASL
+        <input type="radio" name="guidelines" id="AASLD" value="AASLD" onChange="showRibaWeight()"> AASLD
+        <input type="radio" name="guidelines" id="FIXHEPC" value="FIXHEPC" onChange="showRibaWeight()"> PEG/Riba Free
       </td>
     </tr>
     <tr>
