@@ -145,6 +145,39 @@ $( document ).ready(function() {
         <span class="nowrap"> kPa <input type="text" class="narrow" id="kpa" onblur="setFibrosisFromKPa()"></span>
         <span class="nowrap"> Hepascore <input type="text" class="narrow" id="hepascore" onblur="setFibrosisHepascore()"></span>
         <span class="nowrap"> ELF Score <input type="text" class="narrow" id="ELFscore" onblur="setFibrosisELFscore()"></span>
+        <span class="nowrap"> APRI Score <input type="text" class="narrow" id="APRIscore" onblur="setFibrosisAPRIscore()"></span>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label>APRI Score<label>
+      </td>
+      <td>
+        <input type="checkbox" id="apri" onChange="toggleAPRI()"> (Check this box to open the calculator)</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <fieldset id="apriCalc" class="hidden">
+          <legend>APRI Calculator</legend>
+          <table>
+            <tr>
+              <td>
+                <label>ALT<label>
+              </td>
+              <td>
+                <input type="text" class="narrow" id="ALT" onChange="setAPRIscore()">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Platelets<label>
+              </td>
+              <td>
+                <input type="text" class="narrow" id="platletsAPRI" onChange="setAPRIscore()">
+              </td>
+            </tr>
+          </table>
+        </fieldset>
       </td>
     </tr>
     <tr>

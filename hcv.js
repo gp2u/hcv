@@ -3530,6 +3530,59 @@ function setFibrosisELFscore () {
 }
 
 /**
+ * Set fibrosis value based on APRI Score parameter.
+ *
+ * Ref http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3212757/table/s3tbl5/
+ */
+function setFibrosisAPRIscore () {
+
+    var APRIscore = parseFloat($("#APRIscore").val());
+
+    if (isNaN(APRIscore)) {
+        return;
+    }
+
+    if ( APRIscore > 0.879 ) {
+        $("#fibrosis").val('F4');
+    }
+    else if ( APRIscore >= 0.825 ) {
+        $("#fibrosis").val('F3');
+    }
+    else if ( APRIscore >= 0.688 ) {
+        $("#fibrosis").val('F2');
+    }
+    else {
+        $("#fibrosis").val('F1');
+    }
+}
+
+/**
+ * Calculate APRI
+ */
+
+function setAPRIscore () {
+  
+    var ALT = parseFloat($("#ALT").val());
+    var Platlets = parseFloat($("#platletsAPRI").val());
+    //alert(ALT+"|"+Platlets); 
+    if (isNaN(ALT) || isNaN(Platlets)) {
+        return;
+    }
+    
+    var APRI = 100*(ALT/40)/Platlets;
+    $("#APRIscore").val(APRI.toFixed(3));
+    setFibrosisAPRIscore();
+}
+
+/**
+ * Toggle Ribavirin dose calculator.
+ */
+function toggleAPRI () {
+
+    $("#apri:checked").length == 1 ? $("#apriCalc").slideDown() : $("#apriCalc").hide(400);
+}
+
+/**
  * Toggle Ribavirin dose calculator.
  */
 function toggleRiba () {
