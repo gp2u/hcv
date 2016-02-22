@@ -144,28 +144,31 @@ $( document ).ready(function() {
         </select>
         <span class="nowrap"> kPa <input type="text" class="narrow" id="kpa" onblur="setFibrosisFromKPa()"></span>
         <span class="nowrap"> Hepascore <input type="text" class="narrow" id="hepascore" onblur="setFibrosisHepascore()"></span>
-        <span class="nowrap"> ELF Score <input type="text" class="narrow" id="ELFscore" onblur="setFibrosisELFscore()"></span>
-        <span class="nowrap"> APRI Score <input type="text" class="narrow" id="APRIscore" onblur="setFibrosisAPRIscore()"></span>
+        <span class="nowrap"> ELF <input type="text" class="narrow" id="ELFscore" onblur="setFibrosisELFscore()"></span>
+        <span class="nowrap"> APRI <input type="text" class="narrow" id="APRIscore" onblur="setFibrosisAPRIscore()"></span>
+        <span class="nowrap"> AST/ALT <input type="text" class="narrow" id="ASTALTscore" onblur="setFibrosisAPRIscore()"></span>
       </td>
     </tr>
     <tr>
       <td>
-        <label>APRI Score<label>
+        <label>APRI or AST/ALT Score<label>
       </td>
       <td>
-        <input type="checkbox" id="apri" onChange="toggleAPRI()"> (Check this box to open the calculator)</td>
+        <input type="checkbox" id="apri" onChange="toggleAPRI()"> (Check this box to open the calculator and estimate fibrosis)</td>
     </tr>
     <tr>
       <td colspan="2">
         <fieldset id="apriCalc" class="hidden">
-          <legend>APRI Calculator</legend>
+          <legend>APRI or AST/ALT Fibrosis Estimation</legend>
           <table>
             <tr>
               <td>
-                <label>ALT<label>
+                <label>AST<label>
               </td>
               <td>
-                <input type="text" class="narrow" id="ALT" onChange="setAPRIscore()">
+                <input type="text" class="narrow" id="AST" onChange="setAPRIscore()"> 
+                / 
+                <input type="text" class="narrow" id="ASTupper" value="40" onChange="setAPRIscore()"> * AST upper limit of normal usually 40, change if required
               </td>
             </tr>
             <tr>
@@ -173,7 +176,15 @@ $( document ).ready(function() {
                 <label>Platelets<label>
               </td>
               <td>
-                <input type="text" class="narrow" id="platletsAPRI" onChange="setAPRIscore()">
+                <input type="text" class="narrow" id="plateletsAPRI" onChange="setAPRIscore()"> * Required for APRI only
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>ALT<label>
+              </td>
+              <td>
+                <input type="text" class="narrow" id="ALT" onChange="setAPRIscore()"> * Required for AST/ALT only
               </td>
             </tr>
           </table>

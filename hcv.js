@@ -3557,21 +3557,54 @@ function setFibrosisAPRIscore () {
 }
 
 /**
- * Calculate APRI
+ * Set fibrosis value based on AST/ALT Score parameter.
+ *
+ * Ref http://gut.bmj.com/content/59/9/1265.full.pdf
+ */
+function setFibrosisASTALTscore () {
+
+    var ASTALTscore = parseFloat($("#ASTALTscore").val());
+
+    if (isNaN(ASTALTscore)) {
+        return;
+    }
+
+    if ( ASTALTscore > 1.0 ) {
+        $("#fibrosis").val('F4');
+    }
+    else if ( ASTALTscore > 0.8 ) {
+        $("#fibrosis").val('F3');
+    }
+    else {
+        $("#fibrosis").val('F1');
+    }
+}
+
+/**
+ * Calculate APRI or AST/ALT
  */
 
 function setAPRIscore () {
   
+    var AST = parseFloat($("#AST").val());
     var ALT = parseFloat($("#ALT").val());
-    var Platlets = parseFloat($("#platletsAPRI").val());
-    //alert(ALT+"|"+Platlets); 
-    if (isNaN(ALT) || isNaN(Platlets)) {
+    var ASTupper = parseFloat($("#ASTupper").val());
+    var Platlets = parseFloat($("#plateletsAPRI").val());
+
+    if ( ! isNaN(AST) && ! isNaN(ASTupper) && ! isNaN(Platlets)) {
+        var APRI = 100*(AST/ASTupper)/Platlets;
+        $("#APRIscore").val(APRI.toFixed(3));
+        $("#ASTALTscore").val('');
+        setFibrosisAPRIscore();
         return;
     }
-    
-    var APRI = 100*(ALT/40)/Platlets;
-    $("#APRIscore").val(APRI.toFixed(3));
-    setFibrosisAPRIscore();
+
+    if ( ! isNaN(AST) && ! isNaN(ALT) ) {
+        var ASTALT = AST/ALT;
+        $("#ASTALTscore").val(ASTALT.toFixed(3));
+        setFibrosisASTALTscore();
+    }
+
 }
 
 /**
