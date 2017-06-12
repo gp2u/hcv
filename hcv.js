@@ -2,7 +2,7 @@
 *
 * The MIT License (MIT)
 *
-* Copyright (c) 2015 GP2U Telehealth Australia
+* Copyright (c) 2015-2017 GP2U Telehealth Australia
 *
 * Written by Dr James Freeman and Petr Shevtsov
 *
@@ -26,7 +26,7 @@
 *
 */
 
-var version = '1.4';
+var version = '2.0';
 
 var ratings = {
     classILevelA   : 'Class I, Level A',
@@ -83,6 +83,23 @@ var drugs = {
         notes: ['In the ION-3 trial, patients without cirrhosis and a baseline HCV RNA levels less than 6 million IU/mL had similar relapse rates when treated with 8 weeks versus 12 weeks. Decreasing the length of the regimen to 8 weeks should be done with caution.'
         ]
     },
+    sof_vel: {
+        generic: 'Sofosbuvir/Velpatasvir',
+        dose: ['400mg/100mg'],
+        brand: [
+        'Epclusa',
+        'Sofosvel (Beacon)',
+        'Panovir (Incepta)',
+        'Velosof (Hetero)',
+        'Velpanat (Natco)',
+        'Hepcvel (Cipla)',
+        'MyHep All (Mylan)'
+        ],
+        route: 'PO',
+        freq: 'daily',
+        notes: []
+    },
+
     dac: {
         generic: 'Daclatasvir',
         dose: ['60mg','30mg'],
@@ -223,6 +240,38 @@ var svrx = {
             }
 
         },
+
+        sof_vel: {
+            default: {
+                svr: 98,
+                trials: 'ASTRAL-1 98% (323/328)'
+            },
+            gt1a: {
+                default: {
+                    svr: 98,
+                    trials: 'ASTRAL-1 98% (206/210)'
+                }
+            },
+            gt1b: {
+                default: {
+                    svr: 99,
+                    trials: 'ASTRAL-1 99% (117/118)'
+                }
+            },
+            f4: {
+                default: {
+                    svr: 91,
+                    trials: 'ALLY-2 naive 89% (8/9) experienced 92% (12/13) Aggregate 90.9% (20/22)'
+                },
+            },
+            fail: {
+                default: {
+                    svr: 98,
+                    trials: 'ALLY-2 98% (43/44)'
+                },
+            }
+        },
+
 
         sof_dac: {
             default: {
@@ -937,7 +986,7 @@ function renderRx(h) {
 
         if (typeof h.rx[m].rating !== 'undefined') html += '<b>Rating:</b> <a href="javascript:evidence()">' + h.rx[m].rating + '</a><br>';
 
-        h.rx[m].notes.unshift('Check for interactions using <a href="http://www.hep-druginteractions.org/Interactions.aspx" target="_new">http://www.hep-druginteractions.org/Interactions.aspx</a>');
+        h.rx[m].notes.unshift('Check for interactions using <a href="http://www.hep-druginteractions.org/checker" target="_new">http://www.hep-druginteractions.org/checker</a>');
         html += '<br><div class="notes"><b>Notes:</b><ol>';
         for (var i in h.rx[m].notes) {
             html += '<li>' + h.rx[m].notes[i] + '</li>';
