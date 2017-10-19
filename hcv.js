@@ -26,7 +26,7 @@
 *
 */
 
-var version = '2.0';
+var version = '3.0';
 
 var ratings = {
     classILevelA   : 'Class I, Level A',
@@ -144,6 +144,14 @@ var drugs = {
         freq: 'twice daily',
         notes: []
     },
+    zep: {
+        generic: 'Grazoprevir/Elbasvir',
+        dose: [ '100mg/50mg' ],
+        brand: [ 'Zepatier' ],
+        route: 'PO',
+        freq: 'one tablet daily',
+        notes: []
+    },
     peg: {
         generic: 'PegInterferon-&alpha;2a',
         dose: [ '180&mu;g'],
@@ -161,7 +169,7 @@ var drugs = {
         brand: [ 'PegIntron' ],
         route: 'SC',
         freq: 'weekly',
-        note: []
+        notes: []
     },
     sim: {
         generic: 'Simeprevir',
@@ -257,21 +265,27 @@ var svrx = {
                     svr: 99,
                     trials: 'ASTRAL-1 99% (117/118)'
                 }
-            },
-            f4: {
-                default: {
-                    svr: 91,
-                    trials: 'ALLY-2 naive 89% (8/9) experienced 92% (12/13) Aggregate 90.9% (20/22)'
-                },
-            },
-            fail: {
-                default: {
-                    svr: 98,
-                    trials: 'ALLY-2 98% (43/44)'
-                },
             }
         },
 
+        zep: {
+            default: {
+                svr: 97,
+                trials: 'C-EDGE-TN GT1a 92% (144/157) GT1b 99% (129/131) C-EDGE-COINFECTION GT1a 97% (139/144) GT1b 95% (42/44) Aggregate 95.3% (454/476)'
+            },
+            gt1a: {
+                default: {
+                    svr: 94,
+                    trials: 'C-EDGE-TN GT1a 92% (144/157) C-EDGE-COINFECTION GT1a 97% (139/144) Aggregate 94.0 (283/301)'
+                }   
+            },
+            gt1b: {
+                default: {
+                    svr: 98,
+                    trials: 'C-EDGE-TN GT1b 99% (129/131) C-EDGE-COINFECTION GT1b 95% (42/44) Aggregate 97.7% (454/175)'
+                }   
+            }
+        },
 
         sof_dac: {
             default: {
@@ -581,7 +595,14 @@ var svrx = {
                 svr: 96,
                 trials: 'AI444040 (24wk) 96% (25/26)'
             }
-        }
+        },
+
+        sof_vel: {
+            default: {
+                svr: 99,
+                trials: 'ASTRAL-2 99% (133/134) ASTRAL-5 (HIV coinfection) 100% (11/11)'
+            }
+        },
     },
     
     
@@ -680,7 +701,30 @@ var svrx = {
                     trials: 'AASLD-2015 80% (28/35)'
                 }
             }
-        }        
+        },
+
+        sof_vel: {
+            default: {
+                svr: 97,
+                trials: '96.7% ASTRAL-3 (268/277)'
+            },
+            f4: {
+                default: {
+                    svr: 91,
+                    trials: 'ASTRAL-3 91% (31/34)'
+                }
+            },
+            fail: {
+                default: {
+                    svr: 90,
+                    trials: 'ASTRAL-3 90.1% (64/71)'
+                },
+                f4: {
+                    svr: 89,
+                    trials: 'ASTRAL-3 89% (33/37)'
+                }
+            }
+        }         
     },
     
     gt4: {
@@ -778,15 +822,29 @@ var svrx = {
 
         sof_sim: {
             default: {
-                svr: 89,
-                trials: 'No Trials - Based on GT1 extrapolation'
+                svr: 100,
+                trials: 'PLUTO 100% (40/40)'
             }
         },
 
         sof_dac: {
             default: {
                 svr: 97,
-                trials: 'No Trials - Based on GT1 extrapolation'
+                trials: 'Egyptian data in > 500,000 patients'
+            }
+        },
+
+        sof_vel: {
+            default: {
+                svr: 100,
+                trials: 'ASTRAL-1 100% (116/116)'
+            }
+        },
+
+        zep: {
+            default: {
+                svr: 100,
+                trials: 'C-EDGE-TN 100% (18/18)'
             }
         }
     },
@@ -811,6 +869,13 @@ var svrx = {
             default: {
                 svr: 97,
                 trials: 'No Trials - Based on GT1 extrapolation'
+            }
+        },
+
+        sof_vel: {
+            default: {
+                svr: 97,
+                trials: 'ASTRAL-1 97% (34/35)'
             }
         }
     },
@@ -839,6 +904,13 @@ var svrx = {
             default: {
                 svr: 97,
                 trials: 'No Trials - Based on GT1 extrapolation'
+            }
+        },
+
+        sof_vel: {
+            default: {
+                svr: 97,
+                trials: 'ASTRAL-1 97% (34/35)'
             }
         }
     }
@@ -1029,6 +1101,8 @@ function getTrialData(h) {
         meds = meds.replace(/_/g,' ');
         meds = meds.replace('sof','Sofosbuvir');
         meds = meds.replace('led','Ledipasvir');
+        meds = meds.replace('vel','Velpatasvir');
+        meds = meds.replace('zep','Grazoprevir Elbasvir');
         meds = meds.replace('dac','Daclatasvir');
         meds = meds.replace('sim','Simeprevir');
         meds = meds.replace('peg','PegIFN-&alpha;');
@@ -1104,14 +1178,6 @@ function getRxOptions(h) {
         if ( h.genotype.match(/4/) ) rxGT4AASLD(h);
         if ( h.genotype.match(/5/) ) rxGT5AASLD(h);
         if ( h.genotype.match(/6/) ) rxGT6AASLD(h); 
-    }
-    else if (h.guidelines == 'FIXHEPC') {
-        if ( h.genotype.match(/1/) ) rxGT1FIXHEPC(h);
-        if ( h.genotype.match(/2/) ) rxGT2FIXHEPC(h);   
-        if ( h.genotype.match(/3/) ) rxGT3FIXHEPC(h);
-        if ( h.genotype.match(/4/) ) rxGT4FIXHEPC(h);
-        if ( h.genotype.match(/5/) ) rxGT5FIXHEPC(h);
-        if ( h.genotype.match(/6/) ) rxGT6FIXHEPC(h);       
     }
     else {
         alert('OMG, the flux capacitor has imploded!');
@@ -1198,6 +1264,25 @@ function rxGT1AUS (h) {
     if ( ! h.fail && ! h.f4 ) {
         h.rx[0].notes.push('8 weeks may be considered if HCV RNA < 6 x 10^6 IU/ml');
     }
+    // zep
+    h.rx.unshift({
+        medication: [ drugs.zep ],
+        duration: 12,
+        svr:    svrx.gt1.zep.default.svr,
+        trials: svrx.gt1.zep.default.trials,
+        rating: ratings.A1,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1a/) ) {
+        h.rx[0].svr    = svrx.gt1.zep.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.zep.gt1a.default.trials;
+    }
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.zep.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.zep.gt1b.default.trials;
+    }  
 }
 
 /**
@@ -1352,7 +1437,7 @@ function rxGT6AUS (h) {
 *
 *
 *
-* EASL 2015
+* EASL 2016
 *
 *
 *
@@ -1361,7 +1446,7 @@ function rxGT6AUS (h) {
 
 /**
  * Medical prescription options for HCV genotype 1 
- * according to EASL 2015 recommendations.
+ * according to EASL 2016 recommendations.
  * @param {Object} h
  */
 function rxGT1EASL (h) {
@@ -1572,11 +1657,51 @@ function rxGT1EASL (h) {
         h.rx[0].notes.push(noRiba24weeks(svrx.gt1.sof_led.f4.default.svr,svrx.gt1.sof_led.f4.default.trials));
     }
 
+    // sof_vel
+    h.rx.unshift({
+        medication: [ drugs.sof_vel ],
+        duration: 12,
+        svr:    svrx.gt1.sof_vel.default.svr,
+        trials: svrx.gt1.sof_vel.default.trials,
+        rating: ratings.A1,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1a/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_vel.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_vel.gt1a.default.trials;
+    }
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.sof_vel.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.sof_vel.gt1b.default.trials;
+    }
+
+    // zep
+    h.rx.unshift({
+        medication: [ drugs.zep ],
+        duration: 12,
+        svr:    svrx.gt1.zep.default.svr,
+        trials: svrx.gt1.zep.default.trials,
+        rating: ratings.A1,
+        notes: []
+    });
+    pushNotes(h.rx[0]);
+
+    if ( h.genotype.match(/1a/) ) {
+        h.rx[0].svr    = svrx.gt1.zep.gt1a.default.svr;
+        h.rx[0].trials = svrx.gt1.zep.gt1a.default.trials;
+    }
+    if ( h.genotype.match(/1b/) ) {
+        h.rx[0].svr    = svrx.gt1.zep.gt1b.default.svr;
+        h.rx[0].trials = svrx.gt1.zep.gt1b.default.trials;
+    }
+
 }
 
 /**
  * Medical prescription options for HCV genotype 2 
- * according to EASL 2015 recommendations.
+ * according to EASL 2016 recommendations.
  * @param {Object} h
  */
 function rxGT2EASL (h) {
@@ -1638,7 +1763,7 @@ function rxGT2EASL (h) {
 
 /**
  * Medical prescription options for HCV genotype 3 
- * according to EASL 2015 recommendations.
+ * according to EASL 2016 recommendations.
  * @param {Object} h
  */
 function rxGT3EASL (h) {
@@ -1714,7 +1839,7 @@ function rxGT3EASL (h) {
 
 /**
  * Medical prescription options for HCV genotype 4 
- * according to EASL 2015 recommendations.
+ * according to EASL 2016 recommendations.
  * @param {Object} h
  */
 function rxGT4EASL (h) {
@@ -1832,7 +1957,7 @@ function rxGT4EASL (h) {
 
 /**
  * Medical prescription options for HCV genotype 5 
- * according to EASL 2015 recommendations.
+ * according to EASL 2016 recommendations.
  * @param {Object} h
  */
 function rxGT5EASL (h) {
@@ -1889,7 +2014,7 @@ function rxGT5EASL (h) {
 }
 /**
  * Medical prescription options for HCV genotype 6 
- * according to EASL 2015 recommendations.
+ * according to EASL 2016 recommendations.
  * @param {Object} h
  */
 function rxGT6EASL (h) {
@@ -2982,283 +3107,6 @@ function rxGT6AASLD (h) {
     });
     pushNotes(h.rx[0]);
     addRiba(h);
-
-}
-
-/*
-*
-*
-*
-* PEG/Riba Free
-*
-*
-*
-*/
-
-/**
- * Medical prescription options for HCV genotype 1 
- * according to FIXHEPC 2015 recommendations.
- * @param {Object} h
- */
-function rxGT1FIXHEPC (h) {
-
-    // sof_led
-    h.rx.unshift({
-        medication: [ drugs.sof_led ],
-        duration: 12,
-        svr:    svrx.gt1.sof_led.default.svr,
-        trials: svrx.gt1.sof_led.default.trials,
-        notes: []
-    });
-    hasHarvoniCI(h);
-    pushNotes(h.rx[0]);
-
-    if ( h.genotype.match(/1a/) ) {
-        h.rx[0].svr    = svrx.gt1.sof_led.gt1a.default.svr;
-        h.rx[0].trials = svrx.gt1.sof_led.gt1a.default.trials;
-    }
-    if ( h.genotype.match(/1b/) ) {
-        h.rx[0].svr    = svrx.gt1.sof_led.gt1b.default.svr;
-        h.rx[0].trials = svrx.gt1.sof_led.gt1b.default.trials;
-    }
-
-    if ( negativePredictorsOfResponse(h) || h.fail ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr    = svrx.gt1.sof_led.fail.w24.svr;
-        h.rx[0].trials = svrx.gt1.sof_led.fail.w24.trials;
-    }
-
-    // viek
-    h.rx.unshift({
-        medication: [ drugs.viek, drugs.viekx ],
-        duration: 12,
-        svr:    svrx.gt1.viek_viekx.default.svr,
-        trials: svrx.gt1.viek_viekx.default.trials,
-        notes: []
-    });
-    pushNotes(h.rx[0]);
-    if ( h.genotype.match(/1b/) ) {
-        h.rx[0].svr    = svrx.gt1.viek_viekx.gt1b.default.svr;
-        h.rx[0].trials = svrx.gt1.viek_viekx.gt1b.default.trials;
-    }
-
-    // sof sim
-    h.rx.unshift({
-        medication: [ drugs.sof, drugs.sim ],
-        duration: 12,
-        svr:    svrx.gt1.sof_sim.default.svr,
-        trials: svrx.gt1.sof_sim.default.trials,
-        notes: []
-    });
-    pushNotes(h.rx[0]);
-
-    if ( h.genotype.match(/1b/) ) {
-        h.rx[0].svr    = svrx.gt1.sof_sim.gt1b.default.svr;
-        h.rx[0].trials = svrx.gt1.sof_sim.gt1b.default.trials;
-    }
-    else {
-        h.rx[0].svr    = svrx.gt1.sof_sim.gt1a.default.svr; 
-        h.rx[0].trials = svrx.gt1.sof_sim.gt1a.default.trials;        
-    }
-    if ( h.f4 ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr      = svrx.gt1.sof_sim.f4.w12.svr;
-        h.rx[0].trials   = svrx.gt1.sof_sim.f4.w12.trials;
-    }
-    if ( h.fail ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr      = svrx.gt1.sof_sim.fail.w12.svr;
-        h.rx[0].trials   = svrx.gt1.sof_sim.fail.w12.trials;
-    }
-
-    // sof dac
-    h.rx.unshift({
-        medication: [ drugs.sof, drugs.dac ],
-        duration: 12,
-        svr:    svrx.gt1.sof_dac.default.svr,
-        trials: svrx.gt1.sof_dac.default.trials,
-        notes: []
-    });
-    pushNotes(h.rx[0]);
-
-    if ( h.genotype.match(/1b/) ) {
-        h.rx[0].svr    = svrx.gt1.sof_dac.gt1b.default.svr;
-        h.rx[0].trials = svrx.gt1.sof_dac.gt1b.default.trials;
-    }
-    if ( h.f4 || h.fail ) {
-        h.rx[0].duration = 24;
-    }
-
-}
-
-/**
- * Medical prescription options for HCV genotype 2 
- * according to FIXHEPC 2015 recommendations.
- * @param {Object} h
- */
-function rxGT2FIXHEPC (h) {
-
-    // sof dac
-    h.rx.unshift({
-        medication: [ drugs.sof, drugs.dac ],
-        duration: 12,
-        svr:    svrx.gt2.sof_dac.default.svr,
-        trials: svrx.gt2.sof_dac.default.trials,
-        notes: []
-    });
-    pushNotes(h.rx[0]);
-    if ( h.f4 || h.fail ) {
-        h.rx[0].duration = 24;
-    }
-
-}
-
-/**
- * Medical prescription options for HCV genotype 3 
- * according to FIXHEPC 2015 recommendations.
- * @param {Object} h
- */
-function rxGT3FIXHEPC (h) {
-
-    // sof dac
-    h.rx.unshift({
-        medication: [ drugs.sof, drugs.dac ],
-        duration: 12,
-        svr:    svrx.gt3.sof_dac.default.svr,
-        trials: svrx.gt3.sof_dac.default.trials,
-        notes: []
-    });
-    pushNotes(h.rx[0]);
-    if ( h.f4 ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr      = svrx.gt3.sof_dac.f4.w24.svr;
-        h.rx[0].trials   = svrx.gt3.sof_dac.f4.w24.trials;
-    }
-    if ( h.fail ) {
-        h.rx[0].duration = 24;
-        h.rx[0].svr      = svrx.gt3.sof_dac.fail.w24.svr;
-        h.rx[0].trials   = svrx.gt3.sof_dac.fail.w24.trials;
-    }
-
-}
-
-/**
- * Medical prescription options for HCV genotype 4 
- * according to FIXHEPC 2015 recommendations.
- * @param {Object} h
- */
-function rxGT4FIXHEPC (h) {
-
-    // sof led
-    h.rx.unshift({
-        medication: [ drugs.sof_led ],
-        duration: 12,
-        svr:    svrx.gt4.sof_led.default.svr,
-        trials: svrx.gt4.sof_led.default.trials,
-        notes: []
-    });
-    hasHarvoniCI(h)
-    pushNotes(h.rx[0]);
-    if ( h.f4 || h.fail ) {
-        h.rx[0].duration = 24;
-    }
-
-    // sof sim
-    h.rx.unshift({
-        medication: [ drugs.sof, drugs.sim ],
-        duration: 12,
-        svr:    svrx.gt4.sof_sim.default.svr,
-        trials: svrx.gt4.sof_sim.default.trials,
-        notes: []
-    });
-    pushNotes(h.rx[0]);
-    if ( h.f4 || h.fail ) {
-        h.rx[0].duration = 24;
-    }
-
-    // sof dac
-    h.rx.unshift({
-        medication: [ drugs.sof, drugs.dac ],
-        duration: 12,
-        svr:    svrx.gt4.sof_dac.default.svr,
-        trials: svrx.gt4.sof_dac.default.trials,
-        notes: []
-    });
-    pushNotes(h.rx[0]);
-    if ( h.f4 || h.fail ) {
-        h.rx[0].duration = 24;
-    }
-
-}
-
-/**
- * Medical prescription options for HCV genotype 5 
- * according to FIXHEPC 2015 recommendations.
- * @param {Object} h
- */
-function rxGT5FIXHEPC (h) {
-
-    // sof led
-    h.rx.unshift({
-        medication: [ drugs.sof_led ],
-        duration: 12,
-        svr:    svrx.gt5.sof_led.default.svr,
-        trials: svrx.gt5.sof_led.default.trials,
-        notes: []
-    });
-    hasHarvoniCI(h)
-    pushNotes(h.rx[0]);
-    if ( h.f4 || h.fail ) {
-        h.rx[0].duration = 24;
-    }
-
-    // sof dac
-    h.rx.unshift({
-        medication: [ drugs.sof, drugs.dac ],
-        duration: 12,
-        svr:    svrx.gt5.sof_dac.default.svr,
-        trials: svrx.gt5.sof_dac.default.trials,
-        notes: []
-    });
-    pushNotes(h.rx[0]);
-    if ( h.f4 || h.fail ) {
-        h.rx[0].duration = 24;
-    }
-
-}
-/**
- * Medical prescription options for HCV genotype 6 
- * according to FIXHEPC 2015 recommendations.
- * @param {Object} h
- */
-function rxGT6FIXHEPC (h) {
-
-    // sof led
-    h.rx.unshift({
-        medication: [ drugs.sof_led ],
-        duration: 12,
-        svr:    svrx.gt6.sof_led.default.svr,
-        trials: svrx.gt6.sof_led.default.trials,
-        notes: []
-    });
-    hasHarvoniCI(h)
-    pushNotes(h.rx[0]);
-    if ( h.f4 || h.fail ) {
-        h.rx[0].duration = 24;
-    }
-
-    // sof dac
-    h.rx.unshift({
-        medication: [ drugs.sof, drugs.dac ],
-        duration: 12,
-        svr:    svrx.gt6.sof_dac.default.svr,
-        trials: svrx.gt6.sof_dac.default.trials,
-        notes: []
-    });
-    pushNotes(h.rx[0]);
-    if ( h.f4 || h.fail ) {
-        h.rx[0].duration = 24;
-    }
 
 }
 
